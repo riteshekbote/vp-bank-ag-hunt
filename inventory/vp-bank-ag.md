@@ -15,5 +15,3 @@ www.vpbank.com
 
 **CNAME review signals (1):**
 - `api.vpbank.com` -> `api-vpbank-com.hdb-cs04.ellb.ch`
-
-## 2026-09-02 19:10:32 UTC
