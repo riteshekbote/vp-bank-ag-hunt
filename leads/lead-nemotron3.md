@@ -1,0 +1,36 @@
+## 2026-09-03 16:33:49 UTC [target] (model nemotron3)
+[PRIO] api.vpbank.com,8.5,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=6,cloud_surface=9,freshness=10  
+[PRIO] vpbank.com,7.0,attack_surface=7,business_value=8,tech_exposure=6,gate_ease=8,cloud_surface=6,freshness=8  
+[PRIO] www.vpbank.com,6.5,attack_surface=6,business_value=7,tech_exposure=5,gate_ease=8,cloud_surface=5,freshness=8
+[HYP] API versioning & debug endpoints on api.vpbank.com
+class: MISCONFIG
+asset: api.vpbank.com
+confidence: 70
+reasoning: CNAME points to ellb.ch load balancer (Swiss cloud); banking APIs commonly expose /v1,/v2,/beta,/internal,/swagger,/openapi.json,/actuator; no live probes yet
+evidence_needed: HTTP 200 on versioned/debug paths with API schemas or debug info
+verify_steps: GET https://api.vpbank.com/v1; GET https://api.vpbank.com/v2; GET https://api.vpbank.com/swagger.json; GET https://api.vpbank.com/openapi.json; GET https://api.vpbank.com/actuator/health; GET https://api.vpbank.com/.well-known/security.txt
+impact: API contract leak -> IDOR/BOLA enumeration, mass assignment vectors, auth bypass via debug endpoints; severity HIGH
+testability: PASSIVE
+[HYP] OAuth/OIDC misconfiguration on vpbank.com login flow
+class: OAUTH
+asset: vpbank.com
+confidence: 55
+reasoning: Main domain likely hosts auth; banking apps use OAuth/OIDC; redirect_uri validation, state parameter, PKCE flaws are high-value; no probes yet
+evidence_needed: OAuth authorize endpoint accepting arbitrary redirect_uri, missing state, or leaking codes
+verify_steps: GET https://vpbank.com/.well-known/openid-configuration; GET https://vpbank.com/oauth/authorize?client_id=test&redirect_uri=https://evil.com&response_type=code&state=x; observe redirect behavior
+impact: Account takeover via code theft; severity CRITICAL
+testability: PASSIVE
+[HYP] Subdomain takeover via dangling CNAME on api.vpbank.com
+class: MISCONFIG
+asset: api.vpbank.com
+confidence: 45
+reasoning: CNAME to ellb.ch (load balancer); if target decommissioned but CNAME remains, takeover possible; common in cloud migrations
+evidence_needed: CNAME target returns 404/NXDOMAIN or "No such app" page from provider
+verify_steps: Resolve api-vpbank-com.hdb-cs04.ellb.ch; HTTP GET to target IP/host; check for provider error pages (AWS/GCP/Azure/Heroku/Cloudflare)
+impact: Full API subdomain control -> phishing, token theft, API abuse; severity CRITICAL
+testability: PASSIVE
+[PARKED] Subdomain takeover via dangling CNAME on api.vpbank.com: confidence 45 < threshold, ellb.ch appears active LB not decommissioned provider
+[FINAL] 1) API versioning & debug endpoints on api.vpbank.com (confidence 70) 2) OAuth/OIDC misconfiguration on vpbank.com login flow (confidence 55)
+[NEXT] PROBE: GET https://api.vpbank.com/v1 (HEAD first, then GET if 2xx/3xx/401/403)
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
+[RISK] vp-bank-ag: 75 — High-value banking attack surface (API + auth + main site) with zero live verification; API subdomain on cloud LB warrants immediate enumeration

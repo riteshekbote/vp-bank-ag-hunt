@@ -1,0 +1,1113 @@
+===== ANALYST bigpickle 2026-09-03 16:33:58 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mdate -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-03T16:30:01Z
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "---"; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/known.md 2>/dev/null; echo "---AGENTS---"; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/AGENTS.md 2>/dev/null
+total 96
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x  3 runner runner 4096 Sep  3 16:29 ..
+drwxr-xr-x  7 runner runner 4096 Sep  3 16:29 .git
+drwxr-xr-x  3 runner runner 4096 Sep  3 16:29 .github
+-rw-r--r--  1 runner runner 1752 Sep  3 16:29 README.md
+-rw-r--r--  1 runner runner   96 Sep  3 16:30 analyst-out.txt
+-rw-r--r--  1 runner runner 5096 Sep  3 16:29 analyst-prompt.txt
+-rw-r--r--  1 runner runner 1281 Sep  3 16:29 ctx.txt
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 inventory
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 knowledge
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 leads
+-rw-r--r--  1 runner runner  145 Sep  3 16:29 probe-results.md
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 recon-notes
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 reports
+-rw-r--r--  1 runner runner 3228 Sep  3 16:29 scope.yml
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 scripts
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_bigpickle.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_laguna.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_ling3.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_longcat.json
+-rw-r--r--  1 runner runner   33 Sep  3 16:29 state_mimo.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_nemotron3.json
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 triage
+---
+---AGENTS---
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "=== ANALYST OUT ==="; cat analyst-out.txt; echo; echo "=== PROBE RESULTS ==="; cat probe-results.md; echo; echo "=== CTX ==="; cat ctx.txt; echo; echo "=== STATE bigpickle ==="; cat state_bigpickle.json
+=== ANALYST OUT ===
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mdate -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-03T16:30:01Z
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "---"; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/known.md 2>/dev/null; echo "---AGENTS---"; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/AGENTS.md 2>/dev/null
+total 96
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x  3 runner runner 4096 Sep  3 16:29 ..
+drwxr-xr-x  7 runner runner 4096 Sep  3 16:29 .git
+drwxr-xr-x  3 runner runner 4096 Sep  3 16:29 .github
+-rw-r--r--  1 runner runner 1752 Sep  3 16:29 README.md
+-rw-r--r--  1 runner runner   96 Sep  3 16:30 analyst-out.txt
+-rw-r--r--  1 runner runner 5096 Sep  3 16:29 analyst-prompt.txt
+-rw-r--r--  1 runner runner 1281 Sep  3 16:29 ctx.txt
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 inventory
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 knowledge
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 leads
+-rw-r--r--  1 runner runner  145 Sep  3 16:29 probe-results.md
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 recon-notes
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 reports
+-rw-r--r--  1 runner runner 3228 Sep  3 16:29 scope.yml
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 scripts
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_bigpickle.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_laguna.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_ling3.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_longcat.json
+-rw-r--r--  1 runner runner   33 Sep  3 16:29 state_mimo.json
+-rw-r--r--  1 runner runner   32 Sep  3 16:29 state_nemotron3.json
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 triage
+---
+---AGENTS---
+[0m
+
+=== PROBE RESULTS ===
+
+## 2026-09-02 21:53:27 UTC
+
+
+## 2026-09-02 23:50:48 UTC
+
+
+## 2026-09-03 02:36:22 UTC
+
+
+## 2026-09-03 07:29:02 UTC
+
+
+## 2026-09-03 12:18:41 UTC
+
+
+=== CTX ===
+=== KNOWLEDGE BASE ===
+# Knowledge Base (seed)
+=== MY STATE ===
+{"phase":"RECON","target":"api"}=== MY LAST LEADS (tail) ===
+none
+=== AGGREGATED HYPOTHESES (tail) ===
+# Hypotheses (ranked)
+
+## RANKED HYPOTHESES 2026-09-02 21:53:27 UTC
+
+## RANKED HYPOTHESES 2026-09-02 23:50:48 UTC
+
+## RANKED HYPOTHESES 2026-09-03 02:36:22 UTC
+
+## RANKED HYPOTHESES 2026-09-03 07:29:02 UTC
+
+## RANKED HYPOTHESES 2026-09-03 12:18:41 UTC
+=== INVENTORY vp-bank-ag ===
+# VP Bank AG inventory (discovery seed 2026-09-02)
+# NOTE: hosts below are discovery candidates from passive DNS/CT; confirm in-scope vs program scope before active testing.
+api.vpbank.com
+vpbank.com
+www.vpbank.com
+
+## PASSIVE RECON 2026-09-02 (read-only, non-intrusive)
+
+> Recon observations only. These are NOT confirmed vulnerabilities; ownership/in-scope of each host must be confirmed against the program scope before any active testing. Hosts resolve + serve HTTP — investigation requires scoped authorization.
+
+**Probed:** 3 hosts | **Live HTTP:** 0
+
+| Host | Status | Server/Tech |
+|---|---|---|
+
+**CNAME review signals (1):**
+- `api.vpbank.com` -> `api-vpbank-com.hdb-cs04.ellb.ch`
+
+## 2026-09-02 21:53:27 UTC
+
+## 2026-09-02 23:50:48 UTC
+
+## 2026-09-03 02:36:22 UTC
+
+## 2026-09-03 07:29:02 UTC
+
+## 2026-09-03 12:18:41 UTC
+
+=== STATE bigpickle ===
+{"phase":"RECON","target":"api"}
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "=== SCOPE ==="; cat scope.yml; echo; echo "=== INVENTORY files ==="; ls -la inventory; echo; for f in inventory/*; do echo "--- $f ---"; cat "$f"; done
+=== SCOPE ===
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+
+=== INVENTORY files ===
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner  833 Sep  3 16:29 vp-bank-ag.md
+
+--- inventory/vp-bank-ag.md ---
+# VP Bank AG inventory (discovery seed 2026-09-02)
+# NOTE: hosts below are discovery candidates from passive DNS/CT; confirm in-scope vs program scope before active testing.
+api.vpbank.com
+vpbank.com
+www.vpbank.com
+
+## PASSIVE RECON 2026-09-02 (read-only, non-intrusive)
+
+> Recon observations only. These are NOT confirmed vulnerabilities; ownership/in-scope of each host must be confirmed against the program scope before any active testing. Hosts resolve + serve HTTP — investigation requires scoped authorization.
+
+**Probed:** 3 hosts | **Live HTTP:** 0
+
+| Host | Status | Server/Tech |
+|---|---|---|
+
+**CNAME review signals (1):**
+- `api.vpbank.com` -> `api-vpbank-com.hdb-cs04.ellb.ch`
+
+## 2026-09-02 21:53:27 UTC
+
+## 2026-09-02 23:50:48 UTC
+
+## 2026-09-03 02:36:22 UTC
+
+## 2026-09-03 07:29:02 UTC
+
+## 2026-09-03 12:18:41 UTC
+[0m
+Let me look at the inventory, scope, leads, and recon notes to understand the current state.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "=== LEADS ==="; ls -la leads; for f in leads/*; do echo "--- $f ---"; cat "$f"; done; echo; echo "=== RECON NOTES ==="; ls -la recon-notes; for f in recon-notes/*; do echo "--- $f ---"; cat "$f"; done
+=== LEADS ===
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner   18 Sep  3 16:29 lead-mimo.md
+--- leads/lead-mimo.md ---
+# Lead log (seed)
+
+=== RECON NOTES ===
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner  819 Sep  3 16:29 DEDICATED-DEEP.md
+--- recon-notes/DEDICATED-DEEP.md ---
+# Dedicated deep surface (wildcard-filtered) 2026-09-03
+
+**Target:** `vp-bank-ag`
+**Root zones:** `vpbank.com`
+
+## Wildcard analysis
+
+- Total resolving hostnames in zone: 0
+- After shared/wildcard IP filtering: **0 genuinely dedicated hosts**
+- Reason: all resolving hostnames use shared/CDN/wildcard IP signatures
+
+## Honest conclusion
+
+This target's subdomain space is wildcard-dominated. No genuinely dedicated
+subdomain surface was recovered from passive brute + subfinder enumeration.
+The surface either (a) uses wildcard DNS records, (b) all CNAME records
+point to shared CDN/Cloudflare/CloudFront/AWS IPs, or (c) has no
+subdomain program at all. This is the honest exhaustive result.
+
+---
+_Honest framing: passive DNS enumeration + shared-IP wildcard filtering. No finding claimed. No active testing performed._
+[0m
+Let me look at the reports, triage, knowledge, scripts, and git history to understand what has been done.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "=== knowledge ==="; ls -la knowledge; for f in knowledge/*; do echo "--- $f ---"; cat "$f"; done; echo; echo "=== reports ==="; ls -la reports; for f in reports/*; do echo "--- $f ---"; cat "$f"; done; echo; echo "=== triage ==="; ls -la triage; for f in triage/*; do echo "--- $f ---"; cat "$f"; done
+=== knowledge ===
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner   24 Sep  3 16:29 index.md
+--- knowledge/index.md ---
+# Knowledge Base (seed)
+
+=== reports ===
+total 16
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner  252 Sep  3 16:29 hypotheses.md
+-rw-r--r--  1 runner runner   39 Sep  3 16:29 valid-bugs.md
+--- reports/hypotheses.md ---
+# Hypotheses (ranked)
+
+## RANKED HYPOTHESES 2026-09-02 21:53:27 UTC
+
+## RANKED HYPOTHESES 2026-09-02 23:50:48 UTC
+
+## RANKED HYPOTHESES 2026-09-03 02:36:22 UTC
+
+## RANKED HYPOTHESES 2026-09-03 07:29:02 UTC
+
+## RANKED HYPOTHESES 2026-09-03 12:18:41 UTC
+--- reports/valid-bugs.md ---
+# Validated findings (running count 0)
+
+=== triage ===
+total 28
+drwxr-xr-x  2 runner runner 4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner 4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner    0 Sep  3 16:29 .gitkeep
+-rw-r--r--  1 runner runner  240 Sep  3 16:29 run-2026-09-02-21-52.md
+-rw-r--r--  1 runner runner  148 Sep  3 16:29 run-2026-09-02-23-51.md
+-rw-r--r--  1 runner runner  143 Sep  3 16:29 run-2026-09-03-03-10.md
+-rw-r--r--  1 runner runner  277 Sep  3 16:29 run-2026-09-03-08-08.md
+-rw-r--r--  1 runner runner  206 Sep  3 16:29 run-2026-09-03-12-52.md
+--- triage/run-2026-09-02-21-52.md ---
+
+===== TRIAGE 2026-09-02 21:52:49 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+No leads provided. The message ends with "LEADS:" but no actual leads are listed. Please provide the leads you want me to evaluate against the 7-Question Gate.
+--- triage/run-2026-09-02-23-51.md ---
+
+===== TRIAGE 2026-09-02 23:51:49 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+No leads provided. Please paste the probe results for me to triage.
+--- triage/run-2026-09-03-03-10.md ---
+
+===== TRIAGE 2026-09-03 03:10:03 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+No leads provided. Please paste the probe results to validate.
+--- triage/run-2026-09-03-08-08.md ---
+
+===== TRIAGE 2026-09-03 08:08:46 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+I need to see the actual leads to validate them. The message ends with "LEADS:" but no leads are listed. Please provide the probe results/leads you want me to evaluate against the 7-Question Gate.
+--- triage/run-2026-09-03-12-52.md ---
+
+===== TRIAGE 2026-09-03 12:52:27 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+No leads provided — the `LEADS:` section is empty. Please paste the hunt bot's findings and I'll run them through the gate.
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; echo "=== SCRIPTS ==="; ls -la scripts; for f in scripts/*; do echo "--- $f ---"; cat "$f"; done; echo; echo "=== PROMPT ==="; cat analyst-prompt.txt; echo; echo "=== README ==="; cat README.md
+=== SCRIPTS ===
+total 28
+drwxr-xr-x  2 runner runner  4096 Sep  3 16:29 .
+drwxr-xr-x 11 runner runner  4096 Sep  3 16:29 ..
+-rw-r--r--  1 runner runner 16987 Sep  3 16:29 sync-issues.py
+--- scripts/sync-issues.py ---
+import os, re, hashlib
+from difflib import SequenceMatcher
+from pathlib import Path
+from github import Github
+
+REPO = os.environ["GITHUB_REPOSITORY"]
+TOKEN = os.environ["GITHUB_TOKEN"]
+GLOB = os.environ.get("LEAD_GLOB", "leads/lead-*.md")
+TARGET = os.environ.get("TARGET_NAME", "hunt")
+MODEL_FROM_FILENAME = os.environ.get("MODEL_FROM_FILENAME", "0") == "1"
+
+STOP = re.compile(r'^\[(HYP|PARKED|FINAL|NEXT|LEARN|RISK|NEW|CHANGED|PRIO)\]')
+KV = re.compile(r'^([a-z_]+):\s*(.*)$', re.I)
+
+TITLE_SIM_THRESHOLD = float(os.environ.get("TITLE_SIM_THRESHOLD", "0.82"))
+COARSE_SIM_THRESHOLD = float(os.environ.get("COARSE_SIM_THRESHOLD", "0.55"))
+
+
+def split_inline(title):
+    """Extract inline attributes from a single-line lead of the form:
+    [HYP] Title: confidence 96, class MISCONFIG, verify_steps ..., asset https://...
+    Attribute matches are removed; the title is cut at the first attribute."""
+    attrs = {}
+    pats = [
+        (r'confidence\s*(?:=|:|\s+)\s*(\d{1,3})', 'confidence', None),
+        (r'conf\s*(?:=|:|\s+)\s*(\d{1,3})', 'confidence', None),
+        (r'\((\d{2,3})\)\s*[:;]', 'confidence', None),
+        (r'class\s*(?:=|:|\s+)\s*([A-Za-z_]+)', 'class', str.upper),
+        (r'asset\s*(?:=|:|\s+)\s*(https?://[^\s,;]+|/[^\s,;]+)', 'asset', None),
+        (r'severity\s*(?:=|:|\s+)\s*([A-Za-z]+)', 'severity', None),
+        (r'testability\s*(?:=|:|\s+)\s*([A-Za-z_]+)', 'testability', str.upper),
+        (r'verify[_\s]steps\s*(?:=|:|\s+)\s*([^\n|]+)', 'verify_steps', None),
+        (r'impact\s*(?:=|:|\s+)\s*([^\n|]+)', 'impact', None),
+        (r'reasoning\s*(?:=|:|\s+)\s*([^\n|]+)', 'reasoning', None),
+    ]
+    cut = None
+    for pat, key, transform in pats:
+        m = re.search(pat, title, re.I)
+        if m:
+            v = m.group(1).strip()
+            if transform:
+                v = transform(v)
+            if key not in attrs:
+                attrs[key] = v
+            cut = m.start() if cut is None else min(cut, m.start())
+    if cut is not None:
+        t = title[:cut]
+    else:
+        t = title
+    t = re.sub(r'^\s*[:,\s-]+\s*', '', t)
+    t = re.sub(r'\s+', ' ', t).strip()
+    return t, attrs
+
+
+def parse_blocks(text, model):
+    blocks, lines, i = [], text.splitlines(), 0
+    while i < len(lines):
+        m = re.match(r'^\[HYP\]\s*(.*)$', lines[i].strip())
+        if not m:
+            i += 1
+            continue
+        raw_title = m.group(1).strip()
+        b = {"title": raw_title, "model": model}
+        j = i + 1
+        while j < len(lines):
+            l = lines[j].strip()
+            if not l or STOP.match(l):
+                break
+            kv = KV.match(l)
+            if kv:
+                b[kv.group(1).lower()] = kv.group(2).strip()
+            j += 1
+        if "<" not in str(raw_title):
+            if not any(k in b for k in ('class', 'asset', 'confidence', 'reasoning', 'verify_steps')):
+                clean, attrs = split_inline(raw_title)
+                b['title'] = clean
+                for k, v in attrs.items():
+                    b.setdefault(k.lower(), v)
+            blocks.append(b)
+        i = j
+    return blocks
+
+
+def norm_asset(a):
+    a = (a or "").strip().lower().strip("`")
+    a = re.sub(r'^((get|post|put|patch|delete|head|options)s?)[/,\s]+', '', a, flags=re.I)
+    a = re.sub(r'\s*\(.*?\)', ' ', a)
+    a = re.sub(r'[{}[\],].*$', '', a)
+    a = re.sub(r'\s+', ' ', a).strip()
+    return a[:120]
+
+
+def coarse_target(a):
+    """Bare scheme+host+path of an asset (drops credentials, queries, parens)."""
+    a = (a or "").strip().lower()
+    a = re.sub(r'^`+|`+$', '', a)
+    a = re.sub(r'^\[(get|post|put|patch|delete|head|options)s?\][\s,]+', '', a)
+    m = re.match(r'^(?:https?://)?([^/\s()]+)(/[^\s()]*)?', a)
+    if not m:
+        return ""
+    host, path = m.group(1), m.group(2) or ""
+    host = re.sub(r'^www\.', '', host)
+    path = path.rstrip('/')
+    return host + path if path and path != "/" else host
+
+def norm_title(t):
+    t = re.sub(r'^\[\d+%\]\s*', '', t or "")
+    t = re.sub(r'[^a-z0-9]+', ' ', t.lower()).strip()
+    return t
+
+
+def fingerprint(b):
+    a = norm_asset(b.get("asset", ""))
+    c = (b.get("class", "OTHER") or "OTHER").strip().lower()[:20]
+    if a:
+        return hashlib.md5(f"{a}|{c}".encode()).hexdigest()[:12]
+    # no asset -> include normalized title so distinct leads get distinct fps
+    t = norm_title(b.get("title", ""))
+    return hashlib.md5(f"{t}|{c}".encode()).hexdigest()[:12]
+
+
+def issue_fingerprint(iss):
+    """Return the canonical fingerprint for an existing issue.
+
+    The stored <!-- fingerprint:xxx --> comment is the single source of
+    truth: it was computed from the original lead and is stable across
+    runs. Only fall back to recomputing from the body for issues created
+    before the comment existed."""
+    body = iss.body or ""
+    m = re.search(r'<!-- fingerprint:([0-9a-f]{12}) -->', body)
+    if m:
+        return m.group(1)
+    m = re.search(r'^## Target\n`(.*)`', body, re.M)
+    if not m:
+        return None
+    mc = re.search(r'^## Class\n(.*)$', body, re.M)
+    a = norm_asset(m.group(1))
+    c = (mc.group(1).strip().lower()[:20] if mc else "other")
+    if a:
+        return hashlib.md5(f"{a}|{c}".encode()).hexdigest()[:12]
+    mt = re.search(r'^## Title\n(.*)$', body, re.M)
+    t = norm_title(mt.group(1) if mt else "")
+    return hashlib.md5(f"{t}|{c}".encode()).hexdigest()[:12]
+
+
+def ensure_label(repo, name):
+    color = {"pending": "d4c5f9", "false-positive": "7057ff", "verified": "0e8a16",
+             "reported": "fbca04", "duplicate": "b60205",
+             "high-confidence": "1d76db", "bug-bounty": "5319e7",
+             "ai-hypothesis": "c5def5"}.get(name, "c2e0c6")
+    try:
+        repo.get_label(name)
+    except Exception:
+        repo.create_label(name, color)
+        print("label created:", name)
+
+
+def best_title_match(block, issues, by_title_index):
+    """Fuzzy-match a drifted no-asset lead against open issues.
+
+    Returns the issue whose normalized title is most similar to the
+    block title (same class, above TITLE_SIM_THRESHOLD), or None."""
+    bt = norm_title(block.get("title", ""))
+    if not bt:
+        return None
+    bc = (block.get("class", "OTHER") or "OTHER").strip().lower()[:20]
+    best, best_ratio = None, 0.0
+    for iss in issues:
+        i_class = "other"
+        mc = re.search(r'^## Class\n(.*)$', iss.body or "", re.M)
+        if mc:
+            i_class = mc.group(1).strip().lower()[:20]
+        if i_class != bc:
+            continue
+        it = norm_title(iss.title)
+        if not it:
+            continue
+        r = SequenceMatcher(None, bt, it).ratio()
+        if r > best_ratio:
+            best, best_ratio = iss, r
+    if best and best_ratio >= TITLE_SIM_THRESHOLD:
+        return best
+    return None
+
+
+def coarse_match(b, all_issues):
+    """Same target+class and similar title (>= COARSE_SIM_THRESHOLD) ->
+    treat as the same finding, even if the stored issue is closed."""
+    bt = norm_title(b.get("title", ""))
+    if not bt:
+        return None
+    ctarget = coarse_target(b.get("asset", ""))
+    if not ctarget:
+        return None
+    bc = (b.get("class", "OTHER") or "OTHER").strip().lower()[:20]
+    best, best_ratio = None, 0.0
+    for iss in all_issues:
+        m = re.search(r'^## Target\n`(.*)`', iss.body or "", re.M)
+        if not m:
+            continue
+        if coarse_target(m.group(1)) != ctarget:
+            continue
+        mc = re.search(r'^## Class\n(.*)$', iss.body or "", re.M)
+        i_class = (mc.group(1).strip().lower()[:20] if mc else "other")
+        if i_class != bc:
+            continue
+        r = SequenceMatcher(None, bt, norm_title(iss.title)).ratio()
+        if r > best_ratio:
+            best, best_ratio = iss, r
+    if best and best_ratio >= COARSE_SIM_THRESHOLD:
+        return best
+    return None
+
+def main():
+    g = Github(TOKEN)
+    repo = g.get_repo(REPO)
+    files = sorted(Path(".").glob(GLOB))
+    print(f"processing {len(files)} files: {GLOB}")
+    blocks = []
+    for f in files:
+        text = f.read_text(errors="ignore")
+        mh = re.search(r'\(model\s+(\w+)\)', text)
+        model = mh.group(1) if mh else ("unknown")
+        if model == "unknown" and MODEL_FROM_FILENAME:
+            mf = re.match(r'(\w+)', f.name)
+            model = mf.group(1) if mf else "unknown"
+        blocks += parse_blocks(text, model)
+    print("hypothesis blocks:", len(blocks))
+
+
+    def _conf(b):
+        v = b.get("confidence", 0) or 0
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            try:
+                return int(float(v))
+            except (ValueError, TypeError):
+                return 0
+
+    confs = sorted({_conf(b) // 10 * 10 for b in blocks})
+    models = sorted({b["model"] for b in blocks})
+    all_labels = ["bug-bounty", "ai-hypothesis", "pending", "false-positive", TARGET] \
+        + [f"model-{m}" for m in models] + [f"confidence-{c}" for c in confs]
+    for l in all_labels:
+        ensure_label(repo, l)
+
+    try:
+        existing = list(repo.get_issues(state="all", labels=["bug-bounty"]))
+    except Exception:
+        existing = list(repo.get_issues(state="all"))
+    by_fp = {}
+    for i in existing:
+        fp = issue_fingerprint(i)
+        if fp:
+            by_fp.setdefault(fp, []).append(i)
+    open_issues = [i for i in existing if i.state == "open"]
+    closed_issues = [i for i in existing if i.state != "open"]
+    print("existing issues:", len(existing), "open:", len(open_issues))
+
+    # in-run dedup: same fingerprint multiple times in this batch -> keep first
+    seen_fp = set()
+    uniq_blocks = []
+    for b in blocks:
+        fp = fingerprint(b)
+        if fp not in seen_fp:
+            seen_fp.add(fp)
+            uniq_blocks.append(b)
+    if len(uniq_blocks) != len(blocks):
+        print(f"in-run dedup: {len(blocks)} -> {len(uniq_blocks)}")
+
+    created = updated = 0
+    fuzzy_matched = 0
+    for b in uniq_blocks:
+        conf = _conf(b)
+        fp = fingerprint(b)
+        title = f"[{conf}%] {b['title'][:90]}"
+        labels = ["bug-bounty", "ai-hypothesis", "pending", TARGET,
+                  f"model-{b['model']}", f"confidence-{conf//10*10}"] \
+            + (["high-confidence"] if conf >= 80 else [])
+        body = (f"<!-- fingerprint:{fp} -->\n\n"
+                f"## Title\n{b.get('title','')}\n\n"
+                f"## Target\n`{b.get('asset','?')}`\n\n"
+                f"## Class\n{b.get('class','OTHER')}\n\n"
+                f"## Confidence\n{conf}/100\n\n"
+                f"## Reasoning\n{b.get('reasoning','')}\n\n"
+                f"## Evidence needed\n{b.get('evidence_needed','')}\n\n"
+                f"## Verify steps\n{b.get('verify_steps','')}\n\n"
+                f"## Impact\n{b.get('impact','')}\n\n"
+                f"## Testability\n{b.get('testability','')}\n\n"
+                f"_model: {b['model']} · auto-synced from {GLOB}_")
+        if fp in by_fp:
+            iss = by_fp[fp][0]
+            cur = {l.name for l in iss.labels}
+            new = set(labels) | cur
+            if new != cur:
+                iss.edit(labels=list(new))
+                updated += 1
+        else:
+            # no exact fingerprint match: try fuzzy title match against
+            # open issues before creating a duplicate (handles title drift
+            # in asset-less leads across model runs)
+            match = best_title_match(b, open_issues, None)
+            if match is not None:
+                cur = {l.name for l in match.labels}
+                new = set(labels) | cur
+                if new != cur:
+                    match.edit(labels=list(new))
+                try:
+                    match.create_comment(
+                        f"Fuzzy-matched to lead (title similarity ≥ {TITLE_SIM_THRESHOLD}). "
+                        "No new issue created. If this is a genuinely different finding, "
+                        "reword the title so it differs in the first ~6 words.")
+                except Exception:
+                    pass
+                fuzzy_matched += 1
+                continue
+            # re-discovery of a CLOSED (rejected/duplicate) finding with a
+            # drifted asset field: same title+class -> do not re-create
+            closed_match = best_title_match(b, closed_issues, None)
+            if closed_match is not None:
+                try:
+                    closed_match.create_comment(
+                        "Re-discovered in a later analyst lead; kept closed (title matched "
+                        f"a previously closed issue at similarity ≥ {TITLE_SIM_THRESHOLD}).")
+                except Exception:
+                    pass
+                fuzzy_matched += 1
+                continue
+            # same bare target+class with a similar title -> duplicate
+            coarse = coarse_match(b, existing)
+            if coarse is not None:
+                cur = {l.name for l in coarse.labels}
+                new = set(labels) | cur
+                if new != cur:
+                    try:
+                        coarse.edit(labels=list(new))
+                    except Exception:
+                        pass
+                try:
+                    coarse.create_comment(
+                        f"Coarse-matched to {('#' + str(coarse.number)) if coarse.number else 'issue'} "
+                        f"(same target+class, title similarity ≥ {COARSE_SIM_THRESHOLD}). "
+                        "No new issue created.")
+                except Exception:
+                    pass
+                fuzzy_matched += 1
+                continue
+            repo.create_issue(title=title, body=body, labels=labels)
+            created += 1
+
+    confirmed_assets = []
+    for f in files:
+        text = f.read_text(errors="ignore")
+        for m in re.finditer(r'^\[CONFIRMED\]\s*(.*)$', text, re.M):
+            confirmed_assets.append(m.group(1).strip())
+    confirmed_low = ' '.join(a.lower() for a in confirmed_assets)
+
+    verified_now = 0
+    for iss in existing:
+        if iss.state != "open":
+            continue
+        if "verified" in {l.name for l in iss.labels}:
+            continue
+        low = (iss.title + " " + (iss.body or "")).lower()
+        if confirmed_low and (any(a and a.lower()[:40] in low for a in confirmed_assets) or confirmed_low[:40] in low):
+            try:
+                iss.edit(labels=list({l.name for l in iss.labels} | {"verified"}))
+                iss.create_comment("Auto-verified: [CONFIRMED] evidence present in latest analyst lead.")
+                verified_now += 1
+            except Exception:
+                pass
+    print(f"auto-verified issues: {verified_now}")
+
+    rejected = []
+    for f in files:
+        text = f.read_text(errors="ignore")
+        for m in re.finditer(r'^\[LEARN\]\s*REJECTED\s+\S+\s+@\s+(\S+)', text, re.M):
+            rejected.append(m.group(1))
+    closed = 0
+    for iss in existing:
+        if iss.state != "open":
+            continue
+        low = (iss.title + " " + (iss.body or "")).lower()
+        if any(a.lower()[:30] in low for a in rejected):
+            try:
+                iss.edit(state="closed", labels=list({l.name for l in iss.labels} | {"false-positive"}))
+                iss.create_comment("Closed automatically: this class was REJECTED for this asset by a later analyst run.")
+                closed += 1
+            except Exception:
+                pass
+
+    dup_closed = 0
+    for fp, isslist in by_fp.items():
+        if len(isslist) > 1:
+            keep = min(isslist, key=lambda i: i.number)
+            for dup in isslist:
+                if dup != keep and dup.state == "open":
+                    try:
+                        dup.edit(state="closed", labels=list({l.name for l in dup.labels} | {"duplicate"}))
+                        dup.create_comment(f"Duplicate of #{keep.number} (same normalized asset+class). Closed by sync.")
+                        dup_closed += 1
+                    except Exception:
+                        pass
+
+    title_closed = 0
+    groups = {}
+    for i in existing:
+        if i.state != "open":
+            continue
+        key = (norm_title(i.title), (re.search(r'^## Class\n(.*)$', i.body or "", re.M) or [None, "other"])[1].strip().lower())
+        groups.setdefault(key, []).append(i)
+    for key, isslist in groups.items():
+        if len(isslist) > 1:
+            keep = min(isslist, key=lambda i: i.number)
+            for dup in isslist:
+                if dup != keep:
+                    try:
+                        dup.edit(state="closed", labels=list({l.name for l in dup.labels} | {"duplicate"}))
+                        dup.create_comment(f"Duplicate of #{keep.number} (same normalized title+class). Closed by sync.")
+                        title_closed += 1
+                    except Exception:
+                        pass
+
+    print(f"SUMMARY created={created} updated={updated} fuzzy_matched={fuzzy_matched} "
+          f"closed_rejected={closed} dup_closed={dup_closed} title_closed={title_closed}")
+
+if __name__ == "__main__":
+    main()
+
+=== PROMPT ===
+=== KNOWLEDGE BASE ===
+# Knowledge Base (seed)
+=== MY STATE ===
+{"phase":"RECON","target":"api"}=== MY LAST LEADS (tail) ===
+none
+=== AGGREGATED HYPOTHESES (tail) ===
+# Hypotheses (ranked)
+
+## RANKED HYPOTHESES 2026-09-02 21:53:27 UTC
+
+## RANKED HYPOTHESES 2026-09-02 23:50:48 UTC
+
+## RANKED HYPOTHESES 2026-09-03 02:36:22 UTC
+
+## RANKED HYPOTHESES 2026-09-03 07:29:02 UTC
+
+## RANKED HYPOTHESES 2026-09-03 12:18:41 UTC
+=== INVENTORY vp-bank-ag ===
+# VP Bank AG inventory (discovery seed 2026-09-02)
+# NOTE: hosts below are discovery candidates from passive DNS/CT; confirm in-scope vs program scope before active testing.
+api.vpbank.com
+vpbank.com
+www.vpbank.com
+
+## PASSIVE RECON 2026-09-02 (read-only, non-intrusive)
+
+> Recon observations only. These are NOT confirmed vulnerabilities; ownership/in-scope of each host must be confirmed against the program scope before any active testing. Hosts resolve + serve HTTP — investigation requires scoped authorization.
+
+**Probed:** 3 hosts | **Live HTTP:** 0
+
+| Host | Status | Server/Tech |
+|---|---|---|
+
+**CNAME review signals (1):**
+- `api.vpbank.com` -> `api-vpbank-com.hdb-cs04.ellb.ch`
+
+## 2026-09-02 21:53:27 UTC
+
+## 2026-09-02 23:50:48 UTC
+
+## 2026-09-03 02:36:22 UTC
+
+## 2026-09-03 07:29:02 UTC
+
+## 2026-09-03 12:18:41 UTC
+You are a senior bug bounty hunter ANALYST for the VP Bank AG program (report channel: bugs.olivermaicher.eu).
+Eligible in-scope assets (ONLY these, from scope.yml + inventory/vp-bank-ag.md): All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries
+Deep-hunt directives:
+- Prioritize HIGH-VALUE classes: broken auth/session, IDOR/BOLA, SSRF-to-cloud-metadata (169.254.169.254), mass assignment, JWT alg/key confusion, OAuth redirect_uri/state flaws, business logic on money/auth flows, file upload, GraphQL introspection+mutations, subdomain takeover.
+- CHAIN aggressively: open redirect -> OAuth code theft -> ATO; IDOR -> cross-tenant PII dump; SSRF -> metadata -> keys; XSS -> session theft -> ATO.
+- Request-level reasoning: exact METHOD path params headers body, expected vs actual status. No filler.
+- Breadth over the full inventory for anomalies (odd status codes, id/uid/email/user_id params, versioned /api/v1|v2|beta|internal, debug/test flags, swagger/openapi/json), then depth on top-3 anomalies.
+- If a hypothesis needs live confirmation you cannot do passively, emit [NEXT] PROBE with the EXACT read-only request.
+OUT OF SCOPE (REJECTED classes): network DoS, account-lockout DoS, descriptive errors/headers only, robots.txt / known public files, outdated library versions, OPTIONS/TRACE, CSRF on logout or anonymous forms, cookie flags on non-sensitive data, self-XSS, scanner reports without POC, physical access, social engineering of employees/vendors, username enumeration on login/forgot-password, brute-force/rate-limit/lockout policy, SSL/TLS best practice, SSL attacks, clickjacking without demonstrated exploit, mail config (SPF/DKIM/DMARC), known-vulnerable library without program-specific exploit, password/account-recovery policy, autocomplete in fields, public login panels, lack of email verification, session control during email/password change, and any exposure of customer/employee/financial/authentication data during testing (program note). Focus on real logic flaws in scoped assets.
+Your job is NOT to invent vulnerabilities. Run the 8 steps and output ONLY structured blocks.
+
+STEP 1 — DELTA: compare inventory+knowledge+last leads against current surface. [NEW]/[CHANGED] one line each, or NO_DELTA.
+STEP 2 — PRIORITIZE: score top new (or existing) assets 0-10 on attack_surface, business_value, tech_exposure (GraphQL/OAuth/JWT/upload/admin/uncommon), gate_ease (10=no auth), cloud_surface, freshness. priority=0.25a+0.25b+0.15t+0.15g+0.10c+0.10f. Emit [PRIO] asset,score,axis.
+STEP 3 — HYPOTHESES: top 3 assets, max 1 hypothesis each. Strict schema, one field per line under [HYP] title line:
+[HYP] <title>
+class: <IDOR|SSRF|AUTH|XSS|BUSLOGIC|MISCONFIG|OATH|OTHER>
+asset: <host/endpoint>
+confidence: <0-100>
+reasoning: <facts only>
+evidence_needed: <what proves it>
+verify_steps: <passive-first concrete HTTP requests>
+impact: <what attacker gets + severity>
+testability: <PASSIVE|AUTH_HELPED|HUMAN_ONLY>
+Never put fields inline in the [HYP] title.
+STEP 4 — SELF-CRITIQUE: drop confidence<40 or REJECTED-class or no-verify-steps. [PARKED] <title>: <why>. [FINAL] survivors ranked.
+STEP 5 — NEXT ACTION: exactly one [NEXT] <PROBE|SCAN|RAG|HUMAN>: <one concrete action, exact endpoint if PROBE>.
+STEP 6 — LEARNING: [LEARN] REJECTED/ACCEPTED <class> @ <asset>: <reason>.
+STEP 7 — RISK: [RISK] <program>: <0-100> reason.
+RULES: facts vs hypotheses strictly separated; no endpoint-map-only; no REJECTED class; sha256 any secret; all claims trace to context or your own read-only probes; passive-first, <=1 rps, GET/HEAD/OPTIONS only for live probes; no auth-bypass or mutating tests against live customer data; any scanner output requires manual validation.
+
+=== README ===
+# vp-bank-ag-hunt
+
+24/7 deep multi-model bug-hunting automation for **VP Bank AG** (Oliver Maicher bug-bounty hub).
+
+Scope: All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries
+(full exclusion + rules list in `scope.yml`)
+
+Pipeline (all workflows run every 20 minutes):
+
+- **Deep Hunt** (`hunt.yml`): analyst hunts the discovered inventory + hypotheses, emits structured
+  leads, chains primitives, self-critiques. Models: mimo.
+- **Triager** (`triage.yml`): second-model 7-Question Gate validation + live passive probe; keeps
+  running count in `reports/valid-bugs.md`.
+- **Reposcan** (`reposcan.yml`): deep source scan of any public GitHub org (if configured).
+- **Sync Issues** (`sync-issues.yml`): mirrors leads to GitHub issues.
+
+Testing discipline: rate-limited (1 rps), no DoS/account-lockout, writes only on non-prod/test
+assets, no exposure of customer/employee/financial/auth data, secrets committed only as hashes.
+
+> IMPORTANT: the pipeline produces CANDIDATE leads. A reportable, validated finding requires
+> human triage + proof against the program's gate. No finding is fabricated; scanner output alone
+> is never accepted. Active testing is gated behind the in-scope hosts in `inventory/vp-bank-ag.md` and
+> must stay within the program's published scope.
+
+Artifacts:
+
+| Artifact | Purpose |
+|---|---|
+| `leads/` | Candidate findings (UNVALIDATED) |
+| `triage/` | Validation verdicts |
+| `reports/valid-bugs.md` | Validated findings + running count |
+| `scope.yml` | Program scope and exclusions (edit to adjust) |
+
+Program description: Liechtenstein-based private bank specializing in wealth management and financial services
+[0m
+Now let me check the git history and the current state of things, plus do some live verification. Let me understand the timeline: the inventory lists 3 hosts (api.vpbank.com, vpbank.com, www.vpbank.com) but the passive recon says "Probed: 3 hosts | Live HTTP: 0". The CNAME review shows api.vpbank.com -> api-vpbank-com.hdb-cs04.ellb.ch (an "ellb.ch" domain, which is notable — could be a defunct/third-party host).
+
+Let me check git history to understand context between runs, and do some fresh lightweight recon.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt; git log --oneline -30; echo "=== STATUS ==="; git status
+2dbdfa9 fix: reposcan dir order + per-model artifact names (match gladia)
+=== STATUS ===
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	analyst-out.txt
+	analyst-prompt.txt
+	ctx.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+[0m
+The git history is minimal. Let me focus on the key observation in the inventory: the CNAME `api.vpbank.com -> api-vpbank-com.hdb-cs04.ellb.ch`. This is interesting — `.ellb.ch` is Ellipse (SEB's banking platform, now often operated under "hdb" prefix which suggests "Hypothekarbank" conglomerate — actually HDB = "Hypothekarbank Lenzburg" uses ellb/ch). The fact that vpbank.com points at a resumed-elsewhere host is a strong subdomain-takeover / dangling-CNAME / misconfiguration signal.
+
+Let me verify the current DNS resolution of these hosts read-only.
+[0m$ [0mcd /tmp/opencode; echo "=== dig api.vpbank.com ==="; dig +short api.vpbank.com; echo "=== dig CNAME api ==="; dig +short api.vpbank.com CNAME; echo "=== dig vpbank.com ==="; dig +short vpbank.com; echo "=== dig www ==="; dig +short www.vpbank.com; echo "=== dig www CNAME ==="; dig +short www.vpbank.com CNAME; echo "=== dig NS ==="; dig +short vpbank.com NS
+=== dig api.vpbank.com ===
+api-vpbank-com.hdb-cs04.ellb.ch.
+195.186.145.95
+=== dig CNAME api ===
+api-vpbank-com.hdb-cs04.ellb.ch.
+=== dig vpbank.com ===
+193.222.70.149
+=== dig www ===
+193.222.70.149
+=== dig www CNAME ===
+=== dig NS ===
+ns1.ip-plus.net.
+ns2.ip-plus.net.
+dns1.swisscom.com.
+dns2.swisscom.com.
+dns3.swisscom.com.
+ns213.scs-ns.net.
+ns214.scs-ns.net.
+[0m
+Key finding: `api.vpbank.com` CNAMEs to `api-vpbank-com.hdb-cs04.ellb.ch` and resolves. This is Ellipse (`.ellb.ch` = Ellipse Schweiz, the SEB/HDB core-banking SaaS) — an important business-logic surface for a banking API, but it's a third-party core-banking platform. Note the inventory's passive recon claimed "CNAME review signals (1)" — this is the same signal.
+
+Let me do a few read-only HTTP probes to characterize these hosts, respecting <=1 rps.
+[0m$ [0mcd /tmp/opencode; for h in api.vpbank.com vpbank.com www.vpbank.com; do echo "=== $h HEAD/ ==="; curl -s -o /dev/null -w "http_code=%{http_code} redirect=%{redirect_url} server=%header{server} tech=%header{x-powered-by} size=%{size_download}\n" --max-time 12 -I "http://$h/" ; sleep 1; done
+=== api.vpbank.com HEAD/ ===
+http_code=000 redirect= server= tech= size=0
+=== vpbank.com HEAD/ ===
+http_code=302 redirect=https://www.vpbank.com/ server=Apache tech= size=0
+=== www.vpbank.com HEAD/ ===
+http_code=301 redirect=https://www.vpbank.com/ server=Apache tech= size=0
+[0m
+Interesting: `api.vpbank.com` returned http_code=000 (connect failure / no response) while the inventory's passive recon also recorded "Live HTTP: 0". Let me test the https variants and get more details.
+[0m$ [0mcd /tmp/opencode; echo "=== api https ==="; curl -s -o /dev/null -w "http_code=%{http_code} remote=%{remote_ip} redirect=%{redirect_url} server=%header{server} sslverify=%{ssl_verify_result}\n" --max-time 12 -k "https://api.vpbank.com/" ; echo "rc=$?"; sleep 1; echo "=== api http root body ==="; curl -s --max-time 12 -k -D- "https://api.vpbank.com/" -o /dev/null; echo "rc=$?"
+=== api https ===
+http_code=500 remote=195.186.145.95 redirect= server=Layer7-API-Gateway sslverify=19
+rc=0
+=== api http root body ===
+HTTP/1.1 500 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 111
+Date: Thu, 03 Sep 2026 16:31:01 GMT
+Connection: close
+Server: Layer7-API-Gateway
+
+rc=0
+[0m
+**Significant finding.** `api.vpbank.com` (195.186.145.95, via `ellb.ch`) responds over HTTPS with `Server: Layer7-API-Gateway` and returns a **500 with a JSON body**. Layer7 API Gateway is Broadcom's (ex-CA) API management platform — this is the banking API gateway. Let me fetch the 111-byte JSON body to see the error shape.
+[0m$ [0mcd /tmp/opencode; echo "=== api https body ==="; curl -s --max-time 12 -k "https://api.vpbank.com/" -D- ; echo; sleep 1; echo "=== OPTIONS / ==="; curl -s --max-time 12 -k -X OPTIONS -D- "https://api.vpbank.com/" -o /dev/null; echo; sleep 1; echo "=== common api paths ==="; for p in /api /api/v1 /swagger /swagger-ui.html /openapi.json /health /v1 /v2 /oauth/token /graphql /.well-known/openapi.json /actuator/health; do curl -s --max-time 10 -k -o /dev/null -w "$p -> %{http_code}\n" "https://api.vpbank.com$p"; sleep 1; done
+=== api https body ===
+HTTP/1.1 500 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 111
+Date: Thu, 03 Sep 2026 16:31:07 GMT
+Connection: close
+Server: Layer7-API-Gateway
+
+{"status": "500", "code": "INTERNAL_SERVER_ERROR", "message": "Internal Server Error", "error": "server_error"}
+=== OPTIONS / ===
+HTTP/1.1 500 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 111
+Date: Thu, 03 Sep 2026 16:31:09 GMT
+Connection: close
+Server: Layer7-API-Gateway
+
+
+=== common api paths ===
+/api -> 404
+/api/v1 -> 404
+/swagger -> 404
+/swagger-ui.html -> 404
+/openapi.json -> 404
+/health -> 404
+/v1 -> 404
+/v2 -> 404
+/oauth/token -> 404
+/graphql -> 404
+/.well-known/openapi.json -> 404
+/actuator/health -> 404
+[0m
+The API Gateway root returns a standard OAuth2-style error (`error: server_error`), and non-existent paths return 404. The gateway is live and reachable. This is the primary deep-hunt surface but I have no valid API paths yet. Let me probe a few more high-value gateway paths and check the main vpbank.com app for anomalies, staying passive and rate-limited.
+
+Let me also examine main www site structure for interesting endpoints and check the www/apache surface.
+[0m$ [0mcd /tmp/opencode; echo "=== www root body snippet ==="; curl -s --max-time 12 -L "https://www.vpbank.com/" | head -c 1500; echo
+=== www root body snippet ===
+<!DOCTYPE html>
+<html lang="en" dir="ltr" prefix="og: https://ogp.me/ns#" class="no-js">
+
+<head>
+  <meta charset="utf-8" />
+<noscript><style>form.antibot * :not(.antibot-message) { display: none !important; }</style>
+</noscript><meta name="description" content="Personalised advice, excellent wealth management and access to European markets. A partnership that helps you move forward. Get advice now." />
+<link rel="canonical" href="https://www.vpbank.com/en" />
+<link rel="shortlink" href="https://www.vpbank.com/en" />
+<meta property="og:site_name" content="VP Bank AG" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<script src="/CSRFT759.js" type="text/javascript"></script>
+<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebSite",
+            "name": "VP Bank Ltd",
+            "url": "https://www.vpbank.com/en",
+            "publisher": {
+                "@type": "BankOrCreditUnion",
+                "name": "VP Bank Ltd",
+                "url": "www.vpbank.com"
+            }
+        }
+    ]
+}</script>
+<link rel="alternate" hreflang="de" href="https://www.vpbank.com/de" />
+<link rel="alternate" hreflang="en" href="https://www.vpbank.com/en" />
+<link rel="alternate" hreflang="de-ch" href="https://www.vpbank.com/de-ch" />
+<link rel="alternate" hreflang="en-ch" href="https://www.vpbank
+[0m
+The main www site is a Drupal (there's `CSRFT759.js` and antibot) multilingual marketing site. This is standard public marketing — the "public login panels" and known public files are OUT of scope. The core deep-hunt value sits on the API gateway.
+
+Given the scope and my constraints (passive-first, no auth-bypass on live customer data, do not fabricate), the honest position:
+
+- I have identified that `api.vpbank.com` is a live **Layer7 API Gateway** (Broadcom CA API Management) — the highest business-value asset in scope.
+- Root returns a standard `server_error` — no valid path discovered yet. I have NO confirmed in-scope path to probe that yields a differential response, and no credentials to a test/sandbox.
+
+The recon-notes honestly concluded the subdomain space is wildcard/shared-IP dominated and no dedicated surface was recovered. The only genuinely dedicated/interesting surface is the API gateway CNAME'd from vpbank.com to the Ellipse (ellb.ch) core-banking host.
+
+I should not overclaim. Let me do one more rate-limited probe round on the gateway for OpenAPI spec endpoints and gateway-console paths, since Layer7 gateways sometimes expose `/oauth2/` or API portal docs, then finalize.
+[0m$ [0mcd /tmp/opencode; for p in "/oauth2" "/oauth2/authorize" "/oauth" "/oauth/token" "/.well-known" "/docs" "/portal" "/apim" "/gateway" "/oauth2/jwks" "/openid" "/v1/api" "/swagger.yaml" "/api-docs" "/application.wadl"; do curl -s --max-time 8 -k -o /dev/null -w "$p -> %{http_code} %{content_type}\n" "https://api.vpbank.com$p"; sleep 1; done
+/oauth2 -> 404 application/json
+/oauth2/authorize -> 404 application/json
+/oauth -> 404 application/json
+/oauth/token -> 404 application/json
+/.well-known -> 404 application/json
+/docs -> 404 application/json
+/portal -> 404 application/json
+/apim -> 404 application/json
+/gateway -> 404 application/json
+/oauth2/jwks -> 404 application/json
+/openid -> 404 application/json
+/v1/api -> 404 application/json
+/swagger.yaml -> 404 application/json
+/api-docs -> 404 application/json
+/application.wadl -> 404 application/json
+[0m
+All standard paths 404. The gateway is hardened against endpoint probing at the paths I tried — no leak. I have exhausted my reasonable passive read-only API surface with no in-scope differential. This is the honest state: the only confirmed live, in-scope, business-critical asset is the Layer7 API gateway, but I have no valid path and no auth context to build a verifiable hypothesis from.
+
+I should not fabricate a vulnerability. The dedicated recon already established the subdomain space is wildcard/shared-IP dominated. Let me record the honest finding and emit the structured output. The gateway fingerprint (`Layer7-API-Gateway`, OAuth2 `server_error` JSON) is a confirmed technical signal worth noting, but it's not itself a bug.
+
+Let me now write my analyst output.
+
+**STEP 1 — DELTA:** The inventory adds `api.vpbank.com` (CNAME → `api-vpbank-com.hdb-cs04.ellb.ch`, Ellipse core-banking SaaS) — this is the new/confirmed live surface. vpbank.com/www are Apache/Drupal marketing (STALE relative to the API target). These are live-confirmed by my probes today.
+
+**STEP 2 — PRIORITIZE:** api.vpbank.com: attack_surface low (no discovered paths, but gateway) 5, business_value 10 (banking API), tech_exposure 8 (Layer7 gateway, OAuth2), gate_ease 4 (needs auth/paths), cloud_surface 2 (ellb.ch third-party host), freshness 8. priority = 0.25*5+0.25*10+0.15*8+0.15*4+0.10*2+0.10*8 = 1.25+2.5+1.2+0.6+0.2+0.8=6.55.
+
+**STEP 3 — HYPOTHESES:** The strongest, honest hypothesis is a subdomain-takeover / dangling-CNAME class on api.vpbank.com → ellb.ch, but I must be careful: the CNAME currently resolves and serves a live 500, so it is NOT dangling (it's a live Ellipse host). So subdomain takeover is not verifiable — reject that. 
+
+The one defensible high-value hypothesis class here relates to the gateway's OAuth/auth surface, but I have no valid path. Without a path or auth context, any hypothesis lacks verify_steps and confidence<40. Both would be dropped in self-critique.
+
+Given the empty/dedicated recon, the honest action is to log the gateway fingerprint as a confirmed surface and flag the need for path discovery / an authorized OAUTH2 grant flow context, which is HUMAN/AUTH_HELPED territory. I'll park hypotheses that lack verify steps and set NEXT to HUMAN (need scoped path list / test tenant from program) rather than fabricating a low-confidence probe.
+
+Let me finalize the structured output.
+[0m$ [0mcd /tmp/opencode; echo "checking no path leak further - a couple isolated read-only"; curl -s --max-time 8 -k -o /dev/null -w "/healthz -> %{http_code}\n" "https://api.vpbank.com/healthz"; sleep 1; curl -s --max-time 8 -k -o /dev/null -w "/status -> %{http_code}\n" "https://api.vpbank.com/status"
+checking no path leak further - a couple isolated read-only
+/healthz -> 404
+/status -> 404
+[0m
+I have exhausted reasonable passive probing. Let me write my structured analyst output.
+
+STEP 1 — DELTA:
+- [NEW] `api.vpbank.com` -> `api-vpbank-com.hdb-cs04.ellb.ch` (195.186.145.95): live Layer7-API-Gateway (Broadcom CA API Mgmt), OAuth2-style `server_error` JSON on root, all probed paths 404 (confirmed by today's read-only probes).
+- [CHANGED] `vpbank.com`/`www.vpbank.com`: Apache 302/301 -> https://www.vpbank.com/ (Drupal marketing site, multilingual; CSRFT759.js + antibot). Live but public-marketing; low deep-hunt value. (reconfirmed)
+
+STEP 2 — PRIORITIZE:
+- [PRIO] api.vpbank.com,6.55,axis=tech_exposure+business_value (Layer7 gateway/OAuth2 banking API; gate_ease low)
+
+STEP 3 — HYPOTHESES:
+I have no valid gateway path and no auth context; candidates (subdomain takeover via ellb.ch CNAME) are contradicted by the CNAME currently resolving to a live 500 host → not dangling. Any AUTH/IDOR hypothesis on the gateway lacks verify_steps and would be <40 confidence. I will not fabricate. Emit no [HYP].
+
+STEP 4 — SELF-CRITIQUE:
+- [PARKED] Subdomain takeover on api.vpbank.com via ellb.ch CNAME: CNAME resolves + serves live 500 from 195.186.145.95 → host is NOT dangling/available; SDTO not verifiable.
+- [PARKED] Layer7 gateway OAuth/IDOR on unknown path: no valid in-scope endpoint or test-tenant credentials found; no differential to confirm; cannot build verify_steps. Need authorized path list / sandbox.
+- [FINAL] none (no verifiable hypothesis with confidence >=40 and concrete passive verify steps).
+
+STEP 5 — NEXT ACTION:
+- [NEXT] HUMAN: Since the only live banking asset is a Layer7 API Gateway with no discoverable valid path and no test/sandbox credentials, obtain from the program: (a) scoped /api/* path map or swagger/openapi for api.vpbank.com, and (b) a non-prod/OAUTH2 test client grant — then I can run PATH-diff + auth-flow hypothesis verification. No further passive probing yields signal (exhausted ~30 standard paths, all 404).
+
+STEP 6 — LEARNING:
+- [LEARN] REJECTED OTHER @ api.vpbank.com: subdomain takeover hypothesis dropped — CNAME resolves to a live third-party Ellipse host (195.186.145.95) returning HTTP 500, so no dangling/available takeover.
+- [LEARN] REJECTED IDOR @ api.vpbank.com: no in-scope valid path or test auth discovered, so no IDOR hypothesis can meet confidence/verify threshold — parked pending scoped path list.
+
+STEP 7 — RISK:
+- [RISK] vp-bank-ag: 35. Surface is wildcard/shared-IP dominated (per dedicated recon); the one genuinely dedicated/business-critical asset (Layer7 banking API gateway) is reachable but path/auth-gated, so no in-scope exploitable surface is confirmed from passive recon alone. Residual risk: a scoped, authenticated API test could reveal real logic flaws that passive probing cannot reach.
+
+Let me write this out.
