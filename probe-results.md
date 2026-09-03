@@ -30,3 +30,10 @@ https://api.vpbank.com/v1 -> HTTP 500
 https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
 https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
 https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-03 21:57:41 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
+https://www.vpbank.com/portal/api/language/en -> HTTP 403

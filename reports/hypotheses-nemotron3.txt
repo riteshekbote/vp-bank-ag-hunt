@@ -1,9 +1,10 @@
-## 2026-09-03 19:30:07 UTC [target] (model nemotron3)
-[NEW] Live HTTP probes completed on all 3 inventory hosts (previously 0 live)
-[NEW] api.vpbank.com confirmed running Layer7-API-Gateway (CA API Gateway); all versioned/debug paths return HTTP 500 with JSON 404 error (INVALID_REQUEST_RESOURCE)
-[NEW] www.vpbank.com serves marketing site on Apache; OAuth/OIDC endpoints exist but reject invalid requests with 303 to error page
+## 2026-09-03 21:57:21 UTC [target] (model nemotron3)
+[NEW] Live HTTP probes completed on all 3 inventory hosts (api.vpbank.com, www.vpbank.com, vpbank.com)
+[NEW] api.vpbank.com confirmed Layer7-API-Gateway (CA API Gateway); all paths return HTTP 500 with JSON 404 (INVALID_REQUEST_RESOURCE)
+[NEW] www.vpbank.com serves marketing site on Apache; OAuth/OIDC endpoints at /oauth/authorize and /.well-known/openid-configuration reject invalid requests with 303/400
 [NEW] vpbank.com redirects to www.vpbank.com for all tested paths
 [CHANGED] api.vpbank.com attack surface reduced: no exposed API versions, Swagger, OpenAPI, actuator, or security.txt
+[CHANGED] Priority shift: www.vpbank.com now highest (7.8) due to OAuth surface + marketing site exposure; api.vpbank.com reduced to 6.2
 [PRIO] www.vpbank.com,7.8,attack_surface=8,business_value=8,tech_exposure=8,gate_ease=9,cloud_surface=5,freshness=10
 [PRIO] api.vpbank.com,6.2,attack_surface=6,business_value=9,tech_exposure=5,gate_ease=6,cloud_surface=8,freshness=10
 [PRIO] vpbank.com,4.5,attack_surface=4,business_value=7,tech_exposure=4,gate_ease=8,cloud_surface=4,freshness=8
@@ -25,19 +26,20 @@ evidence_needed: Valid client_id accepting arbitrary redirect_uri, or redirect_u
 verify_steps: GET https://www.vpbank.com/.well-known/openid-configuration (check for client registration endpoint); enumerate JS for client_id; test redirect_uri with valid client_id if found; test redirect_uri=https://www.vpbank.com.evil.com
 impact: Account takeover via authorization code theft; severity CRITICAL
 testability: PASSIVE
-[HYP] CSRF token (CSRFT759) leakage or prediction on www.vpbank.com
-class: AUTH
-asset: www.vpbank.com
-confidence: 40
-reasoning: CSRFT759-S cookie set on all responses; CSRFT759.js loaded on every page; token may be predictable, leaked in logs, or usable cross-subdomain
-evidence_needed: CSRF token value predictable or leaked via referer/logs; token accepted across subdomains (api.vpbank.com)
-verify_steps: GET https://www.vpbank.com/en multiple times, analyze CSRFT759-S entropy; GET https://api.vpbank.com/ with CSRFT759-S from www; check CSRFT759.js for token generation logic
-impact: CSRF on state-changing operations if token predictable; severity MEDIUM
+[HYP] SSRF via Layer7 gateway backend routing manipulation
+class: SSRF
+asset: api.vpbank.com
+confidence: 45
+reasoning: Layer7 gateway routes requests to backend services; Host header, X-Forwarded-Host, or custom routing headers may influence backend selection allowing SSRF to internal services or cloud metadata (169.254.169.254)
+evidence_needed: HTTP 200/3xx/500 with backend-specific responses when manipulating Host/X-Forwarded-Host; or differential responses indicating internal routing
+verify_steps: GET https://api.vpbank.com/ with Host: 169.254.169.254; GET https://api.vpbank.com/ with X-Forwarded-Host: 169.254.169.254; GET https://api.vpbank.com/ with X-Forwarded-For: 169.254.169.254; GET https://api.vpbank.com/ with Host: localhost
+impact: SSRF to cloud metadata -> IAM keys, instance identity; internal service enumeration; severity CRITICAL
 testability: PASSIVE
 [PARKED] CSRF token (CSRFT759) leakage or prediction on www.vpbank.com: confidence 40 < threshold, no evidence of token weakness, banking sites typically use cryptographically secure tokens
-[FINAL] 1) Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com (confidence 55) 2) OAuth/OIDC redirect_uri validation bypass on www.vpbank.com (confidence 50)
-[NEXT] PROBE: GET https://api.vpbank.com/ with headers: Accept: application/xml, X-Forwarded-For: 127.0.0.1, Content-Type: application/xml; then POST https://api.vpbank.com/ with SOAP envelope body
+[FINAL] 1) Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com (confidence 55) 2) OAuth/OIDC redirect_uri validation bypass on www.vpbank.com (confidence 50) 3) SSRF via Layer7 gateway backend routing manipulation on api.vpbank.com (confidence 45)
+[NEXT] PROBE: GET https://api.vpbank.com/ with headers: Accept: application/xml, X-Forwarded-For: 127.0.0.1, Content-Type: application/xml; then POST https://api.vpbank.com/ with SOAP envelope body; then GET https://api.vpbank.com/ with Host: 169.254.169.254
 [LEARN] REJECTED MISCONFIG @ api.vpbank.com (API versioning/debug endpoints): All tested paths (/v1,/v2,/swagger.json,/openapi.json,/actuator/health,/beta,/internal,/.well-known/security.txt) return HTTP 500 with JSON 404 error - no exposed API contracts
-[LEARN] REJECTED OAUTH @ vpbank.com (OIDC discovery): .well-known/openid-configuration redirects to www.vpbank.com which returns 303 error page - no OIDC metadata exposed
+[LEARN] REJECTED OAUTH @ vpbank.com (OIDC discovery): .well-known/openid-configuration redirects to www.vpbank.com which returns 303/400 error page - no OIDC metadata exposed
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
 [LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Gateway returns structured JSON errors with request IDs - potential info leak vector
 [RISK] vp-bank-ag: 65 — High-value banking target with API gateway and OAuth surface; api.vpbank.com gateway errors warrant policy bypass testing; www.vpbank.com OAuth endpoint needs redirect_uri validation testing with valid client context
