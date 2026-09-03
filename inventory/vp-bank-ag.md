@@ -27,3 +27,10 @@ www.vpbank.com
 ## 2026-09-03 12:18:41 UTC
 
 ## 2026-09-03 16:33:58 UTC
+
+## 2026-09-03 19:30:16 UTC
+- NEW Live HTTP probes completed on all 3 inventory hosts (previously 0 live)
+- NEW api.vpbank.com confirmed running Layer7-API-Gateway (CA API Gateway); all versioned/debug paths return HTTP 500 with JSON 404 error (INVALID_REQUEST_RESOURCE)
+- NEW www.vpbank.com serves marketing site on Apache; OAuth/OIDC endpoints exist but reject invalid requests with 303 to error page
+- NEW vpbank.com redirects to www.vpbank.com for all tested paths
+- CHANGED api.vpbank.com attack surface reduced: no exposed API versions, Swagger, OpenAPI, actuator, or security.txt
