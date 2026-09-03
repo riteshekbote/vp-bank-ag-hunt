@@ -36,3 +36,9 @@
 - LEARN: REJECTED OAUTH @ vpbank.com (OIDC discovery): .well-known/openid-configuration redirects to www.vpbank.com which returns 303/400 error page - no OIDC metadata e
 - LEARN: REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
 - LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Gateway returns structured JSON errors with request IDs - potential info leak vector
+
+## RANKED HYPOTHESES 2026-09-03 23:51:14 UTC
+- [55] api.vpbank.com: Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: GET https://api.vpbank.com/ with headers: Accept: application/xml, X-Forwarded-For: 127.0.0.1, Content-Type: application/xml
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths, returns maintenance page - no application content accessible
+- LEARN: NEW INFO: WAF version 2.3.0_20260324 exposed in maintenance page responses

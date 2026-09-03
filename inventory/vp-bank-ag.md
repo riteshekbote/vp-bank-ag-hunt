@@ -46,3 +46,6 @@ www.vpbank.com
 - NEW vpbank.com redirects to www.vpbank.com for all tested paths
 - CHANGED api.vpbank.com attack surface reduced: no exposed API versions, Swagger, OpenAPI, actuator, or security.txt
 - CHANGED Priority shift: www.vpbank.com now highest (7.8) due to OAuth surface + marketing site exposure; api.vpbank.com reduced to 6.2
+
+## 2026-09-03 23:51:14 UTC
+- NEW www.vpbank-dev.com and www.vpbank-stage.com ALL paths return identical maintenance page (WAF 2.3.0_20260324) - no application content accessible

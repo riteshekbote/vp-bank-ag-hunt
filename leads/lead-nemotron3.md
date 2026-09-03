@@ -122,3 +122,4 @@ testability: PASSIVE
 [LEARN] REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
 [LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Gateway returns structured JSON errors with request IDs - potential info leak vector
 [RISK] vp-bank-ag: 65 — High-value banking target with API gateway and OAuth surface; api.vpbank.com gateway errors warrant policy bypass testing; www.vpbank.com OAuth endpoint needs redirect_uri validation testing with valid client context
+## 2026-09-03 23:51:04 UTC [target] (model nemotron3)
