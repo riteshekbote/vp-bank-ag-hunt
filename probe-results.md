@@ -52,3 +52,8 @@ https://api.vpbank.com/v1 -> HTTP 500
 https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
 https://api.vpbank.com/ -> HTTP 500
 https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-04 12:21:00 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/nonexistent -> HTTP 500

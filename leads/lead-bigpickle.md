@@ -153,3 +153,17 @@ testability: PASSIVE
 [LEARN] ACCEPTED OAUTH @ www.vpbank.com (redirect_uri bypass): endpoint exists at /oauth/authorize; test returned HTTP 400 (ambiguous); HOLD pending client_id enumeration.
 [LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (SSRF via Host header): proposed but verify_steps NOT YET EXECUTED; remaining high-value test.
 [RISK] vp-bank-ag: 45 reason: passive GET probes only against public gateway and marketing site; SSRF test uses Host header to internal IP (read-only, no data mutation); OAuth test pending client_id discovery; no auth bypass, no customer data accessed.
+## 2026-09-04 12:20:40 UTC [target] (model bigpickle)
+[NEW] www.vpbank.com/portal/api/ serves full LitElement SPA (HTTP 403 with body) — separate app from Drupal; includes `POST /portal/api/language/:language`, CSRF token (`CSRFT759.js`), version renderer, custom web components
+[NEW] www.vpbank.com/portal/api/health and /portal/api/status return WAF maintenance page — backend intercepted, SPA is frontend shell only
+[PRIO] www.vpbank.com,5.2,attack_surface=5 business_value=8 tech_exposure=5 gate_ease=4 cloud_surface=3 freshness=5
+[PRIO] api.vpbank.com,4.5,attack_surface=3 business_value=7 tech_exposure=3 gate_ease=3 cloud_surface=6 freshness=4
+[PARKED] SSRF via Host header on api.vpbank.com: verify_steps EXECUTED — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No differential. CONFIRMED REJECTED.
+[PARKED] OAuth redirect_uri bypass on www.vpbank.com: No client_id discoverable from JS bundles (only `clientWid` from Usercentrics widget); /oauth/authorize always 303→error page. Cannot advance without client_id. CARRY at 35.
+[PARKED] Portal SPA API on www.vpbank.com: /portal/api/ serves SPA shell but backend is WAF-intercepted maintenance mode; only endpoint is language switch (cookie setting). LOW value.
+[PARKED] Drupal portal API: confidence 35 < 40 threshold
+[LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No backend routing influence. CONFIRMED REJECTED.
+[LEARN] REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→error page. Cannot advance.
+[LEARN] NEW INFO @ www.vpbank.com/portal/api/: Full LitElement SPA served (403 with body) — separate app from Drupal; POST /portal/api/language/:language sets portal-language cookie; backend is WAF maintenance mode; no exploitable endpoints.
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend content accessible.
+[RISK] vp-bank-ag: 45 reason: passive GET/HEAD probes only; SSRF Host header test uses internal IPs (read-only, no data mutation); OAuth test pending client_id discovery; no auth bypass, no customer data accessed, no state mutation on any endpoint.

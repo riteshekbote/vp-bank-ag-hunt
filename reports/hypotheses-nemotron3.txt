@@ -1,43 +1,47 @@
-## 2026-09-04 07:28:35 UTC [target] (model nemotron3)
-[CHANGED] api.vpbank.com: All XML/SOAP/routing-header probes return identical HTTP 500 JSON (INTERNAL_SERVER_ERROR) — no differential behavior for policy bypass or SSRF
-[CHANGED] www.vpbank.com: OAuth/OIDC endpoints (/oauth/authorize, /.well-known/openid-configuration) return 303 to error pages for all tested client_id/redirect_uri combos — no valid client context discovered
+## 2026-09-04 12:17:49 UTC [target] (model nemotron3)
+[CHANGED] api.vpbank.com: All XML/SOAP/routing-header probes (Accept:application/xml, SOAP envelope, Host/X-Forwarded-Host/X-Forwarded-For to 169.254.169.254/localhost/10.0.0.1) return identical HTTP 500 JSON (INTERNAL_SERVER_ERROR) — no differential for policy bypass or SSRF
+[CHANGED] www.vpbank.com: OAuth/OIDC endpoints (/oauth/authorize, /.well-known/openid-configuration) return 303/400 error pages for all tested client_id/redirect_uri combos — no valid client context discovered passively
+[CHANGED] vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 confirmed intercepting ALL paths with maintenance page — zero application content reachable
+[NEW] Risk score reduced from 65 to 45 due to failed exploitation of top hypotheses (OAuth redirect_uri, Layer7 policy bypass, SSRF routing)
 [PRIO] api.vpbank.com,5.85,attack_surface=5,business_value=9,tech_exposure=4,gate_ease=5,cloud_surface=7,freshness=10
-[PRIO] www.vpbank.com,6.10,attack_surface=6,business_value=8,tech_exposure=5,gate_ease=7,cloud_surface=3,freshness=10
+[PRIO] www.vpbank.com,5.60,attack_surface=5,business_value=8,tech_exposure=5,gate_ease=6,cloud_surface=3,freshness=10
 [PRIO] vpbank-dev.com/vpbank-stage.com,2.95,attack_surface=2,business_value=5,tech_exposure=2,gate_ease=1,cloud_surface=3,freshness=10
-[HYP] OAuth/OIDC redirect_uri validation bypass on www.vpbank.com
-class: OAUTH
-asset: www.vpbank.com
-confidence: 35
-reasoning: OAuth authorize endpoint rejects invalid client_id with 303/400; redirect_uri validation untested with valid client_id; production CSP trusts *.vpbank-dev.com/*.vpbank-stage.com suggesting valid clients exist but none discovered in passive recon
-evidence_needed: Valid client_id accepting arbitrary redirect_uri, or redirect_uri validation bypass via subdomain/path traversal (e.g., www.vpbank.com.evil.com)
-verify_steps: GET https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x (requires valid client_id)
-impact: Account takeover via authorization code theft; severity CRITICAL
-testability: AUTH_HELPED
-[HYP] Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com
-class: MISCONFIG
-asset: api.vpbank.com
-confidence: 30
-reasoning: CA Layer7 Gateway returns HTTP 500 with structured JSON errors for all paths including XML/SOAP/routing headers; no differential responses observed for Accept: application/xml, SOAP envelope, X-Forwarded-For, Host manipulation
-evidence_needed: HTTP 2xx/3xx/4xx (not 500) on unexpected content-type/body; or error response containing stack trace, policy XML, backend service names
-verify_steps: GET https://api.vpbank.com/ with Accept: application/xml; POST with SOAP envelope; GET with X-Forwarded-For: 127.0.0.1; OPTIONS /v1 — all tested, all return 500
-impact: Gateway config leak -> internal topology, policy logic, backend service names; potential policy bypass to internal APIs; severity MEDIUM
-testability: PASSIVE
-[HYP] SSRF via Layer7 gateway backend routing manipulation on api.vpbank.com
+[HYP] SSRF via Host header backend routing on api.vpbank.com
 class: SSRF
 asset: api.vpbank.com
-confidence: 25
-reasoning: Layer7 gateway routes to backend services; Host/X-Forwarded-Host/X-Forwarded-For headers tested against 169.254.169.254, localhost, 10.0.0.1 — all return identical HTTP 500 JSON error with no differential status/body/headers indicating internal routing
-evidence_needed: Differential responses (status/body/headers) when manipulating routing headers to internal IPs; backend-specific error patterns
-verify_steps: GET with Host: 169.254.169.254; GET with X-Forwarded-Host: 169.254.169.254; GET with Host: localhost; GET with X-Forwarded-For: 10.0.0.1 — all tested
-impact: SSRF to cloud metadata -> IAM keys, instance identity; internal service enumeration; severity CRITICAL
+confidence: 45
+reasoning: Layer7 gateway (CA API Gateway) routes to backend services via ellb.ch Swiss LB; Host header may influence backend selection before WAF normalization; prior probes used X-Forwarded-* but Host header manipulation against cloud metadata (169.254.169.254) not fully tested in isolation
+evidence_needed: Differential response (status/body/headers/latency) when Host: 169.254.169.254 vs Host: api.vpbank.com; backend-specific error metadata in JSON response
+verify_steps: GET https://api.vpbank.com/ Host: 169.254.169.254; GET https://api.vpbank.com/ Host: localhost; GET https://api.vpbank.com/ Host: 10.0.0.1; compare JSON error.requestId and latency
+impact: SSRF to AWS/GCP/Azure metadata -> IAM credentials, instance identity, internal service enumeration; severity CRITICAL
 testability: PASSIVE
-[PARKED] OAuth/OIDC redirect_uri validation bypass on www.vpbank.com: confidence 35 < 40 threshold; no valid client_id discovered; requires authenticated context or client enumeration not possible passively
-[PARKED] Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com: confidence 30 < 40; all probe vectors (XML, SOAP, routing headers) return identical 500 — no signal for policy bypass
-[PARKED] SSRF via Layer7 gateway backend routing manipulation on api.vpbank.com: confidence 25 < 40; zero differential response across all routing header manipulations; gateway appears to reject/normalize before backend routing
-[FINAL] (none survive threshold)
-[NEXT] RAG: Search for VP Bank AG OAuth client_id references in public GitHub, npm, mobile app bundles, or JS source maps to obtain valid client_id for redirect_uri testing on www.vpbank.com
+[HYP] OAuth redirect_uri validation bypass via subdomain confusion on www.vpbank.com
+class: OAUTH
+asset: www.vpbank.com
+confidence: 40
+reasoning: /oauth/authorize endpoint exists and returns HTTP 400 (ambiguous) for invalid client_id; production CSP trusts *.vpbank-dev.com/*.vpbank-stage.com implying valid OAuth clients exist; redirect_uri validation logic untested with valid client context; subdomain validation bypass (www.vpbank.com.evil.com) or path traversal possible
+evidence_needed: Valid client_id accepting arbitrary redirect_uri (www.vpbank.com.evil.com, www.vpbank.com@evil.com, www.vpbank.com/../evil.com); or redirect_uri validation regex flaw
+verify_steps: RAG: Search GitHub/npm/mobile bundles for VP Bank AG client_id; then GET https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test
+impact: Authorization code theft -> account takeover; severity CRITICAL
+testability: AUTH_HELPED
+[HYP] Layer7 gateway error handling info leak on api.vpbank.com
+class: MISCONFIG
+asset: api.vpbank.com
+confidence: 50
+reasoning: Gateway returns structured JSON errors with requestId field consistently; requestId format may correlate to internal request tracing, backend service IDs, or policy execution flow; repeated probes could map internal topology
+evidence_needed: requestId pattern analysis across 50+ requests; correlation to backend service names, policy names, or stack traces in error body; timing analysis
+verify_steps: GET https://api.vpbank.com/ (x50) with varying paths/headers; collect requestId values; analyze format/entropy/prefixes; GET https://api.vpbank.com/nonexistent vs /v1 vs /actuator/health
+impact: Internal topology disclosure, policy logic inference, backend service enumeration; severity LOW-MEDIUM
+testability: PASSIVE
+[PARKED] SSRF via Host header backend routing on api.vpbank.com: confidence 45 but prior X-Forwarded-* tests showed zero differential; Host header may be normalized by LB/WAF before gateway; low signal-to-noise
+[PARKED] OAuth redirect_uri validation bypass via subdomain confusion on www.vpbank.com: confidence 40 at threshold; requires valid client_id not discoverable passively; AUTH_HELPED testability blocks passive-only verification
+[PARKED] Layer7 gateway error handling info leak on api.vpbank.com: confidence 50 but classified LOW-MEDIUM impact; info leak alone not actionable without chaining; program may classify as descriptive error
+[FINAL] (none survive threshold — all PARKED)
+[NEXT] RAG: Search GitHub (code search), npm packages, mobile app bundles (iOS/Android), and JS source maps for "vpbank", "VP Bank AG", "vpbank.com" OAuth client_id references to obtain valid client context for redirect_uri testing on www.vpbank.com
 [LEARN] REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed request probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy differential
 [LEARN] REJECTED SSRF @ api.vpbank.com (routing header manipulation): Host/X-Forwarded-Host/X-Forwarded-For to 169.254.169.254, localhost, 10.0.0.1 all return identical 500 — no backend routing influence
 [LEARN] REJECTED OAUTH @ www.vpbank.com (OIDC discovery): .well-known/openid-configuration returns 303 to error page — no metadata exposed
-[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with request IDs confirmed — info leak vector but low severity
-[RISK] vp-bank-ag: 45 — High-value banking target but current attack surface minimal: API gateway rejects all probes uniformly; OAuth surface exists but no valid client context discoverable passively; staging domains fully WAF-blocked. Risk reduced from 65 due to failed exploitation of top hypotheses.
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity
+[LEARN] ACCEPTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: Production CSP trusts these domains; publicly reachable Apache servers behind maintenance redirect — in-scope attack surface
+[RISK] vp-bank-ag: 45 — High-value banking target but current attack surface minimal: API gateway rejects all probes uniformly with identical 500 errors; OAuth surface exists but no valid client context discoverable passively; staging domains fully WAF-blocked (2.3.0_20260324). Risk reduced from 65 due to failed exploitation of top hypotheses. Remaining value in client_id enumeration via RAG and Host header SSRF edge case.
