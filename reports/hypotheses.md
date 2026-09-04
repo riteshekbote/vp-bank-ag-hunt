@@ -148,3 +148,20 @@
 - LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity
 - LEARN: ACCEPTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: Production CSP trusts these domains; publicly reachable Apache servers behind maintenance redirect — in-sc
 - LEARN: NEW INFO @ www.vpbank.com/portal/api/: Full LitElement SPA served (403 with body) — separate app from Drupal; POST /portal/api/language/:language sets portal-la
+
+## RANKED HYPOTHESES 2026-09-04 21:38:33 UTC
+- [75] developer.vpbank.com: PSD2 Sandbox BOLA/IDOR via consentId/paymentId manipulation (from art/lead_nemotron3.txt)
+- NEXT(hypotheses-bigpickle.txt): RAG: search GitHub/public web for "openbanking.vpbank.com", "vpbank psd2 scaRedirect", "vpbank.com/oauth/authorize" PSD2 client_id/authorize_url; if a PSD2-scop
+- NEXT(hypotheses-nemotron3.txt): PROBE: Test BOLA/IDOR on developer.vpbank.com PSD2 sandbox — create two basic auth contexts (userA:test, userB:test), generate consentId_A and consentId_B, then
+- LEARN: ACCEPTED MISCONFIG @ developer.vpbank.com: PSD2 Berlin Group sandbox API reachable HTTP 200 without client cert or basic auth (documented-open since 2024-05); o
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): discovered via TLS cert CN=openbanking.vpbank.com; production PSD2 ASPSP, mTLS "certificate required" at TLS
+- LEARN: NEW INFO @ developer.vpbank.com: /psd2/sandbox/certificate/verify_certificate also mTLS-gated; OpenAPI spec self-labels server "PSD2 production server" while op
+- LEARN: REJECTED MISCONFIG @ developer.vpbank.com (Drupal admin on PSD2 vhost): /user/login, /admin, /sites/default/files/* all HTTP 404 — dedicated docroot.
+- LEARN: REJECTED MISCONFIG @ openbanking.vpbank.com (anonymous API access): mTLS enforced, anonymous rejected — expected production posture, not a flaw.
+- LEARN: ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accoun
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible past mainte
+- LEARN: REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returne
+- LEARN: REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→e
+- LEARN: REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status retur
+- LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity.
+- LEARN: NEW INFO @ developer.vpbank.com: PSD2 sandbox uses basic auth (test:test works), X-Request-ID last digit controls state encoding (1=RCVD, 5=ACSC for payments), 

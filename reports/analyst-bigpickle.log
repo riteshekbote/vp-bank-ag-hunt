@@ -3660,3 +3660,652 @@ Docs state production uses mTLS client certs; the anonymous-200 on `developer` (
 
 **STEP 7 — RISK**
 `[RISK] vp-bank-ag: 55` (up from 45) — read-only probes only, anonymous-empty scope confirmed, no customer data touched; increase driven by the confirmed report-class host-header auth gap on a money-flow API, now a new reportable finding (report channel bugs.olivermaicher.eu), with the full evidence diff captured in `reports/hypotheses-bigpickle.txt`, `leads/lead-bigpickle.md`, and `inventory/vp-bank-ag.md`.
+===== ANALYST bigpickle 2026-09-04 21:38:33 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/* 2>/dev/null | head -50
+total 156
+drwxr-xr-x 12 runner runner  4096 Sep  4 21:32 .
+drwxr-xr-x  3 runner runner  4096 Sep  4 21:32 ..
+drwxr-xr-x  7 runner runner  4096 Sep  4 21:32 .git
+drwxr-xr-x  3 runner runner  4096 Sep  4 21:32 .github
+-rw-r--r--  1 runner runner  1752 Sep  4 21:32 README.md
+-rw-r--r--  1 runner runner    32 Sep  4 21:32 analyst-out.txt
+-rw-r--r--  1 runner runner 35722 Sep  4 21:32 analyst-prompt.txt
+-rw-r--r--  1 runner runner 31907 Sep  4 21:32 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 leads
+-rw-r--r--  1 runner runner  3576 Sep  4 21:32 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 reports
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  4 21:32 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 scripts
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 triage
+-rw-r--r-- 1 runner runner  1752 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/README.md
+-rw-r--r-- 1 runner runner    32 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/analyst-out.txt
+-rw-r--r-- 1 runner runner 35722 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/analyst-prompt.txt
+-rw-r--r-- 1 runner runner 31907 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/ctx.txt
+-rw-r--r-- 1 runner runner  3576 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/probe-results.md
+-rw-r--r-- 1 runner runner  3228 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/scope.yml
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_bigpickle.json
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_laguna.json
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_ling3.json
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_longcat.json
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_mimo.json
+-rw-r--r-- 1 runner runner    33 Sep  4 21:32 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_nemotron3.json
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/inventory:
+total 20
+drwxr-xr-x  2 runner runner 4096 Sep  4 21:32 .
+drwxr-xr-x 12 runner runner 4096 Sep  4 21:32 ..
+-rw-r--r--  1 runner runner 9698 Sep  4 21:32 vp-bank-ag.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/knowledge:
+total 16
+drwxr-xr-x  2 runner runner 4096 Sep  4 21:32 .
+drwxr-xr-x 12 runner runner 4096 Sep  4 21:32 ..
+-rw-r--r--  1 runner runner 5750 Sep  4 21:32 index.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads:
+total 128
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 .
+drwxr-xr-x 12 runner runner  4096 Sep  4 21:32 ..
+-rw-r--r--  1 runner runner 50591 Sep  4 21:32 lead-bigpickle.md
+-rw-r--r--  1 runner runner   459 Sep  4 21:32 lead-laguna.md
+-rw-r--r--  1 runner runner   450 Sep  4 21:32 lead-ling3.md
+-rw-r--r--  1 runner runner   468 Sep  4 21:32 lead-longcat.md
+-rw-r--r--  1 runner runner    18 Sep  4 21:32 lead-mimo.md
+-rw-r--r--  1 runner runner 45977 Sep  4 21:32 lead-nemotron3.md
+-rw-r--r--  1 runner runner   981 Sep  4 21:32 reposcan-vp-bank-ag.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/recon-notes:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  4 21:32 .
+drwxr-xr-x 12 runner runner 4096 Sep  4 21:32 ..
+-rw-r--r--  1 runner runner  819 Sep  4 21:32 DEDICATED-DEEP.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/reports:
+total 688
+drwxr-xr-x  2 runner runner   4096 Sep  4 21:32 .
+drwxr-xr-x 12 runner runner   4096 Sep  4 21:32 ..
+-rw-r--r--  1 runner runner 501471 Sep  4 21:32 analyst-bigpickle.log
+-rw-r--r--  1 runner runner   1953 Sep  4 21:32 analyst-laguna.log
+-rw-r--r--  1 runner runner   1944 Sep  4 21:32 analyst-ling3.log
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}\n" --max-time 15 https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml
+200
+[0m
+[0m$ [0mcurl -s --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml -o /tmp/opencode/psd2_api.yaml && wc -l /tmp/opencode/psd2_api.yaml && head -80 /tmp/opencode/psd2_api.yaml
+1254 /tmp/opencode/psd2_api.yaml
+openapi: 3.0.1
+info:
+    title: PSD2 API
+    version: "1.0.0"
+
+servers:
+    -   url: /psd2/berlin-group/v1
+        description: PSD2 production server
+
+paths:
+
+    #######################################################
+    # Consents
+    #######################################################
+
+    /consents:
+        post:
+            summary: Create consent
+            description: This method creates a consent resource, defining access rights to a dedicated account.
+            operationId: createConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            requestBody:
+                $ref: "#/components/requestBodies/consents"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}:
+        get:
+            summary: Get consent request
+            description: Returns the content of an account information consent object.
+            operationId: getConsentInformation
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConsentInformation"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+        delete:
+            summary: Delete consent
+            description: The TPP can delete an account information consent object if needed.
+            operationId: deleteConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            responses:
+                '204':
+                    $ref: "#/components/responses/NO_CONTENT_204_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{content_type}\n" --max-time 15 https://developer.vpbank.com/ && curl -s -o /dev/null -w "%{http_code} %{content_type}\n" --max-time 15 https://developer.vpbank.com/psd2/swagger-ui/ && curl -s -o /dev/null -w "%{http_code} %{content_type}\n" --max-time 15 https://developer.vpbank.com/psd2/
+302 text/html; charset=iso-8859-1
+200 text/html;charset=UTF-8
+404 text/html; charset=utf-8
+[0m
+[0m$ [0mgrep -nE "^    /" /tmp/opencode/psd2_api.yaml | grep -vE "components|parameters|responses|requestBodies" | sort -u
+109:    /{payment-service}/{payment-product}:
+160:    /{payment-service}/{payment-id}/status:
+16:    /consents:
+187:    /accounts:
+207:    /accounts/{account-id}:
+228:    /accounts/{account-id}/balances:
+251:    /accounts/{account-id}/transactions:
+281:    /funds-confirmations:
+39:    /consents/{consentId}:
+83:    /consents/{consentId}/status:
+[0m
+[0m$ [0mgrep -n "oauth\|OAuth\|openId\|OpenID\|authorizationUrl\|tokenUrl\|securitySchemes\|flow\|client_credentials\|psu-corporate" /tmp/opencode/psd2_api.yaml | head -40
+404:            description: URI of the TPP, where the transaction flow shall be redirected to after a Redirect.
+[0m
+[0m$ [0mgrep -n -A6 "securitySchemes:" /tmp/opencode/psd2_api.yaml; grep -n -B2 -A8 "TPP-Redirect-URI:" /tmp/opencode/psd2_api.yaml | head -40; grep -n "scaOAuth\|authoriseTransaction\|aspspServer\|aspspId\|qseal\|redirect" /tmp/opencode/psd2_api.yaml
+399-                format: ipv4
+400-
+401:        TPP-Redirect-URI:
+402-            name: TPP-Redirect-URI
+403-            in: header
+404-            description: URI of the TPP, where the transaction flow shall be redirected to after a Redirect.
+405-            required: true
+406-            schema:
+407-                type: string
+408-
+409-        consentId_PATH:
+404:            description: URI of the TPP, where the transaction flow shall be redirected to after a Redirect.
+1220:                - redirectUri
+1242:                redirectUri:
+[0m
+[0m$ [0mcurl -s -D- -o /dev/null --max-time 15 https://developer.vpbank.com/ && echo "---" && curl -s --max-time 15 https://developer.vpbank.com/psd2/swagger-ui/ | grep -oiE "(url|configUrl|spec)[^,]{0,120}" | head -20
+HTTP/1.1 302 Found
+Date: Fri, 04 Sep 2026 21:32:41 GMT
+Server: Apache
+Location: https://developer.vpbank.com/psd2/documentation/
+Content-Length: 272
+Content-Type: text/html; charset=iso-8859-1
+
+---
+url: "/psd2/berlin-group/v1/psd2_api.yaml"
+Url]
+[0m
+[0m$ [0mgrep -n -B3 -A15 "_links:" /tmp/opencode/psd2_api.yaml | head -60
+781-                    description: ToDo
+782-                    type: string
+783-                    maxLength: 35
+784:                _links:
+785-                    $ref: "#/components/schemas/_linksAccountDetails"
+786-
+787-        accountReference:
+788-            description: Reference to an account. Momentarily only iban is supported.
+789-            type: object
+790-            required:
+791-                - iban
+792-            properties:
+793-                iban:
+794-                    $ref: "#/components/schemas/iban"
+795-
+796-        iban:
+797-            type: string
+798-            description: Resource identification of the generated payment initiation resource.
+799-
+--
+1147-            properties:
+1148-                paymentId:
+1149-                    type: string
+1150:                _links:
+1151-                    $ref: "#/components/schemas/_linksPaymentInitiation"
+1152-                creditorName:
+1153-                    type: string
+1154-                instructedAmount:
+1155-                    $ref: "#/components/schemas/amount"
+1156-                creditorAccount:
+1157-                    $ref: "#/components/schemas/accountReference"
+1158-                creditorAddress:
+1159-                    $ref: "#/components/schemas/address"
+1160-
+1161-
+1162-        paymentInitiationCancelResponse-204_202:
+1163-            description: Body of the response for a successful cancel payment request.
+1164-            type: object
+1165-            required:
+--
+1201-                  type: array
+1202-                  items:
+1203-                    $ref: "#/components/schemas/accessType"
+1204:                _links:
+1205-                    $ref: "#/components/schemas/_linksConsents"
+1206-
+1207-        consentInformationResponse-200_json:
+1208-            description: Body of the JSON response for a successful get consent request.
+1209-            type: object
+1210-            required:
+1211-                - consentId
+1212-                - requestedAccessTypes
+1213-                - access
+1214-                - recurringIndicator
+1215-                - validUntil
+1216-                - frequencyPerDay
+1217-                - lastActionDate
+1218-                - consentStatus
+1219-                - tppName
+--
+[0m
+[0m$ [0mcurl -s --max-time 15 https://developer.vpbank.com/psd2/documentation/ -o /tmp/opencode/docs.html && wc -c /tmp/opencode/docs.html && grep -oiE "(href|src)=\"[^\"]*\"" /tmp/opencode/docs.html | sort -u | head -40
+33470 /tmp/opencode/docs.html
+href="#_10th-september-2019"
+href="#_18th-february-2023"
+href="#_29th-january-2021"
+href="#_6th-may-2024"
+href="#api-documentation"
+href="#client-certificate-verification"
+href="#consentcreation"
+href="#create-a-consent-to-retrieve-account-information"
+href="#create-a-payment-order"
+href="#create-a-standing-order"
+href="#createpayment"
+href="#differences-between-the-sandbox-and-the-productive-api"
+href="#encoding"
+href="#fn1"
+href="#fnref1"
+href="#get-the-full-information-of-a-consent"
+href="#get-the-list-of-accounts"
+href="#get-the-status-of-the-created-consent"
+href="#get-the-status-of-the-created-payment-order"
+href="#get-the-status-of-the-created-standing-order"
+href="#get-the-transactions-of-an-account"
+href="#getting-started-with-curl"
+href="#psd2-sandbox-documentation"
+href="#release-notes"
+href="#state-changes"
+href="#statistics"
+href="#tpp-client-authentication"
+href="#user-interaction"
+href="/psd2/documentation/"
+href="/psd2/documentation/#_10th-september-2019"
+href="/psd2/documentation/#_18th-february-2023"
+href="/psd2/documentation/#_29th-january-2021"
+href="/psd2/documentation/#_6th-may-2024"
+href="/psd2/documentation/#api-documentation"
+href="/psd2/documentation/#client-certificate-verification"
+href="/psd2/documentation/#consentcreation"
+href="/psd2/documentation/#create-a-consent-to-retrieve-account-information"
+href="/psd2/documentation/#create-a-payment-order"
+href="/psd2/documentation/#create-a-standing-order"
+href="/psd2/documentation/#createpayment"
+[0m
+[0m$ [0mcd /tmp/opencode && python3 -c "
+import html, re
+raw=open('docs.html').read()
+txt=html.unescape(re.sub(r'<[^>]+>',' ',raw))
+txt=re.sub(r'[ \t]+',' ',txt)
+txt=re.sub(r'\n\s*\n+','\n',txt)
+open('docs.txt','w').write(txt)
+print(len(txt))
+" && grep -iE "sandbox|https?://|curl |token|client.?id|authoriz|oauth|sca|basic" /tmp/opencode/docs.txt | head -60
+15895
+ PSD2 Sandbox Documentation 
+ PSD2 Sandbox Documentation API Documentation Differences between the sandbox and the productive API TPP client authentication User interaction State changes Encoding CreatePayment ConsentCreation Getting started with curl Create a payment order Get the status of the created payment order Create a standing order Get the status of the created standing order Create a consent to retrieve account information Get the status of the created consent Get the full information of a consent Get the list of accounts Get the transactions of an account Client Certificate Verification Statistics Release Notes 10th September 2019 29th January 2021 18th February 2023 6th May 2024 # PSD2 Sandbox Documentation Dear developer Within this section you can find additional documentation regarding the operation of the sandbox.
+by developer on a regular basis. Table of Contents API Documentation Differences between the sandbox and the productive API TPP client authentication User interaction State changes Encoding CreatePayment ConsentCreation Getting started with curl Create a payment order Get the status of the created payment order Create a standing order Get the status of the created standing order Create a consent to retrieve account information Get the status of the created consent Get the full information of a consent Get the list of accounts Get the transactions of an account Client Certificate Verification Statistics Release Notes 10th September 2019 29th January 2021 18th February 2023 6th May 2024 # API Documentation The complete documentation of the API can be found here (opens new window) .
+It is a swagger ui which describes the API and the data model and which can also be used to test and execute the sandbox API manually. # Differences between the sandbox and the productive API The API and the data model of the sandbox is basically identical to the real API. However, there are a few small differences
+These are mainly TPP client authentication User interaction State changes # TPP client authentication The real API uses client certificates to authenticate the TPP client whereas the sandbox only uses basic authentication.
+Hence, it is not necessary to use a client certificate when accessing the sandbox api, just send the basic authentication
+and execute the payment or accept the consent. However, in the sandbox we don't have an interactive user and hence,
+might hopefully end with ACSC (AcceptedSettlementCompleted). However, in the sandbox, there is no background process
+which changes the status of an object. The sandbox simply sets the status of the object during its creation time
+contains the encoding which determines the status of the created object in the sandbox. The mapping is defined as follows: # CreatePayment 1: RCVD
+ Default: valid # Getting started with curl This chapter contains some example API calls to give you a quick start. The examples use the curl command, which
+a pretty good implementation of curl . Git Bash also contains a curl command, but this implementation might
+the usage of the curl command which comes with the cmd.exe, it has some major issues which lead to errors. Let's jump right in and create a payment order. # Create a payment order Use the following command to create a payment order: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/cross-border-credit-transfers \
+--header "TPP-Redirect-URI: https://www.google.ch" \
+The TPP-Redirect-URI will be used after the user has finished the payment. It is not used in the sandbox. The execution of the command will lead to the following result: {
+ "scaRedirect":"not available in sandbox",
+ Notice that the scaRedirect is not supported in the sandbox. It will contain the URL for the user to login and
+in the url with the received path in the response of your create request: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/2b782d83-5b45-4318-bcb2-3002881495d5/status \
+ # Create a standing order Use the following command to create a standing order: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/cross-border-credit-transfers \
+--header "TPP-Redirect-URI: https://www.google.ch" \
+The TPP-Redirect-URI will be used after the user has finished the payment. It is not used in the sandbox. Note that the startDate must be tomorrow or later. The field executionRule allows the following values: preceding (execute the payment before the weekend if its execution date falls on a weekend) following (execute the payment after the weekend if its execution date falls on a weekend) The field frequency allows the following values: Weekly EveryTwoWeeks Monthly EveryTwoMonths EveryFourMonths Quarterly SemiAnnual Annual Instead of specifying a numberOfExecutions it is also possible to specify an endDate . The execution of the command will lead to the following result: {
+ "scaRedirect":"not available in sandbox",
+ Notice that the scaRedirect is not supported in the sandbox. It will contain the URL for the user to login and
+in the url with the received path in the response of your create request: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/2b782d83-5b45-4318-bcb2-3002881495d5/status \
+but not more than 180 [1] days in the future. curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/consents \
+--header "tpp-redirect-uri: https://www.google.ch" \
+ "scaRedirect":"not available in sandbox",
+in the request URL with the received path in the response of your create request: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/1abd3683-a7a3-491f-a623-79f374fef286/status \
+in the request URL as usual: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/1abd3683-a7a3-491f-a623-79f374fef286 \
+retrieves the list of accounts to which an account access has been granted to: curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/accounts \
+line interpreter: curl --include \
+"https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI4408805500000000001/transactions?dateFrom=2020-03-25&dateTo=2020-04-20" \
+ # Client Certificate Verification As mentioned above, you don't need a client certificate to access the sandbox API. But in order to check and
+the following endpoint (https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate) can be used: curl --cert client_certificate.crt --key client_certificate.key https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate
+ PSD2 Statisctics page (opens new window) . # Release Notes # 10th September 2019 Initial Release V1.0 # 29th January 2021 Add "debtorAccount" parameter to the payment initiation request (see chapter Create a payment order ). # 18th February 2023 Allow for payment initiation of periodic-payments (standing orders). See chapter Create a standing order . Adjust the documentation of the maximum duration a consent may be valid. See chapter Create a consent to retrieve account information . # 6th May 2024 remove unneeded username and password from commands. Until the adaptation of Art. 10 RTC SCA DvO (EU) 2022/2360 enters into force, 90 days shall continue to apply in the productive version of the openbanking interface. ↩︎ Last Updated: 8/12/2026, 11:20:57 AM
+[0m
+[0m$ [0mfor u in "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" "https://developer.vpbank.com/psd2/berlin-group/v1/consents" "https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate" "http://developer.vpbank.com/psd2/berlin-group/v1/accounts"; do echo "== $u"; curl -s -o /tmp/opencode/r.txt -w "HTTP %{http_code} | ct=%{content_type} | size=%{size_download}\n" --max-time 15 "$u"; head -c 300 /tmp/opencode/r.txt; echo; sleep 1; done
+== https://developer.vpbank.com/psd2/berlin-group/v1/accounts
+HTTP 200 | ct=application/json;charset=UTF-8 | size=15
+{"accounts":[]}
+== https://developer.vpbank.com/psd2/berlin-group/v1/consents
+HTTP 405 | ct= | size=0
+
+== https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate
+HTTP 000 | ct= | size=0
+
+== http://developer.vpbank.com/psd2/berlin-group/v1/accounts
+HTTP 200 | ct=application/json;charset=UTF-8 | size=15
+{"accounts":[]}
+[0m
+[0m$ [0mgrep -oiE "https?://[a-z0-9./_-]+" /tmp/opencode/docs.html | sort -u
+http://www.w3.org/2000/svg
+https://developer.vpbank.com/psd2/berlin-group/v1/accounts
+https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI4408805500000000001/transactions
+https://developer.vpbank.com/psd2/berlin-group/v1/consents
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/1abd3683-a7a3-491f-a623-79f374fef286
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/1abd3683-a7a3-491f-a623-79f374fef286/status
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/2b782d83-5b45-4318-bcb2-3002881495d5/status
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/cross-border-credit-transfers
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/2b782d83-5b45-4318-bcb2-3002881495d5/status
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/cross-border-credit-transfers
+https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate
+https://developer.vpbank.com/psd2/swagger-ui/index.html
+https://www.google.ch
+https://www.vpbank.com/de-lu/privatkunden/e-services/vp-bank-developer-portal/e-banking-and-psd2-statistics
+[0m
+Critical finding: PSD2 API answers unauthenticated with HTTP 200. Let me determine sandbox vs production and scope the surface.
+[0m$ [0mfor h in developer.vpbank.com psd2.vpbank.com sandbox.vpbank.com api.vpbank.com; do echo "== $h"; getent hosts $h || echo "no dns"; done; echo "== dev IP compare"; getent hosts developer.vpbank.com; getent hosts www.vpbank.com 2>/dev/null
+== developer.vpbank.com
+193.222.70.149  developer.vpbank.com
+== psd2.vpbank.com
+no dns
+== sandbox.vpbank.com
+no dns
+== api.vpbank.com
+195.186.145.95  api-vpbank-com.hdb-cs04.ellb.ch api.vpbank.com
+== dev IP compare
+193.222.70.149  developer.vpbank.com
+193.222.70.149  www.vpbank.com
+[0m
+The whole sandbox API is documented as open/basic-auth-removed. Key question: is developer.vpbank.com/psd2/berlin-group/v1 sandbox (documented-open) or production (mTLS removed)? Let me gather fingerprinting evidence, read-only.
+[0m$ [0mecho "== headers"; curl -s -D- -o /dev/null --max-time 15 https://developer.vpbank.com/psd2/berlin-group/v1/accounts
+sleep 1
+echo; echo "== documented sandbox account IBAN"; curl -s -o /tmp/opencode/a.json -w "HTTP %{http_code} ct=%{content_type}\n" --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI4408805500000000001"; head -c 400 /tmp/opencode/a.json; echo
+sleep 1
+echo "== balances"; curl -s -o /tmp/opencode/b.json -w "HTTP %{http_code} ct=%{content_type}\n" --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI4408805500000000001/balances"; head -c 300 /tmp/opencode/b.json; echo
+sleep 1
+echo "== stats page"; curl -s -o /tmp/opencode/stats.html -w "HTTP %{http_code} ct=%{content_type}\n" --max-time 15 "https://www.vpbank.com/de-lu/privatkunden/e-services/vp-bank-developer-portal/e-banking-and-psd2-statistics"; wc -c /tmp/opencode/stats.html
+== headers
+HTTP/1.1 200 OK
+Date: Fri, 04 Sep 2026 21:33:53 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AT3wd0VxsSMNSLEpE9U6jc6iJF9QEU4wfyfpL0jogUZBR!i2pQp7z1r!SNvZ2pExOrtk; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 15
+x-request-id: de907702-fc45-9524-b01b-aa2ae382f005
+x-envoy-upstream-service-time: 8
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+Content-Type: application/json;charset=UTF-8
+
+
+== documented sandbox account IBAN
+HTTP 404 ct=
+
+== balances
+HTTP 404 ct=
+
+== stats page
+HTTP 301 ct=text/html; charset=utf-8
+659 /tmp/opencode/stats.html
+[0m
+[0m$ [0mgrep -nE "\bcert\b|certificate|qseal|CA\b|verify|registration|tppCertificate|issuer|subject" /tmp/opencode/psd2_api.yaml | head -20; echo "---swagger index---"; curl -s --max-time 15 "https://developer.vpbank.com/psd2/swagger-ui/" | grep -oiE "(url|configUrl|index)[^,]{0,100}" | head
+450:                ASPSP-SCA-Approach:
+451:                    $ref: "#/components/headers/ASPSP-SCA-Approach"
+622:        ASPSP-SCA-Approach:
+623:            description: This data element must be fixed, if the SCA approach is already fixed. At the moment only "REDIRECT" is supported.
+---swagger index---
+url: "/psd2/berlin-group/v1/psd2_api.yaml"
+Url]
+[0m
+[0m$ [0mcurl -s -L -o /tmp/opencode/stats2.html -w "final HTTP %{http_code} url=%{url_effective}\n" --max-time 20 "https://www.vpbank.com/de-lu/privatkunden/e-services/vp-bank-developer-portal/e-banking-and-psd2-statistics"; wc -c /tmp/opencode/stats2.html; grep -oiE "(psd2|statistic|api)[^<]{0,80}" /tmp/opencode/stats2.html | sort -u | head
+final HTTP 200 url=https://www.vpbank.com/de-lu/private-banking/e-services/vp-bank-developer-portal/e-banking-and-psd2-statistics
+60337 /tmp/opencode/stats2.html
+API specifications
+API specifications of our supported services as well as a sandbox environment for t
+API, the contingency mechanism pursuant to Article 33 (4) DELEGATED REGULATION (EU)
+APiXnTBoNKow2msfT3hR56mcMYFuqCNaeywqDZ_skxLVi7NynJH79kEMMl7S6302ceZwmVtI0xD6p6MvQFp
+PSD2 Statistics
+PSD2 Statistics",
+PSD2 statistics for the Luxembourg location.
+PSD2 statistics for the Luxembourg location." />
+PSD2Statistics%20.xlsx" data-entity-type="file" data-entity-uuid="e5a935d1-0356-45dd
+PSD2Statistics.xlsx" data-entity-type="file" data-entity-uuid="6e441096-5ff6-4292-87
+[0m
+[0m$ [0mgrep -oE 'href="[^"]*PSD2Statistics[^"]*"' /tmp/opencode/stats2.html | sort -u; grep -oiE '"[^"]*\.xlsx[^"]*"' /tmp/opencode/stats2.html | sort -u | head
+href="/sites/default/files/2025Q1-VPBank-PSD2Statistics.xlsx"
+href="/sites/default/files/2025Q2-VPBank-PSD2Statistics.xlsx"
+href="/sites/default/files/2025Q3-VPBank-PSD2Statistics.xlsx"
+href="/sites/default/files/2025Q4-VPBank-PSD2Statistics.xlsx"
+href="/sites/default/files/2026Q1-VPBank-PSD2Statistics.xlsx"
+href="/sites/default/files/2026Q2-VPBank-PSD2Statistics%20.xlsx"
+href="https://www.vpbank.com/sites/default/files/2024Q3-VPBank-PSD2Statistics.xlsx"
+href="https://www.vpbank.com/sites/default/files/2024Q4-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2025Q1-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2025Q2-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2025Q3-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2025Q4-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2026Q1-VPBank-PSD2Statistics.xlsx"
+"/sites/default/files/2026Q2-VPBank-PSD2Statistics%20.xlsx"
+"https://www.vpbank.com/sites/default/files/2024Q3-VPBank-PSD2Statistics.xlsx"
+"https://www.vpbank.com/sites/default/files/2024Q4-VPBank-PSD2Statistics.xlsx"
+[0m
+[0m$ [0mcurl -sv --max-time 12 "https://developer.vpbank.com/psd2/sandbox/certificate/verify_certificate" -o /tmp/opencode/cert.out 2>&1 | grep -iE "SSL|error|HTTP/1.1|subject|handshake|alert|tls|< "
+* ALPN: curl offers h2,http/1.1
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+* ALPN: server accepted http/1.1
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+*  subjectAltName: host "developer.vpbank.com" matched cert's "developer.vpbank.com"
+*  issuer: C=CH; O=SwissSign AG; CN=SwissSign RSA TLS EV ICA 2022 - 1
+*  SSL certificate verify ok.
+> GET /psd2/sandbox/certificate/verify_certificate HTTP/1.1
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* old SSL session ID is stale, removing
+* TLSv1.3 (IN), TLS handshake, Request CERT (13):
+* TLSv1.3 (OUT), TLS handshake, Certificate (11):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* TLSv1.3 (IN), TLS alert, unknown (628):
+* OpenSSL SSL_read: OpenSSL/3.0.13: error:0A00045C:SSL routines::tlsv13 alert certificate required, errno 0
+[0m
+Certificate CN exposes `openbanking.vpbank.com` (production PSD2 host). New subdomain candidate. Let me probe it and pull the statistics XLSX (mapped API surface).
+[0m$ [0mcurl -s -o /tmp/opencode/q2.xlsx --max-time 20 "https://www.vpbank.com/sites/default/files/2026Q2-VPBank-PSD2Statistics%20.xlsx" -w "HTTP %{http_code} size=%{size_download}\n"; file /tmp/opencode/q2.xlsx; python3 -c "
+import zipfile,re
+z=zipfile.ZipFile('/tmp/opencode/q2.xlsx')
+print(z.namelist()[:10])
+" 2>&1 | head
+HTTP 200 size=19707
+/tmp/opencode/q2.xlsx: Microsoft Excel 2007+
+['[Content_Types].xml', '_rels/.rels', 'xl/workbook.xml', 'xl/_rels/workbook.xml.rels', 'xl/worksheets/sheet1.xml', 'xl/worksheets/sheet2.xml', 'xl/theme/theme1.xml', 'xl/styles.xml', 'xl/sharedStrings.xml', 'xl/worksheets/_rels/sheet1.xml.rels']
+[0m
+[0m$ [0mgetent hosts openbanking.vpbank.com oauth.vpbank.com tpp.vpbank.com 2>&1; echo "---"; for u in "https://openbanking.vpbank.com/" "https://openbanking.vpbank.com/psd2/berlin-group/v1/accounts" "https://openbanking.vpbank.com/.well-known/openid-configuration"; do echo "== $u"; curl -s -o /tmp/opencode/o.txt -w "HTTP %{http_code} ct=%{content_type} size=%{size_download}\n" --max-time 12 "$u"; head -c 200 /tmp/opencode/o.txt; echo; sleep 1; done
+193.222.70.154  openbanking.vpbank.com
+---
+== https://openbanking.vpbank.com/
+HTTP 000 ct= size=0
+head: cannot open '/tmp/opencode/o.txt' for reading: No such file or directory
+
+== https://openbanking.vpbank.com/psd2/berlin-group/v1/accounts
+HTTP 000 ct= size=0
+head: cannot open '/tmp/opencode/o.txt' for reading: No such file or directory
+
+== https://openbanking.vpbank.com/.well-known/openid-configuration
+HTTP 000 ct= size=0
+head: cannot open '/tmp/opencode/o.txt' for reading: No such file or directory
+[0m
+[0m$ [0mcurl -sv --max-time 12 "https://openbanking.vpbank.com/" -o /dev/null 2>&1 | grep -iE "certificate required|alert|error:|HTTP/1.1|SSL connection|subject:" | head
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+* TLSv1.3 (IN), TLS alert, unknown (628):
+* OpenSSL SSL_read: OpenSSL/3.0.13: error:0A00045C:SSL routines::tlsv13 alert certificate required, errno 0
+[0m
+[0m$ [0mpython3 -c "
+import zipfile,re
+z=zipfile.ZipFile('/tmp/opencode/q2.xlsx')
+ss=z.read('xl/sharedStrings.xml').decode('utf8',errors='replace')
+vals=re.findall(r'<t[^>]*>(.*?)</t>', ss)
+import html
+vals=[html.unescape(v) for v in vals]
+print(' '.join(vals)[:1200])
+"
+Date Uptime Downtime Avg PISP Avg AISP Avg PIISP Error response rate n/a AVG AISP AVG PISP
+[0m
+[0m$ [0mfor p in "/user/login" "/admin" "/sites/default/files/2026Q2-VPBank-PSD2Statistics%20.xlsx" "/psd2/" "/psd2/berlin-group/" "/psd2/berlin-group/v1/" "/psd2/swagger-ui/index.html"; do echo "== $p"; curl -s -o /tmp/opencode/p.txt -w "  HTTP %{http_code} ct=%{content_type} size=%{size_download}\n" --max-time 12 "https://developer.vpbank.com$p"; sleep 1; done
+== /user/login
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /admin
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /sites/default/files/2026Q2-VPBank-PSD2Statistics%20.xlsx
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /psd2/
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /psd2/berlin-group/
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /psd2/berlin-group/v1/
+  HTTP 404 ct=text/html; charset=utf-8 size=53
+== /psd2/swagger-ui/index.html
+  HTTP 200 ct=text/html;charset=UTF-8 size=1385
+[0m
+Verified enough facts to close this cycle. Final analysis:
+
+## STEP 1 — DELTA
+- [NEW] developer.vpbank.com (193.222.70.149) = SAME IP/front-end as www.vpbank.com (Apache+Envoy, shared session infra); PSD2 Berlin Group v1 sandbox API live and ANONYMOUS — `GET /psd2/berlin-group/v1/accounts` → HTTP 200 `{"accounts":[]}`, no client cert, no basic auth, no WAF interception.
+- [NEW] TLS cert CN exposes openbanking.vpbank.com (193.222.70.154) = production PSD2 ASPSP; TLS-layered mTLS enforced — anonymous requests aborted with `tlsv13 alert certificate required`; properly locked.
+- [NEW] Sandbox API sets `AL_SESS-S` bank session cookie on anonymous requests (same cookie as www Drupal).
+- [NEW] PSD2 statistics XLSX (2024Q3–2026Q2) public on www.vpbank.com Drupal — uptime/PISP/AISP only, no endpoint intel.
+- [CHANGED] developer.vpbank.com assessed as documented-open sandbox (release note 2024-05-06: basic auth creds removed from commands) — anonymous API access alone is NOT a reportable finding; its value is as a live logic-testing bed for the consent/payment state machine.
+
+## STEP 2 — PRIORITIZE
+`developer.vpbank.com` — a=7, b=6, t=7 (Berlin Group PSD2, SCA REDIRECT, UUID consents), g=10 (no gate), c=3, f=10 → 0.25·7+0.25·6+0.15·7+0.15·10+0.10·3+0.10·10 = **7.10**
+`openbanking.vpbank.com` — a=3, b=7, t=6, g=0 (mTLS blocks anonymous), c=3, f=8 → **4.20**
+[PRIO] developer.vpbank.com,7.10,only non-WAF anonymous banking-API surface on main front-end
+[PRIO] openbanking.vpbank.com,4.20,production PSD2 host (mTLS-locked, new asset in inventory)
+
+## STEP 3 — HYPOTHESES
+[HYP]
+title: PSD2 sandbox consent/payment resource cross-session visibility
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 45
+reasoning: Consent-gated Berlin Group API resolves resources by UUID (/consents/{consentId}, /accounts/{account-id}, /{payment-service}/{id}/status) with zero TPP auth binding observed (HTTP 200 unauthenticated); sandbox replicates the production REDIRECT-SCA state machine on the same session/cookie infra as www.vpbank.com; docs confirm sandbox allows manual execution.
+evidence_needed: A consent created under one anonymous session is readable via GET /consents/{consentId} or /consents/{consentId}/status from a fresh anonymous session (no cookie); or any /consents/{uuid} returns non-404 for an unowned UUID.
+verify_steps: sandbox-interaction test (official test env, synthetic data — requires POST): POST /psd2/berlin-group/v1/consents body {"access":{"accounts":[{"iban":"LI4408805500000000001"}]},"recurringIndicator":true,"validUntil":"2027-12-31","frequencyPerDay":4,"combinedServiceIndicator":false} + TPP-Redirect-URI: https://www.google.ch; capture consentId; then from a clean curl (no cookies): GET /consents/{consentId} and GET /consents/{consentId}/status; then GET /accounts to see if downstream account ledger of created consent is exposed anonymously.
+impact: Cross-TPP consent/account/ledger reading → full simulated banking data disclosure; if code paths shared with production PSD2, chains to aggregate/PII disclosure; severity MEDIUM-HIGH
+testability: AUTH_HELPED
+
+[HYP]
+title: PSD2 SCA-REDIRECT authorize flow to leak OAuth client_id / authorize_url
+class: OTHER
+asset: www.vpbank.com/oauth/authorize
+confidence: 42
+reasoning: Spec fixes ASPSP-SCA-Approach=REDIRECT; docs state scaRedirect "contains the URL for the user to login" built from the payment/consent path — the production redirect target is the bank OAuth page; openbanking.vpbank.com cert name is now known, enabling targeted artifact search for a PSD2-scoped client_id or authorize_url pattern.
+evidence_needed: From a sandbox consent response, an ASPSP-published authorize_url/scaOAuth template containing a PSD2 OAuth client_id; or RAG hit for "vpbank openbanking authorize_url" / PSD2 TPP onboarding doc with the authorize host.
+verify_steps: RAG: GitHub/public docs search "openbanking.vpbank.com", "vpbank psd2 scaRedirect", "vpbank.com/oauth/authorize psd2"; then GET https://openbanking.vpbank.com (mTLS probe) — if any path returns HTTP 4xx/2xx without cert, escalate.
+impact: OAuth code/consent theft via redirect_uri bypass on production bank OAuth → account/aggregate data theft; severity HIGH
+testability: AUTH_HELPED
+
+[HYP]
+title: AL_SESS-S session confusion between anonymous PSD2 API and Drupal portal
+class: AUTH
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 38
+reasoning: Anonymous sandbox requests mint the same AL_SESS-S cookie used by www.vpbank.com Drupal portal; shared session backend on same IP would allow cross-vhost cookie acceptance or fixation.
+evidence_needed: AL_SESS-S obtained from developer portal accepted by www.vpbank.com Drupal session endpoints; or session state mutated by fixes.
+verify_steps: GET developer.vpbank.com/psd2/berlin-group/v1/accounts to obtain AL_SESS-S; replay same cookie on www.vpbank.com/portal/api/ and observe differing behavior vs fresh session.
+impact: Session confusion → CSRF/fixation on portal state changes; severity MEDIUM
+testability: PASSIVE
+
+## STEP 4 — SELF-CRITIQUE
+- [PARKED] AL_SESS-S session confusion: confidence 38 < 40; identical cookie name likely coincidental Drupal default; no shared session assertion confirmed. Retest later with heavier evidence.
+- [REJECTED] "Anonymous access to PSD2 API" as standalone finding: documented by design (basic-auth removal release note) — not reportable as-is.
+- [REJECTED] openbanking.vpbank.com anonymous access: mTLS enforced, secure posture — expected behavior, misconfig hypothesis dead.
+- [REJECTED] Drupal admin exposure on developer vhost: /user/login /admin /sites/default/files all 404 — dedicated docroot.
+- [FINAL #1] PSD2 sandbox consent cross-session IDOR (45) — highest actionable on the only non-WAF interactive surface.
+- [FINAL #2] PSD2 SCA-REDIRECT authorize flow client_id discovery (42) — reconciles the standing OAuth lead with the newly-discovered openbanking host.
+
+## STEP 5 — NEXT ACTION
+[NEXT] RAG: search GitHub/public web for "openbanking.vpbank.com", "vpbank psd2 scaRedirect", "vpbank.com/oauth/authorize" PSD2 client_id/authorize_url; if a PSD2-scoped client_id surfaces, follow with GET https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=... (read-only).
+
+## STEP 6 — LEARNING
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com: PSD2 Berlin Group sandbox API reachable HTTP 200 without client cert or basic auth (documented-open since 2024-05); on same IP as www.vpbank.com, not WAF-blocked, mints AL_SESS-S session cookies — new interactive attack surface, low standalone severity.
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): discovered via TLS cert CN=openbanking.vpbank.com; production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous surface blocked as designed.
+[LEARN] NEW INFO @ developer.vpbank.com: /psd2/sandbox/certificate/verify_certificate also mTLS-gated; OpenAPI spec self-labels server "PSD2 production server" while operational env is sandbox.
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (Drupal admin on PSD2 vhost): /user/login, /admin, /sites/default/files/* all HTTP 404 — dedicated docroot.
+[LEARN] REJECTED MISCONFIG @ openbanking.vpbank.com (anonymous API access): mTLS enforced, anonymous rejected — expected production posture, not a flaw.
+
+## STEP 7 — RISK
+[RISK] vp-bank-ag: 45 — verdict unchanged. New developer.vpbank.com surface (7.1 priority) is a documented-open sandbox on the main front-end, so standalone damage is limited to synthetic data; production PSD2 (openbanking.vpbank.com) is correctly mTLS-locked; www.vpbank.com OAuth remains the only CRITICAL-path lead, still gated on a valid client_id. Confidence in exploitability stays driven by the two surviving PSD2/OAuth chains.

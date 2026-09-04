@@ -436,3 +436,40 @@ testability: PASSIVE
 [NEW] Plaintext http://developer.../accounts → 200. Docs: production=mTLS client cert, sandbox=basic auth. /psd2/sandbox/* → 404 (sandbox not on this vhost).
 [LEARN] OAuth client_id hunt via App Store/Google/GitHub/npm surfaced only VP Bank Vietnam (different entity) + unrelated SDKs — no Liechtenstein client_id.
 [PRIO] developer.vpbank.com 8.3 — highest-value live surface found this cycle.
+## 2026-09-04 21:36:49 UTC [target] (model bigpickle)
+[PRIO] developer.vpbank.com,7.10,only non-WAF anonymous banking-API surface on main front-end
+[PRIO] openbanking.vpbank.com,4.20,production PSD2 host (mTLS-locked, new asset in inventory)
+[HYP]
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 45
+reasoning: Consent-gated Berlin Group API resolves resources by UUID (/consents/{consentId}, /accounts/{account-id}, /{payment-service}/{id}/status) with zero TPP auth binding observed (HTTP 200 unauthenticated); sandbox replicates the production REDIRECT-SCA state machine on the same session/cookie infra as www.vpbank.com; docs confirm sandbox allows manual execution.
+evidence_needed: A consent created under one anonymous session is readable via GET /consents/{consentId} or /consents/{consentId}/status from a fresh anonymous session (no cookie); or any /consents/{uuid} returns non-404 for an unowned UUID.
+verify_steps: sandbox-interaction test (official test env, synthetic data — requires POST): POST /psd2/berlin-group/v1/consents body {"access":{"accounts":[{"iban":"LI4408805500000000001"}]},"recurringIndicator":true,"validUntil":"2027-12-31","frequencyPerDay":4,"combinedServiceIndicator":false} + TPP-Redirect-URI: https://www.google.ch; capture consentId; then from a clean curl (no cookies): GET /consents/{consentId} and GET /consents/{consentId}/status; then GET /accounts to see if downstream account ledger of created consent is exposed anonymously.
+impact: Cross-TPP consent/account/ledger reading → full simulated banking data disclosure; if code paths shared with production PSD2, chains to aggregate/PII disclosure; severity MEDIUM-HIGH
+testability: AUTH_HELPED
+[HYP]
+class: OTHER
+asset: www.vpbank.com/oauth/authorize
+confidence: 42
+reasoning: Spec fixes ASPSP-SCA-Approach=REDIRECT; docs state scaRedirect "contains the URL for the user to login" built from the payment/consent path — the production redirect target is the bank OAuth page; openbanking.vpbank.com cert name is now known, enabling targeted artifact search for a PSD2-scoped client_id or authorize_url pattern.
+evidence_needed: From a sandbox consent response, an ASPSP-published authorize_url/scaOAuth template containing a PSD2 OAuth client_id; or RAG hit for "vpbank openbanking authorize_url" / PSD2 TPP onboarding doc with the authorize host.
+verify_steps: RAG: GitHub/public docs search "openbanking.vpbank.com", "vpbank psd2 scaRedirect", "vpbank.com/oauth/authorize psd2"; then GET https://openbanking.vpbank.com (mTLS probe) — if any path returns HTTP 4xx/2xx without cert, escalate.
+impact: OAuth code/consent theft via redirect_uri bypass on production bank OAuth → account/aggregate data theft; severity HIGH
+testability: AUTH_HELPED
+[HYP]
+class: AUTH
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 38
+reasoning: Anonymous sandbox requests mint the same AL_SESS-S cookie used by www.vpbank.com Drupal portal; shared session backend on same IP would allow cross-vhost cookie acceptance or fixation.
+evidence_needed: AL_SESS-S obtained from developer portal accepted by www.vpbank.com Drupal session endpoints; or session state mutated by fixes.
+verify_steps: GET developer.vpbank.com/psd2/berlin-group/v1/accounts to obtain AL_SESS-S; replay same cookie on www.vpbank.com/portal/api/ and observe differing behavior vs fresh session.
+impact: Session confusion → CSRF/fixation on portal state changes; severity MEDIUM
+testability: PASSIVE
+[NEXT] RAG: search GitHub/public web for "openbanking.vpbank.com", "vpbank psd2 scaRedirect", "vpbank.com/oauth/authorize" PSD2 client_id/authorize_url; if a PSD2-scoped client_id surfaces, follow with GET https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=... (read-only).
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com: PSD2 Berlin Group sandbox API reachable HTTP 200 without client cert or basic auth (documented-open since 2024-05); on same IP as www.vpbank.com, not WAF-blocked, mints AL_SESS-S session cookies — new interactive attack surface, low standalone severity.
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): discovered via TLS cert CN=openbanking.vpbank.com; production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous surface blocked as designed.
+[LEARN] NEW INFO @ developer.vpbank.com: /psd2/sandbox/certificate/verify_certificate also mTLS-gated; OpenAPI spec self-labels server "PSD2 production server" while operational env is sandbox.
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (Drupal admin on PSD2 vhost): /user/login, /admin, /sites/default/files/* all HTTP 404 — dedicated docroot.
+[LEARN] REJECTED MISCONFIG @ openbanking.vpbank.com (anonymous API access): mTLS enforced, anonymous rejected — expected production posture, not a flaw.
+[RISK] vp-bank-ag: 45 — verdict unchanged. New developer.vpbank.com surface (7.1 priority) is a documented-open sandbox on the main front-end, so standalone damage is limited to synthetic data; production PSD2 (openbanking.vpbank.com) is correctly mTLS-locked; www.vpbank.com OAuth remains the only CRITICAL-path lead, still gated on a valid client_id. Confidence in exploitability stays driven by the two surviving PSD2/OAuth chains.

@@ -1370,3 +1370,1475 @@ testability: PASSIVE
 ### STEP 7 — RISK
 
 [RISK] vp-bank-ag: 45 — High-value banking target but current attack surface minimal: API gateway rejects all probes uniformly with identical 500 errors; OAuth surface exists but no valid client context discoverable passively; staging domains fully WAF-blocked (2.3.0_20260324); portal SPA is frontend-only with backend intercepted. Risk reduced from 65 due to failed exploitation of top hypotheses. Remaining value solely in client_id enumeration via RAG for OAuth redirect_uri testing.
+===== ANALYST nemotron3 2026-09-04 21:38:33 UTC =====
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m$ [0mls -la
+total 156
+drwxr-xr-x 12 runner runner  4096 Sep  4 21:32 .
+drwxr-xr-x  3 runner runner  4096 Sep  4 21:32 ..
+drwxr-xr-x  7 runner runner  4096 Sep  4 21:32 .git
+drwxr-xr-x  3 runner runner  4096 Sep  4 21:32 .github
+-rw-r--r--  1 runner runner  1752 Sep  4 21:32 README.md
+-rw-r--r--  1 runner runner    43 Sep  4 21:32 analyst-out.txt
+-rw-r--r--  1 runner runner 35872 Sep  4 21:32 analyst-prompt.txt
+-rw-r--r--  1 runner runner 32057 Sep  4 21:32 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 leads
+-rw-r--r--  1 runner runner  3576 Sep  4 21:32 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 reports
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  4 21:32 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 scripts
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  4 21:32 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  4 21:32 triage
+[0m
+[0m→ [0mRead inventory/vp-bank-ag.md
+[0m→ [0mRead scope.yml
+[0m
+[0m$ [0mcurl -s -I "https://developer.vpbank.com" 2>&1 | head -20
+HTTP/1.1 302 Found
+Date: Fri, 04 Sep 2026 21:33:08 GMT
+Server: Apache
+Location: https://developer.vpbank.com/psd2/documentation/
+Content-Type: text/html; charset=iso-8859-1
+[0m
+[0m$ [0mcurl -s -I "https://developer.vpbank.com/psd2/swagger-ui/" 2>&1 | head -30
+HTTP/1.1 303 See Other
+Date: Fri, 04 Sep 2026 21:33:16 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AYhaHoGsbbwMMyi3uBh2CvEBlnCbyajoMquPm5ZLK8Ik4oIhtq5WJFJyPXROhOtZKHLB; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 123
+Location: /error_path/400.html?al_req_id=aps5HM8wmQWXfCJtsIBiNgAAATM
+Content-Type: text/html
+[0m
+[0m$ [0mcurl -s -I "https://developer.vpbank.com/psd2/berlin-group/v1/ps" 2>&1 | head -30
+HTTP/1.1 303 See Other
+Date: Fri, 04 Sep 2026 21:33:25 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=ARIpNgJypbj4mlHrV0q!LUXaD7TXwbV7x6VurwMxN76oelrw6hsH7ejJevf2oYIQP4sz; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 123
+Location: /error_path/400.html?al_req_id=aps5JUDiZv3t28E_KO86NAAAAWQ
+Content-Type: text/html
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/documentation/" 2>&1 | head -100
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>PSD2 Sandbox Documentation</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    
+    <meta name="description" content="">
+    
+    <link rel="preload" href="/psd2/documentation/assets/css/0.styles.2d47e9a8.css" as="style"><link rel="preload" href="/psd2/documentation/assets/js/app.7c902bf5.js" as="script"><link rel="preload" href="/psd2/documentation/assets/js/2.1b4dfa80.js" as="script"><link rel="preload" href="/psd2/documentation/assets/js/1.0a98fbc7.js" as="script"><link rel="preload" href="/psd2/documentation/assets/js/22.ae0556b0.js" as="script"><link rel="prefetch" href="/psd2/documentation/assets/js/10.53b1f4e6.js"><link rel="prefetch" href="/psd2/documentation/assets/js/11.c4caf49b.js"><link rel="prefetch" href="/psd2/documentation/assets/js/12.773525f7.js"><link rel="prefetch" href="/psd2/documentation/assets/js/13.e08ae10f.js"><link rel="prefetch" href="/psd2/documentation/assets/js/14.9f8ed0ee.js"><link rel="prefetch" href="/psd2/documentation/assets/js/15.34dae868.js"><link rel="prefetch" href="/psd2/documentation/assets/js/16.7057ca59.js"><link rel="prefetch" href="/psd2/documentation/assets/js/17.47bb56b3.js"><link rel="prefetch" href="/psd2/documentation/assets/js/18.a01b6027.js"><link rel="prefetch" href="/psd2/documentation/assets/js/19.c424a848.js"><link rel="prefetch" href="/psd2/documentation/assets/js/20.be33f5bf.js"><link rel="prefetch" href="/psd2/documentation/assets/js/21.6e8780db.js"><link rel="prefetch" href="/psd2/documentation/assets/js/3.d755b591.js"><link rel="prefetch" href="/psd2/documentation/assets/js/4.8ad7f4ae.js"><link rel="prefetch" href="/psd2/documentation/assets/js/5.5e4a50e9.js"><link rel="prefetch" href="/psd2/documentation/assets/js/6.06eac82e.js"><link rel="prefetch" href="/psd2/documentation/assets/js/7.b2241a3c.js"><link rel="prefetch" href="/psd2/documentation/assets/js/vendors~docsearch.8b826ef6.js">
+    <link rel="stylesheet" href="/psd2/documentation/assets/css/0.styles.2d47e9a8.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/psd2/documentation/" aria-current="page" class="home-link router-link-exact-active router-link-active"></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>PSD2 Sandbox Documentation</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/psd2/documentation/#api-documentation" class="sidebar-link">API Documentation</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/psd2/documentation/#differences-between-the-sandbox-and-the-productive-api" class="sidebar-link">Differences between the sandbox and the productive API</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/psd2/documentation/#tpp-client-authentication" class="sidebar-link">TPP client authentication</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#user-interaction" class="sidebar-link">User interaction</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#state-changes" class="sidebar-link">State changes</a></li></ul></li><li><a href="/psd2/documentation/#encoding" class="sidebar-link">Encoding</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/psd2/documentation/#createpayment" class="sidebar-link">CreatePayment</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#consentcreation" class="sidebar-link">ConsentCreation</a></li></ul></li><li><a href="/psd2/documentation/#getting-started-with-curl" class="sidebar-link">Getting started with curl</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/psd2/documentation/#create-a-payment-order" class="sidebar-link">Create a payment order</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-status-of-the-created-payment-order" class="sidebar-link">Get the status of the created payment order</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#create-a-standing-order" class="sidebar-link">Create a standing order</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-status-of-the-created-standing-order" class="sidebar-link">Get the status of the created standing order</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#create-a-consent-to-retrieve-account-information" class="sidebar-link">Create a consent to retrieve account information</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-status-of-the-created-consent" class="sidebar-link">Get the status of the created consent</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-full-information-of-a-consent" class="sidebar-link">Get the full information of a consent</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-list-of-accounts" class="sidebar-link">Get the list of accounts</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#get-the-transactions-of-an-account" class="sidebar-link">Get the transactions of an account</a></li></ul></li><li><a href="/psd2/documentation/#client-certificate-verification" class="sidebar-link">Client Certificate Verification</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/psd2/documentation/#statistics" class="sidebar-link">Statistics</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/psd2/documentation/#release-notes" class="sidebar-link">Release Notes</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/psd2/documentation/#_10th-september-2019" class="sidebar-link">10th September 2019</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#_29th-january-2021" class="sidebar-link">29th January 2021</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#_18th-february-2023" class="sidebar-link">18th February 2023</a></li><li class="sidebar-sub-header"><a href="/psd2/documentation/#_6th-may-2024" class="sidebar-link">6th May 2024</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="psd2-sandbox-documentation"><a href="#psd2-sandbox-documentation" class="header-anchor">#</a> PSD2 Sandbox Documentation</h1> <p><strong>Dear developer</strong></p> <p>Within this section you can find additional documentation regarding the operation of the sandbox.
+The information will be updated and completed as a reaction of questions and need of clarifications
+by developer on a regular basis.</p> <p><strong>Table of Contents</strong></p> <p></p><div class="table-of-contents"><ul><li><a href="#api-documentation">API Documentation</a></li><li><a href="#differences-between-the-sandbox-and-the-productive-api">Differences between the sandbox and the productive API</a><ul><li><a href="#tpp-client-authentication">TPP client authentication</a></li><li><a href="#user-interaction">User interaction</a></li><li><a href="#state-changes">State changes</a></li></ul></li><li><a href="#encoding">Encoding</a><ul><li><a href="#createpayment">CreatePayment</a></li><li><a href="#consentcreation">ConsentCreation</a></li></ul></li><li><a href="#getting-started-with-curl">Getting started with curl</a><ul><li><a href="#create-a-payment-order">Create a payment order</a></li><li><a href="#get-the-status-of-the-created-payment-order">Get the status of the created payment order</a></li><li><a href="#create-a-standing-order">Create a standing order</a></li><li><a href="#get-the-status-of-the-created-standing-order">Get the status of the created standing order</a></li><li><a href="#create-a-consent-to-retrieve-account-information">Create a consent to retrieve account information</a></li><li><a href="#get-the-status-of-the-created-consent">Get the status of the created consent</a></li><li><a href="#get-the-full-information-of-a-consent">Get the full information of a consent</a></li><li><a href="#get-the-list-of-accounts">Get the list of accounts</a></li><li><a href="#get-the-transactions-of-an-account">Get the transactions of an account</a></li></ul></li><li><a href="#client-certificate-verification">Client Certificate Verification</a></li><li><a href="#statistics">Statistics</a></li><li><a href="#release-notes">Release Notes</a><ul><li><a href="#_10th-september-2019">10th September 2019</a></li><li><a href="#_29th-january-2021">29th January 2021</a></li><li><a href="#_18th-february-2023">18th February 2023</a></li><li><a href="#_6th-may-2024">6th May 2024</a></li></ul></li></ul></div><p></p> <h2 id="api-documentation"><a href="#api-documentation" class="header-anchor">#</a> API Documentation</h2> <p>The complete documentation of the API can be found <a href="https://developer.vpbank.com/psd2/swagger-ui/index.html" target="_blank" rel="noopener noreferrer">here<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>.
+It is a swagger ui which describes the API and the data model and which can also be used to test and execute the sandbox API manually.</p> <h2 id="differences-between-the-sandbox-and-the-productive-api"><a href="#differences-between-the-sandbox-and-the-productive-api" class="header-anchor">#</a> Differences between the sandbox and the productive API</h2> <p>The API and the data model of the sandbox is basically identical to the real API. However, there are a few small differences
+which are worth mentioning here.
+These are mainly</p> <ul><li>TPP client authentication</li> <li>User interaction</li> <li>State changes</li></ul> <h3 id="tpp-client-authentication"><a href="#tpp-client-authentication" class="header-anchor">#</a> TPP client authentication</h3> <p>The real API uses client certificates to authenticate the TPP client whereas the sandbox only uses basic authentication.
+Hence, it is not necessary to use a client certificate when accessing the sandbox api, just send the basic authentication
+credentials within your request or use the session cookie which you received from the previous request.
+All roles (<code>PISP</code>,<code>AISP</code> and <code>PIISP</code>) will be assigned to the TPP by default.</p> <h3 id="user-interaction"><a href="#user-interaction" class="header-anchor">#</a> User interaction</h3> <p>The real API returns a URL which must be used to redirect the user to the login page. There, he can authenticate himself
+and execute the payment or accept the consent. However, in the sandbox we don't have an interactive user and hence,
+the API will not return a URL for redirection.</p> <h3 id="state-changes"><a href="#state-changes" class="header-anchor">#</a> State changes</h3> <p>In the real word, the transaction status of a payment order will change in time. It will start with the status RCVD (Received) and
+might hopefully end with ACSC (AcceptedSettlementCompleted). However, in the sandbox, there is no background process
+which changes the status of an object. The sandbox simply sets the status of the object during its creation time
+as a function of the <code>X-Request-ID</code>. See the chapter &quot;Encoding&quot; for details.</p> <h2 id="encoding"><a href="#encoding" class="header-anchor">#</a> Encoding</h2> <p>The last digit of the <code>X-Request-ID</code> HTTP-Header (e.g. for <code>99391c7e-ad88-49ec-a2ad-99ddcb1f7721</code> this would be <code>1</code>)
+contains the encoding which determines the status of the created object in the sandbox. The mapping is defined as follows:</p> <h3 id="createpayment"><a href="#createpayment" class="header-anchor">#</a> <code>CreatePayment</code></h3> <div class="language- extra-class"><pre><code>1: RCVD
+2: RJCT
+3: CANC
+4: PNDG
+5: ACSC
+</code></pre></div><p>Default: <code>ACSC</code></p> <h3 id="consentcreation"><a href="#consentcreation" class="header-anchor">#</a> <code>ConsentCreation</code></h3> <div class="language- extra-class"><pre><code>0: received
+1: valid
+2: rejected
+3: revokedByPsu
+4: expired
+5: terminatedByTpp
+</code></pre></div><p>Default: <code>valid</code></p> <h2 id="getting-started-with-curl"><a href="#getting-started-with-curl" class="header-anchor">#</a> Getting started with <code>curl</code></h2> <p>This chapter contains some example API calls to give you a quick start. The examples use the <code>curl</code> command, which
+is available on all unix based operating systems. For Windows-Users, we recommend the usage of mobaXTerm which contains
+a pretty good implementation of <code>curl</code>.  Git Bash also contains a <code>curl</code> command, but this implementation might
+lead to problems when using non-Ascii text in the body (e.g. german Umlaute in names and Addresses). We don't recommend
+the usage of the <code>curl</code> command which comes with the cmd.exe, it has some major issues which lead to errors.</p> <p>Let's jump right in and create a payment order.</p> <h3 id="create-a-payment-order"><a href="#create-a-payment-order" class="header-anchor">#</a> Create a payment order</h3> <p>Use the following command to create a payment order:</p> <div class="language- extra-class"><pre><code>curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/cross-border-credit-transfers \
+--header &quot;accept: application/json&quot; \
+--header &quot;X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721&quot; \
+--header &quot;TPP-Redirect-URI: https://www.google.ch&quot; \
+--header &quot;PSU-IP-Address: 192.0.0.12&quot; \
+--header &quot;Content-Type: application/json&quot; \
+--data '{&quot;debtorAccount&quot;:{&quot;iban&quot;:&quot;LI3808805500000000012&quot;},&quot;instructedAmount&quot;:{&quot;currency&quot;:&quot;CHF&quot;,&quot;amount&quot;:&quot;10.0&quot;},&quot;creditorAccount&quot;:{&quot;iban&quot;:&quot;LI7108805500000000000&quot;},&quot;creditorName&quot;:&quot;Peter Parker&quot;,&quot;creditorAddress&quot;:{&quot;street&quot;:&quot;Ingram Street&quot;,&quot;buildingNumber&quot;:&quot;20&quot;,&quot;city&quot;:&quot;Spidercity&quot;,&quot;postalCode&quot;:&quot;12345&quot;,&quot;country&quot;:&quot;DE&quot;},&quot;remittanceInformationUnstructured&quot;:&quot;Invoice Nr. 123456&quot;}'
+</code></pre></div><p>The <code>X-Request-ID</code> can be any UUID created by an online UUID generator tool. The last digit of <code>X-Request-ID</code>
+influences the state of the created payment. See chapter <a href="#encoding">Encoding</a>.
+The <code>TPP-Redirect-URI</code> will be used after the user has finished the payment. It is not used in the sandbox.</p> <p>The execution of the command will lead to the following result:</p> <div class="language- extra-class"><pre><code>{
+  &quot;paymentId&quot;:&quot;2b782d83-5b45-4318-bcb2-3002881495d5&quot;,
+  &quot;creditorAccount&quot;:{
+    &quot;iban&quot;:&quot;LI7108805500000000000&quot;
+  },
+  &quot;creditorName&quot;:&quot;Peter Parker&quot;,
+  &quot;_links&quot;:{
+    &quot;scaRedirect&quot;:&quot;not available in sandbox&quot;,
+    &quot;status&quot;:&quot;/psd2/berlin-group/v1/payments/2b782d83-5b45-4318-bcb2-3002881495d5/status&quot;
+  }
+}
+</code></pre></div><p>Notice that the <code>scaRedirect</code> is not supported in the sandbox. It will contain the URL for the user to login and
+approve the payment.</p> <h3 id="get-the-status-of-the-created-payment-order"><a href="#get-the-status-of-the-created-payment-order" class="header-anchor">#</a> Get the status of the created payment order</h3> <p>In order to get the status of the created payment order, execute the following command. Remember to replace the path
+in the url with the received path in the response of your create request:</p> <div class="language- extra-class"><pre><code>curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/2b782d83-5b45-4318-bcb2-3002881495d5/status \
+--header &quot;accept: application/json&quot; \
+--header &quot;X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721&quot; \
+--header &quot;Content-Type: application/json&quot;
+</code></pre></div><p>You will receive a response of the following form:</p> <div class="language- extra-class"><pre><code>{
+  &quot;transactionStatus&quot;:&quot;RCVD&quot;,
+  &quot;fundsAvailable&quot;:false
+}
+</code></pre></div><h3 id="create-a-standing-order"><a href="#create-a-standing-order" class="header-anchor">#</a> Create a standing order</h3> <p>Use the following command to create a standing order:</p> <div class="language- extra-class"><pre><code>curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/cross-border-credit-transfers \
+--header &quot;accept: application/json&quot; \
+--header &quot;X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721&quot; \
+--header &quot;TPP-Redirect-URI: https://www.google.ch&quot; \
+--header &quot;PSU-IP-Address: 192.0.0.12&quot; \
+--header &quot;Content-Type: application/json&quot; \
+--data '{&quot;debtorAccount&quot;:{&quot;iban&quot;:&quot;LI3808805500000000012&quot;},&quot;instrAmount&quot;:{&quot;currency&quot;:&quot;CHF&quot;,&quot;amount&quot;:&quot;10.0&quot;},&quot;creditorAccount&quot;:{&quot;iban&quot;:&quot;LI7108805500000000000&quot;},&quot;creditorName&quot;:&quot;Peter Parker&quot;,&quot;creditorAddress&quot;:{&quot;street&quot;:&quot;Ingram Street&quot;,&quot;buildingNumber&quot;:&quot;20&quot;,&quot;city&quot;:&quot;Spidercity&quot;,&quot;postalCode&quot;:&quot;12345&quot;,&quot;country&quot;:&quot;DE&quot;},	&quot;startDate&quot;: &quot;2023-04-01&quot;, &quot;executionRule&quot;: &quot;preceding&quot;, &quot;frequency&quot;: &quot;Monthly&quot;, &quot;numberOfExecutions&quot;: 12}'
+</code></pre></div><p>The <code>X-Request-ID</code> can be any UUID created by an online UUID generator tool. The last digit of <code>X-Request-ID</code>
+influences the state of the created payment. See chapter <a href="#encoding">Encoding</a>.
+The <code>TPP-Redirect-URI</code> will be used after the user has finished the payment. It is not used in the sandbox.</p> <p>Note that the <code>startDate</code> must be tomorrow or later.</p> <p>The field <code>executionRule</code> allows the following values:</p> <ul><li><code>preceding</code> (execute the payment before the weekend if its execution date falls on a weekend)</li> <li><code>following</code> (execute the payment after the weekend if its execution date falls on a weekend)</li></ul> <p>The field <code>frequency</code> allows the following values:</p> <ul><li><code>Weekly</code></li> <li><code>EveryTwoWeeks</code></li> <li><code>Monthly</code></li> <li><code>EveryTwoMonths</code></li> <li><code>EveryFourMonths</code></li> <li><code>Quarterly</code></li> <li><code>SemiAnnual</code></li> <li><code>Annual</code></li></ul> <p>Instead of specifying a <code>numberOfExecutions</code> it is also possible to specify an <code>endDate</code>.</p> <p>The execution of the command will lead to the following result:</p> <div class="language- extra-class"><pre><code>{
+  &quot;paymentId&quot;:&quot;2b782d83-5b45-4318-bcb2-3002881495d5&quot;,
+  &quot;creditorAccount&quot;:{
+    &quot;iban&quot;:&quot;LI7108805500000000000&quot;
+  },
+  &quot;creditorName&quot;:&quot;Peter Parker&quot;,
+  &quot;_links&quot;:{
+    &quot;scaRedirect&quot;:&quot;not available in sandbox&quot;,
+    &quot;status&quot;:&quot;/psd2/berlin-group/v1/periodic-payments/2b782d83-5b45-4318-bcb2-3002881495d5/status&quot;
+  }
+}
+</code></pre></div><p>Notice that the <code>scaRedirect</code> is not supported in the sandbox. It will contain the URL for the user to login and
+approve the standing order.</p> <h3 id="get-the-status-of-the-created-standing-order"><a href="#get-the-status-of-the-created-standing-order" class="header-anchor">#</a> Get the status of the created standing order</h3> <p>In order to get the status of the created standing order, execute the following command. Remember to replace the path
+in the url with the received path in the response of your create request:</p> <div class="language- extra-class"><pre><code>curl --include \
+https://developer.vpbank.com/psd2/berlin-group/v1/periodic-payments/2b782d83-5b45-4318-bcb2-3002881495d5/status \
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/swagger-ui/index.html" 2>&1 | head -200
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="./favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="./favicon-16x16.png"
+      sizes="16x16"
+    />
+    <style>
+      html {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        margin: 0;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+
+    <script src="./swagger-ui-bundle.js"></script>
+    <script src="./swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.onload = function() {
+        // Build a system
+        const ui = SwaggerUIBundle({
+          url: "/psd2/berlin-group/v1/psd2_api.yaml",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout"
+        });
+
+        window.ui = ui;
+      };
+    </script>
+  </body>
+</html>
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" 2>&1 | head -300
+openapi: 3.0.1
+info:
+    title: PSD2 API
+    version: "1.0.0"
+
+servers:
+    -   url: /psd2/berlin-group/v1
+        description: PSD2 production server
+
+paths:
+
+    #######################################################
+    # Consents
+    #######################################################
+
+    /consents:
+        post:
+            summary: Create consent
+            description: This method creates a consent resource, defining access rights to a dedicated account.
+            operationId: createConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            requestBody:
+                $ref: "#/components/requestBodies/consents"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}:
+        get:
+            summary: Get consent request
+            description: Returns the content of an account information consent object.
+            operationId: getConsentInformation
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConsentInformation"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+        delete:
+            summary: Delete consent
+            description: The TPP can delete an account information consent object if needed.
+            operationId: deleteConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            responses:
+                '204':
+                    $ref: "#/components/responses/NO_CONTENT_204_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}/status:
+        get:
+            summary: Consent status request
+            description: Read the status of an account information consent resource.
+            operationId: getConsentStatus
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConsentStatus"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    #######################################################
+    # Payment Initiation Service (PIS)
+    #######################################################
+
+    /{payment-service}/{payment-product}:
+        post:
+            summary: Payment initiation request
+            description: This method is used to initiate a payment at the ASPSP.
+            operationId: initiatePayment
+            tags:
+                - Payment Initiation Service (PIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/paymentService"
+                -   $ref: "#/components/parameters/paymentProduct"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+                -   $ref: "#/components/parameters/PSU-IP-Address"
+            requestBody:
+                $ref: "#/components/requestBodies/paymentInitiation"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_PaymentInitiation"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    #  /{payment-service}/{payment-id}:
+    #    delete:
+    #      summary: Payment cancellation request
+    #      description: This method initiates the cancellation of a payment.
+    #      operationId: cancelPayment
+    #      tags:
+    #        - Payment Initiation Service (PIS)
+    #      parameters:
+    #        #path
+    #        - $ref: "#/components/parameters/paymentService"
+    #        - $ref: "#/components/parameters/paymentId"
+    #        #header
+    #        - $ref: "#/components/parameters/X-Request-ID"
+    #        - $ref: "#/components/parameters/TPP-Redirect-URI"
+    #      responses:
+    #        '204':
+    #          $ref: "#/components/responses/NO_CONTENT_204_PaymentInitiationCancel"
+    #        '403':
+    #          $ref: "#/components/responses/FORBIDDEN_403_AIS"
+    #        '404':
+    #          $ref: "#/components/responses/NOT_FOUND_404_AIS"
+    #        '500':
+    #          $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /{payment-service}/{payment-id}/status:
+        get:
+            summary: Payment initiation stauts request
+            description: Check the transaction status of a payment initiation
+            operationId: getPaymentInitiationStatus
+            tags:
+                - Payment Initiation Service (PIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/paymentService"
+                -   $ref: "#/components/parameters/paymentId"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_PaymentInitiationStatus"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    #######################################################
+    # Account Information Service (AIS)
+    #######################################################
+
+    /accounts:
+        get:
+            summary: Read account list
+            description: Returns all identifiers of the accounts, to which an account access has been granted to through the /consents endpoint by the PSU.
+            operationId: getAccountList
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_AccountList"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /accounts/{account-id}:
+        get:
+            summary: Read account details
+            description: Returns details about an account.
+            operationId: readAccountDetails
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/accountId"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/consentId_header"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_AccountDetails"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+
+    /accounts/{account-id}/balances:
+        get:
+            summary: Read balances
+            description: Reads account data from a given account addressed by "account-id".
+            operationId: getBalances
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/accountId"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/consentId_header"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_Balances"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /accounts/{account-id}/transactions:
+        get:
+            summary: Read transaction list
+            description: Reads a list of transactions from a given account addressed by "account-id".
+            operationId: getTransactionList
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/accountId"
+                #query
+                -   $ref: "#/components/parameters/dateFrom"
+                -   $ref: "#/components/parameters/dateTo"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/consentId_header"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_AccountsTransactions"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    #######################################################
+    # Funds Confirmation Service (PIIS)
+    #######################################################
+
+    /funds-confirmations:
+        post:
+            summary: Confirmation of funds request
+            description: Checks whether a specific amount is available at the point of time of the request on a given account.
+            operationId: checkAvailabilityOfFunds
+            tags:
+                - Confirmation of Funds Service (PIIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/consentId_header"
+            requestBody:
+                $ref: "#/components/requestBodies/confirmationOfFunds"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConfirmationOfFunds"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" 2>&1 | tail -200
+- creditorName
+                - startDate
+                - frequency
+            properties:
+                debtorAccount:
+                    $ref: "#/components/schemas/accountReference"
+                instrAmount:
+                    $ref: "#/components/schemas/amount"
+                creditorAccount:
+                    $ref: "#/components/schemas/accountReference"
+                creditorName:
+                    $ref: "#/components/schemas/creditorName"
+                creditorAddress:
+                    $ref: "#/components/schemas/address"
+                remittanceInformationUnstructured:
+                    $ref: "#/components/schemas/remittanceInformationUnstructured"
+                startDate:
+                    $ref: "#/components/schemas/startDate"
+                endDate:
+                    $ref: "#/components/schemas/endDate"
+                executionRule:
+                    $ref: "#/components/schemas/executionRule"
+                frequency:
+                    $ref: "#/components/schemas/vpbFrequencyCode"
+                numberOfExecutions:
+                    $ref: "#/components/schemas/vpbNumberOfExecutions"
+
+
+        consents:
+            description: Content of the body of a consent request.
+            type: object
+            required:
+                - access
+                - recurringIndicator
+                - validUntil
+                - frequencyPerDay
+            properties:
+                access:
+                    $ref: "#/components/schemas/vpbAccountAccess"
+                recurringIndicator:
+                    $ref: "#/components/schemas/recurringIndicator"
+                validUntil:
+                    $ref: "#/components/schemas/validUntil"
+                frequencyPerDay:
+                    $ref: "#/components/schemas/frequencyPerDay"
+
+        confirmationOfFunds:
+            description: JSON Request body for the "Confirmation of Funds Service"
+            type: object
+            required:
+                - account
+                - instructedAmount
+            properties:
+                account:
+                    $ref: "#/components/schemas/accountReference"
+                instructedAmount:
+                    $ref: "#/components/schemas/amount"
+
+        #####################################################
+        # Content of Request Bodies - XML
+        #####################################################
+        paymentInitiation_pain.001:
+            description: A pain.001 structure corresponding to the SCT schema.
+            type: string
+
+
+        paymentInitiationStatusResponse-200_xml:
+            description: Body of the response for a successful payment
+            type: string
+        #####################################################
+        # Content of Response Bodies
+        #####################################################
+        paymentInitiationStatusResponse-200_json:
+            description: Body of the response for a successful payment initiation status request.
+            type: object
+            required:
+                - transactionStatus
+            properties:
+                fundsAvailable:
+                    type: boolean
+                transactionStatus:
+                    $ref: "#/components/schemas/transactionStatus"
+
+        paymentInitiationRequestResponse-201:
+            description: Body of the response for a successful payment initiation request.
+            type: object
+            required:
+                - paymentId
+                - _links
+                - creditorName
+                - instructedAmount
+                - creditorAccount
+            properties:
+                paymentId:
+                    type: string
+                _links:
+                    $ref: "#/components/schemas/_linksPaymentInitiation"
+                creditorName:
+                    type: string
+                instructedAmount:
+                    $ref: "#/components/schemas/amount"
+                creditorAccount:
+                    $ref: "#/components/schemas/accountReference"
+                creditorAddress:
+                    $ref: "#/components/schemas/address"
+
+
+        paymentInitiationCancelResponse-204_202:
+            description: Body of the response for a successful cancel payment request.
+            type: object
+            required:
+                - transactionStatus
+            properties:
+                transactionStatus:
+                    $ref: "#/components/schemas/transactionStatus"
+
+        readAccountBalanceResponse-200:
+            description: Body of the response for a successful read balance for an account request.
+            type: object
+            required:
+                - balances
+            properties:
+                balances:
+                    $ref: "#/components/schemas/balanceList"
+
+        transactionResponse-200_json:
+            description: Body of the JSON response for a successful read transaction list request.
+            type: object
+            properties:
+                transactions:
+                    $ref: "#/components/schemas/accountReport"
+
+        consentsResponse-201:
+            description: Body of the JSON response for a successful consent request.
+            type: object
+            required:
+                - consentStatus
+                - consentId
+                - requestedAccessTypes
+                - _links
+            properties:
+                consentStatus:
+                    $ref: "#/components/schemas/consentStatus"
+                consentId:
+                    $ref: "#/components/schemas/consentId"
+                requestedAccessTypes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/accessType"
+                _links:
+                    $ref: "#/components/schemas/_linksConsents"
+
+        consentInformationResponse-200_json:
+            description: Body of the JSON response for a successful get consent request.
+            type: object
+            required:
+                - consentId
+                - requestedAccessTypes
+                - access
+                - recurringIndicator
+                - validUntil
+                - frequencyPerDay
+                - lastActionDate
+                - consentStatus
+                - tppName
+                - redirectUri
+            properties:
+                consentId:
+                  $ref: "#/components/schemas/consentId"
+                requestedAccessTypes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/accessType"
+                access:
+                    $ref: "#/components/schemas/accountAccess"
+                recurringIndicator:
+                    $ref: "#/components/schemas/recurringIndicator"
+                validUntil:
+                    $ref: "#/components/schemas/validUntil"
+                frequencyPerDay:
+                    $ref: "#/components/schemas/frequencyPerDay"
+                lastActionDate:
+                    $ref: "#/components/schemas/lastActionDate"
+                consentStatus:
+                    $ref: "#/components/schemas/consentStatus"
+                tppName:
+                  type: string
+                redirectUri:
+                  type: string
+                _links:
+                  $ref: "#/components/schemas/_linksGetConsent"
+
+        consentStatusResponse-200:
+            description: Body of the JSON response for a successful get status request for a consent.
+            type: object
+            required:
+                - consentStatus
+            properties:
+                consentStatus:
+                    $ref: "#/components/schemas/consentStatus"
+[0m
+[0m$ [0mcurl -s -I "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" 2>&1 | head -30
+HTTP/1.1 303 See Other
+Date: Fri, 04 Sep 2026 21:34:18 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AR4gem_jEqMUARhf8LcPE7ROGstiAnoxWe!5ycfazy0VRH7vly1k3vbosJlToB1TNUev; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 123
+Location: /error_path/400.html?al_req_id=aps5WqjSMjVxjAwgaJpi3wAAAKQ
+Content-Type: text/html
+[0m
+[0m$ [0mcurl -s -u "test:test" -I "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" 2>&1 | head -30
+HTTP/1.1 303 See Other
+Date: Fri, 04 Sep 2026 21:34:43 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AeRVzfi1bM_m0PN94y1T8xjFIZv6hXyzkXn3uc4LG5nwU13YiDeGXPLy3SPhk9bgOmOI; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 123
+Location: /error_path/400.html?al_req_id=aps5c00YXf8kIYrOokuhVwAAAM0
+Content-Type: text/html
+[0m
+[0m$ [0mcurl -s -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" 2>&1 | head -100
+{"accounts":[]}
+[0m
+[0m$ [0mcurl -s -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents" -X POST -H "Content-Type: application/json" -d '{"access":{"accounts":[],"balances":[],"transactions":[]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4}' 2>&1 | head -100
+(no output)
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents" -X POST -H "Content-Type: application/json" -d '{"access":{"accounts":[],"balances":[],"transactions":[]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4}' 2>&1
+Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host developer.vpbank.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 193.222.70.149
+*   Trying 193.222.70.149:443...
+* Connected to developer.vpbank.com (193.222.70.149) port 443
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [47 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [5896 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [520 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+* ALPN: server accepted http/1.1
+* Server certificate:
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+*  start date: Jun  1 13:36:28 2026 GMT
+*  expire date: Dec 16 13:36:28 2026 GMT
+*  subjectAltName: host "developer.vpbank.com" matched cert's "developer.vpbank.com"
+*  issuer: C=CH; O=SwissSign AG; CN=SwissSign RSA TLS EV ICA 2022 - 1
+*  SSL certificate verify ok.
+*   Certificate level 0: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 1: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 2: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+* using HTTP/1.x
+* Server auth using Basic with user 'test'
+} [5 bytes data]
+> POST /psd2/berlin-group/v1/consents HTTP/1.1
+> Host: developer.vpbank.com
+> Authorization: Basic dGVzdDp0ZXN0
+> User-Agent: curl/8.5.0
+> X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+> Accept: application/json
+> Content-Type: application/json
+> Content-Length: 130
+> 
+} [130 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+< HTTP/1.1 400 Bad Request
+< Date: Fri, 04 Sep 2026 21:35:37 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AcE8LB!M6YhVr98kZk_JS61csov0NryT!O!8MkdqMf2!ZfgkBseHc3n546onHGgj0HTd; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 0
+< x-envoy-upstream-service-time: 4
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< Connection: close
+< 
+
+100   130    0     0  100   130      0    290 --:--:-- --:--:-- --:--:--   291
+* Closing connection
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS alert, close notify (256):
+{ [2 bytes data]
+* TLSv1.3 (OUT), TLS alert, close notify (256):
+} [2 bytes data]
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" 2>&1 | grep -A 50 "vpbAccountAccess:"
+vpbAccountAccess:
+            description: |
+                A simpler `accountAccess` variant used within the VP Bank for creating a consent.
+                It just holds a list of access types the TPP requires. Each access type is related
+                to the same account the user is selecting when granting access.
+            type: array
+            items:
+                $ref: "#/components/schemas/accessType"
+
+        accessType:
+            description: Enumeration of the supported access types that can by provided by a consent.
+            type: string
+            enum:
+                - "accounts"
+                - "balances"
+                - "transactions"
+                - "confirmationOfFunds"
+
+        lastActionDate:
+            description: This date is containing the last action on the consent object.
+            type: string
+            format: date
+
+        hrefType:
+            description: Link to a resource.
+            type: string
+
+        remittanceInformationUnstructured:
+            description: Unstructured remittance information.
+            type: string
+            maxLength: 140
+            example: "Ref Number Merchant"
+
+        startDate:
+            description: The first applicable day of execution starting from this date is the first payment.
+            type: string
+            format: date
+
+        endDate:
+            description: The last applicable day of execution. If not given, it is an infinite standing order unless a number of executions is defined.
+            type: string
+            format: date
+
+        vpbNumberOfExecutions:
+            description: |
+                This field indicates the number of executions of a standing order.
+                If this attribute is set, a possibly set end date is ignored.
+            type: integer
+
+        vpbFrequencyCode:
+            description: |
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" 2>&1 | grep -B 5 -A 30 "consents:"
+#######################################################
+    # Consents
+    #######################################################
+
+    /consents:
+        post:
+            summary: Create consent
+            description: This method creates a consent resource, defining access rights to a dedicated account.
+            operationId: createConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            requestBody:
+                $ref: "#/components/requestBodies/consents"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}:
+        get:
+            summary: Get consent request
+            description: Returns the content of an account information consent object.
+            operationId: getConsentInformation
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+--
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/confirmationOfFunds"
+
+        consents:
+            description: Request body for a consents request
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/consents"
+
+    #####################################################
+    # Reusable Response Header Elements
+    #####################################################
+    headers:
+        X-Request-ID:
+            description: ID of the request, unique to the call, as determined by the initiating party.
+            required: true
+            schema:
+                type: string
+
+        Location:
+            description: Location of the created resource.
+            required: true
+            schema:
+                type: string
+                format: url
+
+        ASPSP-SCA-Approach:
+            description: This data element must be fixed, if the SCA approach is already fixed. At the moment only "REDIRECT" is supported.
+            schema:
+                type: string
+                enum:
+                    - "Redirect"
+            required: true
+--
+                    $ref: "#/components/schemas/vpbFrequencyCode"
+                numberOfExecutions:
+                    $ref: "#/components/schemas/vpbNumberOfExecutions"
+
+
+        consents:
+            description: Content of the body of a consent request.
+            type: object
+            required:
+                - access
+                - recurringIndicator
+                - validUntil
+                - frequencyPerDay
+            properties:
+                access:
+                    $ref: "#/components/schemas/vpbAccountAccess"
+                recurringIndicator:
+                    $ref: "#/components/schemas/recurringIndicator"
+                validUntil:
+                    $ref: "#/components/schemas/validUntil"
+                frequencyPerDay:
+                    $ref: "#/components/schemas/frequencyPerDay"
+
+        confirmationOfFunds:
+            description: JSON Request body for the "Confirmation of Funds Service"
+            type: object
+            required:
+                - account
+                - instructedAmount
+            properties:
+                account:
+                    $ref: "#/components/schemas/accountReference"
+                instructedAmount:
+                    $ref: "#/components/schemas/amount"
+
+        #####################################################
+[0m
+[0m$ [0mcurl -s "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" 2>&1 | grep -A 20 "recurringIndicator:"
+recurringIndicator:
+            description: |
+                "true" if the consent is for recurring access to the account data, "false" otherwise
+            type: boolean
+
+        validUntil:
+            description: This parameter is requesting a valid until date for the requested consent.
+            type: string
+            format: date
+
+        frequencyPerDay:
+            description: This field indicates the requested maximum frequency for an access without PSU involvement per day
+            type: integer
+
+        accountAccess:
+            description: Requested access services for a consent.
+            type: object
+            properties:
+                accounts:
+                    type: array
+                    items:
+--
+                recurringIndicator:
+                    $ref: "#/components/schemas/recurringIndicator"
+                validUntil:
+                    $ref: "#/components/schemas/validUntil"
+                frequencyPerDay:
+                    $ref: "#/components/schemas/frequencyPerDay"
+
+        confirmationOfFunds:
+            description: JSON Request body for the "Confirmation of Funds Service"
+            type: object
+            required:
+                - account
+                - instructedAmount
+            properties:
+                account:
+                    $ref: "#/components/schemas/accountReference"
+                instructedAmount:
+                    $ref: "#/components/schemas/amount"
+
+        #####################################################
+        # Content of Request Bodies - XML
+--
+                recurringIndicator:
+                    $ref: "#/components/schemas/recurringIndicator"
+                validUntil:
+                    $ref: "#/components/schemas/validUntil"
+                frequencyPerDay:
+                    $ref: "#/components/schemas/frequencyPerDay"
+                lastActionDate:
+                    $ref: "#/components/schemas/lastActionDate"
+                consentStatus:
+                    $ref: "#/components/schemas/consentStatus"
+                tppName:
+                  type: string
+                redirectUri:
+                  type: string
+                _links:
+                  $ref: "#/components/schemas/_linksGetConsent"
+
+        consentStatusResponse-200:
+            description: Body of the JSON response for a successful get status request for a consent.
+            type: object
+            required:
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "TPP-Redirect-URI: https://example.com" "https://developer.vpbank.com/psd2/berlin-group/v1/consents" -X POST -H "Content-Type: application/json" -d '{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4}' 2>&1
+Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host developer.vpbank.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 193.222.70.149
+*   Trying 193.222.70.149:443...
+* Connected to developer.vpbank.com (193.222.70.149) port 443
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [47 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [5896 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [520 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+* ALPN: server accepted http/1.1
+* Server certificate:
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+*  start date: Jun  1 13:36:28 2026 GMT
+*  expire date: Dec 16 13:36:28 2026 GMT
+*  subjectAltName: host "developer.vpbank.com" matched cert's "developer.vpbank.com"
+*  issuer: C=CH; O=SwissSign AG; CN=SwissSign RSA TLS EV ICA 2022 - 1
+*  SSL certificate verify ok.
+*   Certificate level 0: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 1: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 2: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+* using HTTP/1.x
+* Server auth using Basic with user 'test'
+} [5 bytes data]
+> POST /psd2/berlin-group/v1/consents HTTP/1.1
+> Host: developer.vpbank.com
+> Authorization: Basic dGVzdDp0ZXN0
+> User-Agent: curl/8.5.0
+> X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+> Accept: application/json
+> TPP-Redirect-URI: https://example.com
+> Content-Type: application/json
+> Content-Length: 121
+> 
+} [121 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+< HTTP/1.1 201 Created
+< Date: Fri, 04 Sep 2026 21:36:14 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AcV5WolyUEIeTo4TPBjLp1PL_WytGwobAzMZ11kKGi4PYYe9gZoTtY0Hvz1f1phNQTOC; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 317
+< x-request-id: 5c4d98a1-5522-9e4b-a376-95d54c86aa19
+< x-envoy-upstream-service-time: 269
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< Content-Type: application/json;charset=UTF-8
+< 
+{ [5 bytes data]
+
+100   438  100   317  100   121    424    161 --:--:-- --:--:-- --:--:--   587
+* Connection #0 to host developer.vpbank.com left intact
+{"consentStatus":"valid","consentId":"12a1a354-ef0a-47a4-9c2d-008a4c376255","requestedAccessTypes":[],"_links":{"self":"/psd2/berlin-group/v1/consents/12a1a354-ef0a-47a4-9c2d-008a4c376255","status":"/psd2/berlin-group/v1/consents/12a1a354-ef0a-47a4-9c2d-008a4c376255/status","scaRedirect":"not available in sandbox"}}
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" 2>&1
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host developer.vpbank.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 193.222.70.149
+*   Trying 193.222.70.149:443...
+* Connected to developer.vpbank.com (193.222.70.149) port 443
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [47 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [5896 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [520 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+* ALPN: server accepted http/1.1
+* Server certificate:
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+*  start date: Jun  1 13:36:28 2026 GMT
+*  expire date: Dec 16 13:36:28 2026 GMT
+*  subjectAltName: host "developer.vpbank.com" matched cert's "developer.vpbank.com"
+*  issuer: C=CH; O=SwissSign AG; CN=SwissSign RSA TLS EV ICA 2022 - 1
+*  SSL certificate verify ok.
+*   Certificate level 0: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 1: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 2: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+* using HTTP/1.x
+* Server auth using Basic with user 'test'
+} [5 bytes data]
+> GET /psd2/berlin-group/v1/accounts HTTP/1.1
+> Host: developer.vpbank.com
+> Authorization: Basic dGVzdDp0ZXN0
+> User-Agent: curl/8.5.0
+> X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+> Accept: application/json
+> consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255
+> 
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0{ [5 bytes data]
+< HTTP/1.1 200 OK
+< Date: Fri, 04 Sep 2026 21:36:23 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AUYko0wnU6bTfqOUYdnFsRw4DrTkmQhnqofHjakELHnu2FHPxUHQrDMw9XAIgsNqABol; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 105
+< x-request-id: 4964c67e-3202-95a5-bdfd-4e5492c02776
+< x-envoy-upstream-service-time: 1705
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< Content-Type: application/json;charset=UTF-8
+< 
+{ [5 bytes data]
+
+100   105  100   105    0     0     48      0  0:00:02  0:00:02 --:--:--    48
+* Connection #0 to host developer.vpbank.com left intact
+{"accounts":[{"iban":"LI1708805500000000002","currency":"EUR","name":null,"product":null,"_links":null}]}
+[0m
+[0m$ [0mcurl -s -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI1708805500000000002/balances" 2>&1
+(no output)
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI1708805500000000002/balances" 2>&1
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host developer.vpbank.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 193.222.70.149
+*   Trying 193.222.70.149:443...
+* Connected to developer.vpbank.com (193.222.70.149) port 443
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [47 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [5896 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [520 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+* ALPN: server accepted http/1.1
+* Server certificate:
+*  subject: jurisdictionC=LI; businessCategory=Private Organization; C=LI; L=Vaduz; postalCode=9490; street=Aeulestrasse 6; O=VP Bank AG; serialNumber=FL-0001.007.080-0; CN=openbanking.vpbank.com
+*  start date: Jun  1 13:36:28 2026 GMT
+*  expire date: Dec 16 13:36:28 2026 GMT
+*  subjectAltName: host "developer.vpbank.com" matched cert's "developer.vpbank.com"
+*  issuer: C=CH; O=SwissSign AG; CN=SwissSign RSA TLS EV ICA 2022 - 1
+*  SSL certificate verify ok.
+*   Certificate level 0: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 1: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+*   Certificate level 2: Public key type RSA (4096/152 Bits/secBits), signed using sha256WithRSAEncryption
+* using HTTP/1.x
+* Server auth using Basic with user 'test'
+} [5 bytes data]
+> GET /psd2/berlin-group/v1/accounts/LI1708805500000000002/balances HTTP/1.1
+> Host: developer.vpbank.com
+> Authorization: Basic dGVzdDp0ZXN0
+> User-Agent: curl/8.5.0
+> X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+> Accept: application/json
+> consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255
+> 
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+< HTTP/1.1 404 Not Found
+< Date: Fri, 04 Sep 2026 21:36:38 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AWcPKc0ZVIKauDj9f37vX5IDTcuEWgxwUpNEQwJekPWf_xL8iAbGUdMqoOiaQOKpOztj; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 0
+< x-request-id: 7256a6b2-7653-9aa0-b640-67a114d43e8a
+< x-envoy-upstream-service-time: 7
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< 
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host developer.vpbank.com left intact
+[0m
+[0m$ [0mcurl -s -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI1708805500000000002/transactions" 2>&1
+(no output)
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "consentId: 12a1a354-ef0a-47a4-9c2d-008a4c376255" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI1708805500000000002/transactions" 2>&1 | tail -20
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+< HTTP/1.1 404 Not Found
+< Date: Fri, 04 Sep 2026 21:36:59 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AS5O_jusw4KlzBKqwnpzqGkswgqC2pinV3LNYvNcM2Kq!2IhlXdIxMctpz6pfd9d16r4; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 0
+< x-request-id: b395d3a8-7121-93ce-9fe6-db13725e457b
+< x-envoy-upstream-service-time: 6
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< 
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host developer.vpbank.com left intact
+[0m
+[0m$ [0mcurl -v -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" -H "TPP-Redirect-URI: https://example.com" -H "PSU-IP-Address: 192.0.0.12" "https://developer.vpbank.com/psd2/berlin-group/v1/payments/cross-border-credit-transfers" -X POST -H "Content-Type: application/json" -d '{"debtorAccount":{"iban":"LI3808805500000000012"},"instructedAmount":{"currency":"CHF","amount":"10.0"},"creditorAccount":{"iban":"LI7108805500000000000"},"creditorName":"Peter Parker","creditorAddress":{"street":"Ingram Street","buildingNumber":"20","city":"Spidercity","postalCode":"12345","country":"DE"},"remittanceInformationUnstructured":"Invoice Nr. 123456"}' 2>&1 | tail -30
+> TPP-Redirect-URI: https://example.com
+> PSU-IP-Address: 192.0.0.12
+> Content-Type: application/json
+> Content-Length: 365
+> 
+} [365 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [57 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+< HTTP/1.1 201 Created
+< Date: Fri, 04 Sep 2026 21:37:13 GMT
+< Server: Apache
+< Set-Cookie: AL_SESS-S=AZdv7XBMOuqwsnUsO0zUgsuI1XIU7_rtA9l_E_sLVot3d6tuhkNNnWuZg_97U90XgmsC; Path=/; Secure; HttpOnly; SameSite=Lax
+< Content-Length: 360
+< x-request-id: f3a5311c-37c0-9acb-a88e-887ff4d077fc
+< x-envoy-upstream-service-time: 334
+< X-Frame-Options: SAMEORIGIN
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+< Content-Type: application/json;charset=UTF-8
+< 
+{ [5 bytes data]
+
+100   725  100   360  100   365    536    544 --:--:-- --:--:-- --:--:--  1080
+* Connection #0 to host developer.vpbank.com left intact
+{"paymentId":"7a96bcba-5676-47f2-b681-5a3d49931f01","_links":{"scaRedirect":"not available in sandbox","self":null,"status":"/psd2/berlin-group/v1/payments/7a96bcba-5676-47f2-b681-5a3d49931f01/status"},"creditorName":"Peter Parker","instructedAmount":{"currency":"CHF","amount":"10.0"},"creditorAccount":{"iban":"LI7108805500000000000"},"creditorAddress":null}
+[0m
+[0m$ [0mcurl -s -u "test:test" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/payments/7a96bcba-5676-47f2-b681-5a3d49931f01/status" 2>&1
+{"fundsAvailable":false,"transactionStatus":"ACSC"}
+[0m
+Now I have a clear picture. Let me run through the 8-step analysis.
+
+---
+
+### STEP 1 — DELTA
+
+[NEW] developer.vpbank.com (193.222.70.149): VP Bank PSD2 Developer Portal discovered via RAG — live Apache+Envoy, NOT WAF-blocked (unlike dev/stage). Serves full PSD2 API documentation (VuePress + Swagger UI), OpenAPI spec at `/psd2/berlin-group/v1/psd2_api.yaml`, functional sandbox API with basic auth. Endpoints verified: `POST /consents` (201), `GET /accounts` (200, returns IBAN LI1708805500000000002), `POST /payments/cross-border-credit-transfers` (201), `GET /payments/{id}/status` (200). X-Request-ID last digit controls sandbox state encoding. Certificate: CN=openbanking.vpbank.com.
+
+[CHANGED] api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials; all probes return identical HTTP 500 JSON.
+
+[CHANGED] www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400.
+
+[CHANGED] vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED.
+
+[CHANGED] www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (/health, /status) return WAF maintenance page — SPA is frontend shell only.
+
+---
+
+### STEP 2 — PRIORITIZE
+
+[PRIO] developer.vpbank.com,8.35,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=8,cloud_surface=5,freshness=10
+[PRIO] www.vpbank.com,6.20,attack_surface=5,business_value=8,tech_exposure=5,gate_ease=6,cloud_surface=3,freshness=10
+[PRIO] api.vpbank.com,5.55,attack_surface=4,business_value=9,tech_exposure=3,gate_ease=5,cloud_surface=7,freshness=10
+[PRIO] www.vpbank.com/portal/api/,3.85,attack_surface=4,business_value=6,tech_exposure=4,gate_ease=5,cloud_surface=2,freshness=10
+[PRIO] vpbank-dev.com/vpbank-stage.com,2.95,attack_surface=2,business_value=5,tech_exposure=2,gate_ease=1,cloud_surface=3,freshness=10
+
+---
+
+### STEP 3 — HYPOTHESES
+
+[HYP] PSD2 Sandbox BOLA/IDOR via consentId/paymentId manipulation
+class: IDOR
+asset: developer.vpbank.com
+confidence: 75
+reasoning: PSD2 sandbox API functional with basic auth; consent creation returns consentId (UUID); account access requires consentId header; payment initiation returns paymentId; no authorization checks visible in sandbox for cross-consent/payment data access; production uses mTLS but sandbox uses basic auth — potential authz gap
+evidence_needed: Access accounts/balances/transactions of consentId created by different basic auth credentials; access payment status of paymentId created by different credentials; enumerate consentIds/paymentIds via predictable UUID or sequential patterns
+verify_steps: 1) Create consent with userA:test → get consentId_A; 2) Create consent with userB:test → get consentId_B; 3) GET /accounts with userA:test + consentId_B header; 4) GET /consents/{consentId_B} with userA:test; 5) POST payment with userA:test → paymentId_A; 6) GET /payments/{paymentId_A}/status with userB:test; 7) Test consentId/paymentId enumeration via UUID v4 collision or timing
+impact: Cross-TPP account data access (IBAN, balances, transactions), payment status leakage, consent manipulation; severity HIGH (PSD2 financial data exposure)
+testability: AUTH_HELPED
+
+[HYP] PSD2 Sandbox X-Request-ID state manipulation for payment status tampering
+class: BUSLOGIC
+asset: developer.vpbank.com
+confidence: 70
+reasoning: Documentation explicitly states last digit of X-Request-ID controls sandbox payment/consent state (1=RCVD, 5=ACSC for payments; 0=received, 1=valid for consents); state is deterministic and client-controlled; no server-side validation of state transitions; could allow forcing payment to ACSC without funds
+evidence_needed: Create payment with X-Request-ID ending in 1 (RCVD) → verify status=RCVD; recreate same payment with X-Request-ID ending in 5 (ACSC) → verify status=ACSC; test if production API (openbanking.vpbank.com) has similar encoding; test if state can be changed post-creation via status endpoint
+verify_steps: 1) POST /payments with X-Request-ID:...1 → check status=RCVD; 2) POST /payments with X-Request-ID:...5 → check status=ACSC; 3) POST /consents with X-Request-ID:...0 → check consentStatus=received; 4) POST /consents with X-Request-ID:...1 → check consentStatus=valid; 5) Attempt to mutate status via PATCH/PUT if exists; 6) Test on production endpoint (openbanking.vpbank.com) with mTLS cert if available
+impact: Payment status forgery, consent state manipulation, sandbox-to-production logic flaw; severity MEDIUM-HIGH
+testability: PASSIVE
+
+[HYP] OAuth client_id enumeration via external artifact mining for www.vpbank.com redirect_uri bypass
+class: OAUTH
+asset: www.vpbank.com
+confidence: 45
+reasoning: /oauth/authorize endpoint exists and returns HTTP 400 (ambiguous) for invalid client_id; production CSP trusts *.vpbank-dev.com/*.vpbank-stage.com implying valid OAuth clients exist; no valid client_id found in passive JS bundle analysis (only Usercentrics clientWid); redirect_uri validation logic untested with valid client context
+evidence_needed: Valid client_id accepting arbitrary redirect_uri (www.vpbank.com.evil.com, www.vpbank.com@evil.com, www.vpbank.com/../evil.com); or redirect_uri validation regex flaw
+verify_steps: RAG: Search GitHub code search for "vpbank" "VP Bank AG" "vpbank.com" OAuth client_id; search npm packages for @vpbank/*; search iOS App Store / Google Play for "VP Bank" apps and extract bundle configs; then GET https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test
+impact: Authorization code theft -> account takeover; severity CRITICAL
+testability: AUTH_HELPED
+
+---
+
+### STEP 4 — SELF-CRITIQUE
+
+[PARKED] OAuth client_id enumeration via external artifact mining for www.vpbank.com redirect_uri bypass: confidence 45 but AUTH_HELPED testability — requires valid client_id not discoverable passively; all JS bundles scanned (only Usercentrics clientWid found); RAG is only remaining path; confidence < 50 threshold for active pursuit.
+
+[FINAL] 1. PSD2 Sandbox BOLA/IDOR via consentId/paymentId manipulation (confidence 75, HIGH impact, AUTH_HELPED)
+[FINAL] 2. PSD2 Sandbox X-Request-ID state manipulation for payment status tampering (confidence 70, MEDIUM-HIGH impact, PASSIVE)
+
+---
+
+### STEP 5 — NEXT ACTION
+
+[NEXT] PROBE: Test BOLA/IDOR on developer.vpbank.com PSD2 sandbox — create two basic auth contexts (userA:test, userB:test), generate consentId_A and consentId_B, then cross-access: GET /accounts with userA:test + consentId_B header; GET /consents/{consentId_B} with userA:test; POST payment with userA:test → paymentId_A, then GET /payments/{paymentId_A}/status with userB:test
+
+---
+
+### STEP 6 — LEARNING
+
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accounts, payments), basic auth only — NEW high-value attack surface not WAF-blocked like dev/stage.
+
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible past maintenance redirect. CONFIRMED REJECTED.
+
+[LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No backend routing influence. CONFIRMED REJECTED.
+
+[LEARN] REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→error page. Cannot advance without valid client_id.
+
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend content accessible.
+
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity.
+
+[LEARN] NEW INFO @ developer.vpbank.com: PSD2 sandbox uses basic auth (test:test works), X-Request-ID last digit controls state encoding (1=RCVD, 5=ACSC for payments), certificate CN=openbanking.vpbank.com.
+
+---
+
+### STEP 7 — RISK
+
+[RISK] vp-bank-ag: 55 — Risk increased from 45 due to discovery of developer.vpbank.com PSD2 Developer Portal with functional sandbox API (basic auth, full OpenAPI spec, working consents/accounts/payments endpoints). High-value financial API surface now accessible for BOLA/IDOR and business logic testing. Remaining attack surface: api.vpbank.com exhausted, www.vpbank.com OAuth blocked without client_id, dev/stage WAF-blocked, portal SPA frontend-only. Primary value now in PSD2 sandbox authorization flaws and potential sandbox-to-production logic carryover.

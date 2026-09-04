@@ -85,3 +85,8 @@ https://api.vpbank.com/gateway -> HTTP 500
 https://api.vpbank.com/config -> HTTP 500
 https://api.vpbank.com/management -> HTTP 500
 https://api.vpbank.com/_internal -> HTTP 500
+
+## 2026-09-04 21:38:40 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://openbanking.vpbank.com -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri= -> HTTP 400

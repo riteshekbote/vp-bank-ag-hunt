@@ -361,3 +361,53 @@ testability: PASSIVE
 [LEARN] ACCEPTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: Production CSP trusts these domains; publicly reachable Apache servers behind maintenance redirect — in-scope attack surface
 [LEARN] NEW INFO @ www.vpbank.com/portal/api/: Full LitElement SPA served (403 with body) — separate app from Drupal; POST /portal/api/language/:language sets portal-language cookie; backend is WAF maintenance mode; no exploitable endpoints
 [RISK] vp-bank-ag: 45 — High-value banking target but current attack surface minimal: API gateway rejects all probes uniformly with identical 500 errors; OAuth surface exists but no valid client context discoverable passively; staging domains fully WAF-blocked (2.3.0_20260324); portal SPA is frontend-only with backend intercepted. Risk reduced from 65 due to failed exploitation of top hypotheses. Remaining value solely in client_id enumeration via RAG for OAuth redirect_uri testing.
+## 2026-09-04 21:38:24 UTC [target] (model nemotron3)
+[NEW] developer.vpbank.com (193.222.70.149): VP Bank PSD2 Developer Portal discovered via RAG — live Apache+Envoy, NOT WAF-blocked (unlike dev/stage). Serves full PSD2 API documentation (VuePress + Swagger UI), OpenAPI spec at `/psd2/berlin-group/v1/psd2_api.yaml`, functional sandbox API with basic auth. Endpoints verified: `POST /consents` (201), `GET /accounts` (200, returns IBAN LI1708805500000000002), `POST /payments/cross-border-credit-transfers` (201), `GET /payments/{id}/status` (200). X-Request-ID last digit controls sandbox state encoding. Certificate: CN=openbanking.vpbank.com.
+[CHANGED] api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials; all probes return identical HTTP 500 JSON.
+[CHANGED] www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400.
+[CHANGED] vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED.
+[CHANGED] www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (/health, /status) return WAF maintenance page — SPA is frontend shell only.
+[PRIO] developer.vpbank.com,8.35,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=8,cloud_surface=5,freshness=10
+[PRIO] www.vpbank.com,6.20,attack_surface=5,business_value=8,tech_exposure=5,gate_ease=6,cloud_surface=3,freshness=10
+[PRIO] api.vpbank.com,5.55,attack_surface=4,business_value=9,tech_exposure=3,gate_ease=5,cloud_surface=7,freshness=10
+[PRIO] www.vpbank.com/portal/api/,3.85,attack_surface=4,business_value=6,tech_exposure=4,gate_ease=5,cloud_surface=2,freshness=10
+[PRIO] vpbank-dev.com/vpbank-stage.com,2.95,attack_surface=2,business_value=5,tech_exposure=2,gate_ease=1,cloud_surface=3,freshness=10
+[HYP] PSD2 Sandbox BOLA/IDOR via consentId/paymentId manipulation
+class: IDOR
+asset: developer.vpbank.com
+confidence: 75
+reasoning: PSD2 sandbox API functional with basic auth; consent creation returns consentId (UUID); account access requires consentId header; payment initiation returns paymentId; no authorization checks visible in sandbox for cross-consent/payment data access; production uses mTLS but sandbox uses basic auth — potential authz gap
+evidence_needed: Access accounts/balances/transactions of consentId created by different basic auth credentials; access payment status of paymentId created by different credentials; enumerate consentIds/paymentIds via predictable UUID or sequential patterns
+verify_steps: 1) Create consent with userA:test → get consentId_A; 2) Create consent with userB:test → get consentId_B; 3) GET /accounts with userA:test + consentId_B header; 4) GET /consents/{consentId_B} with userA:test; 5) POST payment with userA:test → paymentId_A; 6) GET /payments/{paymentId_A}/status with userB:test; 7) Test consentId/paymentId enumeration via UUID v4 collision or timing
+impact: Cross-TPP account data access (IBAN, balances, transactions), payment status leakage, consent manipulation; severity HIGH (PSD2 financial data exposure)
+testability: AUTH_HELPED
+[HYP] PSD2 Sandbox X-Request-ID state manipulation for payment status tampering
+class: BUSLOGIC
+asset: developer.vpbank.com
+confidence: 70
+reasoning: Documentation explicitly states last digit of X-Request-ID controls sandbox payment/consent state (1=RCVD, 5=ACSC for payments; 0=received, 1=valid for consents); state is deterministic and client-controlled; no server-side validation of state transitions; could allow forcing payment to ACSC without funds
+evidence_needed: Create payment with X-Request-ID ending in 1 (RCVD) → verify status=RCVD; recreate same payment with X-Request-ID ending in 5 (ACSC) → verify status=ACSC; test if production API (openbanking.vpbank.com) has similar encoding; test if state can be changed post-creation via status endpoint
+verify_steps: 1) POST /payments with X-Request-ID:...1 → check status=RCVD; 2) POST /payments with X-Request-ID:...5 → check status=ACSC; 3) POST /consents with X-Request-ID:...0 → check consentStatus=received; 4) POST /consents with X-Request-ID:...1 → check consentStatus=valid; 5) Attempt to mutate status via PATCH/PUT if exists; 6) Test on production endpoint (openbanking.vpbank.com) with mTLS cert if available
+impact: Payment status forgery, consent state manipulation, sandbox-to-production logic flaw; severity MEDIUM-HIGH
+testability: PASSIVE
+[HYP] OAuth client_id enumeration via external artifact mining for www.vpbank.com redirect_uri bypass
+class: OAUTH
+asset: www.vpbank.com
+confidence: 45
+reasoning: /oauth/authorize endpoint exists and returns HTTP 400 (ambiguous) for invalid client_id; production CSP trusts *.vpbank-dev.com/*.vpbank-stage.com implying valid OAuth clients exist; no valid client_id found in passive JS bundle analysis (only Usercentrics clientWid); redirect_uri validation logic untested with valid client context
+evidence_needed: Valid client_id accepting arbitrary redirect_uri (www.vpbank.com.evil.com, www.vpbank.com@evil.com, www.vpbank.com/../evil.com); or redirect_uri validation regex flaw
+verify_steps: RAG: Search GitHub code search for "vpbank" "VP Bank AG" "vpbank.com" OAuth client_id; search npm packages for @vpbank/*; search iOS App Store / Google Play for "VP Bank" apps and extract bundle configs; then GET https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test
+impact: Authorization code theft -> account takeover; severity CRITICAL
+testability: AUTH_HELPED
+[PARKED] OAuth client_id enumeration via external artifact mining for www.vpbank.com redirect_uri bypass: confidence 45 but AUTH_HELPED testability — requires valid client_id not discoverable passively; all JS bundles scanned (only Usercentrics clientWid found); RAG is only remaining path; confidence < 50 threshold for active pursuit.
+[FINAL] 1. PSD2 Sandbox BOLA/IDOR via consentId/paymentId manipulation (confidence 75, HIGH impact, AUTH_HELPED)
+[FINAL] 2. PSD2 Sandbox X-Request-ID state manipulation for payment status tampering (confidence 70, MEDIUM-HIGH impact, PASSIVE)
+[NEXT] PROBE: Test BOLA/IDOR on developer.vpbank.com PSD2 sandbox — create two basic auth contexts (userA:test, userB:test), generate consentId_A and consentId_B, then cross-access: GET /accounts with userA:test + consentId_B header; GET /consents/{consentId_B} with userA:test; POST payment with userA:test → paymentId_A, then GET /payments/{paymentId_A}/status with userB:test
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accounts, payments), basic auth only — NEW high-value attack surface not WAF-blocked like dev/stage.
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible past maintenance redirect. CONFIRMED REJECTED.
+[LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No backend routing influence. CONFIRMED REJECTED.
+[LEARN] REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→error page. Cannot advance without valid client_id.
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend content accessible.
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity.
+[LEARN] NEW INFO @ developer.vpbank.com: PSD2 sandbox uses basic auth (test:test works), X-Request-ID last digit controls state encoding (1=RCVD, 5=ACSC for payments), certificate CN=openbanking.vpbank.com.
+[RISK] vp-bank-ag: 55 — Risk increased from 45 due to discovery of developer.vpbank.com PSD2 Developer Portal with functional sandbox API (basic auth, full OpenAPI spec, working consents/accounts/payments endpoints). High-value financial API surface now accessible for BOLA/IDOR and business logic testing. Remaining attack surface: api.vpbank.com exhausted, www.vpbank.com OAuth blocked without client_id, dev/stage WAF-blocked, portal SPA frontend-only. Primary value now in PSD2 sandbox authorization flaws and potential sandbox-to-production logic carryover.
