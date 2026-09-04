@@ -1,14 +1,46 @@
-## 2026-09-04 12:20:40 UTC [target] (model bigpickle)
-[NEW] www.vpbank.com/portal/api/ serves full LitElement SPA (HTTP 403 with body) — separate app from Drupal; includes `POST /portal/api/language/:language`, CSRF token (`CSRFT759.js`), version renderer, custom web components
-[NEW] www.vpbank.com/portal/api/health and /portal/api/status return WAF maintenance page — backend intercepted, SPA is frontend shell only
-[PRIO] www.vpbank.com,5.2,attack_surface=5 business_value=8 tech_exposure=5 gate_ease=4 cloud_surface=3 freshness=5
-[PRIO] api.vpbank.com,4.5,attack_surface=3 business_value=7 tech_exposure=3 gate_ease=3 cloud_surface=6 freshness=4
-[PARKED] SSRF via Host header on api.vpbank.com: verify_steps EXECUTED — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No differential. CONFIRMED REJECTED.
-[PARKED] OAuth redirect_uri bypass on www.vpbank.com: No client_id discoverable from JS bundles (only `clientWid` from Usercentrics widget); /oauth/authorize always 303→error page. Cannot advance without client_id. CARRY at 35.
-[PARKED] Portal SPA API on www.vpbank.com: /portal/api/ serves SPA shell but backend is WAF-intercepted maintenance mode; only endpoint is language switch (cookie setting). LOW value.
-[PARKED] Drupal portal API: confidence 35 < 40 threshold
+## 2026-09-04 16:25:52 UTC [target] (model bigpickle)
+[CHANGED] api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials
+[CHANGED] www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered, redirect_uri bypass blocked
+[PARKED] www.vpbank.com/portal/api/: SPA shell served but WAF maintenance intercepts all backend requests — no attack surface
+[NEW] External attack surface required: Must pivot to mobile app bundles, GitHub, npm packages to discover OAuth client_id for www.vpbank.com
+[PRIO] www.vpbank.com, 5.2, attack_surface=5 business_value=8 tech_exposure=6 gate_ease=4 cloud_surface=3 freshness=5
+[PRIO] api.vpbank.com, 4.5, attack_surface=3 business_value=7 tech_exposure=3 gate_ease=3 cloud_surface=6 freshness=4
+[PRIO] vpbank-dev.com, 3.8, attack_surface=4 business_value=6 tech_exposure=3 gate_ease=2 cloud_surface=3 freshness=3
+[HYP] OAuth client_id discovery via external artifact enumeration
+class: OAUTH
+asset: www.vpbank.com
+confidence: 45
+reasoning: /oauth/authorize endpoint exists; JS bundles on marketing site contain no client_id (only Usercentrics widget clientWid); mobile app stores (iOS/Android) may embed OAuth configuration; GitHub source code may contain client registration
+evidence_needed: Valid client_id string found in mobile app IPA/APK, GitHub repository, or npm package; or HTTP 200/302 from /oauth/authorize with discovered client_id
+verify_steps: RAG: Search iOS App Store / Google Play for "VP Bank" apps; extract and decompile mobile app bundles; search for OAuth client_id/client_secret patterns; also search GitHub code search for "vpbank.com/oauth" or "client_id.*vpbank"
+impact: OAuth flow exploitation → account takeover via authorization code theft; severity CRITICAL
+testability: PASSIVE
+[HYP] GraphQL introspection on www.vpbank.com portal API
+class: MISCONFIG
+asset: www.vpbank.com/portal/api/
+confidence: 30
+reasoning: Full LitElement SPA served at /portal/api/ (HTTP 403 with body); custom web components suggest GraphQL or REST backend; CSRFT759 cookie present; portal language endpoint exists; GraphQL introspection commonly enabled on fresh deployments
+evidence_needed: HTTP 200 with schema definition from POST /portal/api/graphql with introspection query; or HTTP 400/500 with different error structure than WAF maintenance page
+verify_steps: POST https://www.vpbank.com/portal/api/graphql with body {"query":"{__schema{types{name}}}"} and Content-Type: application/json; also try GET https://www.vpbank.com/portal/api/graphql?query=__schema
+impact: Schema disclosure → full API surface mapping → potential IDOR/BOLA/authorization bypass; severity HIGH
+testability: PASSIVE
+[HYP] Hidden admin/debug endpoints on api.vpbank.com gateway
+class: MISCONFIG
+asset: api.vpbank.com
+confidence: 35
+reasoning: Layer7-API-Gateway returns structured JSON with requestId; all tested paths return HTTP 500 JSON 404; gateway may have admin/debug paths not in standard lists (/debug, /admin, /gateway, /config, /internal, /management, /_internal, /actuator)
+evidence_needed: HTTP 200/303/401 with gateway configuration or debug data; or HTTP 401 with authentication challenge (not 500)
+verify_steps: GET https://api.vpbank.com/debug; GET https://api.vpbank.com/admin; GET https://api.vpbank.com/gateway; GET https://api.vpbank.com/config; GET https://api.vpbank.com/management; GET https://api.vpbank.com/_internal
+impact: Gateway configuration disclosure → API routing rules → internal service enumeration; severity HIGH
+testability: PASSIVE
+[PARKED] GraphQL introspection on portal API: confidence 30 < 40 threshold; WAF maintenance intercepts all backend requests — no evidence GraphQL endpoint exists behind WAF
+[PARKED] Hidden admin/debug endpoints on api.vpbank.com: confidence 35 < 40 threshold; all standard paths already tested return identical 500 JSON — unlikely non-standard paths differ
+[FINAL] 1) OAuth client_id discovery via external artifact enumeration (45) — only remaining high-value path
+[FINAL] 2) All other hypotheses exhausted or below threshold
+[NEXT] RAG: Search iOS App Store and Google Play Store for "VP Bank" or "VP Bank AG" mobile applications; extract and analyze OAuth configuration from app bundles to discover valid client_id for www.vpbank.com OAuth flow
 [LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON. No backend routing influence. CONFIRMED REJECTED.
 [LEARN] REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→error page. Cannot advance.
 [LEARN] NEW INFO @ www.vpbank.com/portal/api/: Full LitElement SPA served (403 with body) — separate app from Drupal; POST /portal/api/language/:language sets portal-language cookie; backend is WAF maintenance mode; no exploitable endpoints.
 [LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend content accessible.
-[RISK] vp-bank-ag: 45 reason: passive GET/HEAD probes only; SSRF Host header test uses internal IPs (read-only, no data mutation); OAuth test pending client_id discovery; no auth bypass, no customer data accessed, no state mutation on any endpoint.
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity
+[RISK] vp-bank-ag: 40 reason: passive GET/POST probes only; OAuth redirect_uri bypass blocked without client_id; SSRF Host header test uses internal IPs (read-only); no auth bypass, no customer data accessed, no state mutation on any endpoint; all high-value hypotheses exhausted or rejected; external artifact enumeration required to advance

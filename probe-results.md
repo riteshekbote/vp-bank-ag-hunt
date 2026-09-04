@@ -57,3 +57,17 @@ https://www.vpbank.com/en -> HTTP 400
 https://api.vpbank.com/ -> HTTP 500
 https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
 https://api.vpbank.com/nonexistent -> HTTP 500
+
+## 2026-09-04 16:37:47 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/nonexistent -> HTTP 500
+https://www.vpbank.com/portal/api/ -> HTTP 403
+https://www.vpbank.com/portal/api/CSRFT759.js -> HTTP 403
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500

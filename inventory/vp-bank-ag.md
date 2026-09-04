@@ -65,3 +65,13 @@ www.vpbank.com
 - NEW Risk score reduced from 65 to 45 due to failed exploitation of top hypotheses (OAuth redirect_uri, Layer7 policy bypass, SSRF routing)
 - NEW www.vpbank.com/portal/api/ serves full LitElement SPA (HTTP 403 with body) — separate app from Drupal; includes `POST /portal/api/language/:language`, CSRF token (`CSRFT759.js`), version renderer, cus
 - NEW www.vpbank.com/portal/api/health and /portal/api/status return WAF maintenance page — backend intercepted, SPA is frontend shell only
+
+## 2026-09-04 16:37:23 UTC
+- CHANGED api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered, redirect_uri bypass blocked
+- NEW External attack surface required: Must pivot to mobile app bundles, GitHub, npm packages to discover OAuth client_id for www.vpbank.com
+- CHANGED api.vpbank.com: All probes (XML, SOAP, Host/X-Forwarded-* to 169.254.169.254/localhost/10.0.0.1) return identical HTTP 500 JSON — SSRF and policy bypass CONFIRMED REJECTED by multiple models
+- CHANGED www.vpbank.com: OAuth endpoints return 303/400 for all client_id/redirect_uri combos; no valid client_id in JS bundles (only Usercentrics clientWid); redirect_uri bypass CARRIED at confidence 35 pendi
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED
+- NEW www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); POST /portal/api/language/:language sets portal-language cookie; CSRF token CSRFT759.js present; backend API endpoints (/health,
+- NEW Risk score stabilized at 45 (down from 65) across all models due to failed exploitation of top hypotheses
