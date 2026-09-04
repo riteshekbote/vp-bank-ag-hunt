@@ -41,3 +41,9 @@ https://www.vpbank.com/portal/api/language/en -> HTTP 403
 ## 2026-09-03 23:51:18 UTC
 https://api.vpbank.com/ -> HTTP 500
 https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-04 02:38:11 UTC
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500

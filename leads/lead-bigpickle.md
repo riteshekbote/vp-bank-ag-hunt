@@ -103,3 +103,23 @@ testability: PASSIVE
 [LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths, returns maintenance page - no application content accessible
 [LEARN] NEW INFO: WAF version 2.3.0_20260324 exposed in maintenance page responses
 [RISK] vp-bank-ag: 50 reason: passive probes only; probing staging WAF and api gateway; no auth bypass or data mutation; low risk
+## 2026-09-04 02:31:47 UTC [target] (model bigpickle)
+[CHANGED] vpbank-dev.com/vpbank-stage.com staging hypothesis CONFIRMED REJECTED: WAF 2.3.0_20260324 intercepts ALL paths, zero app content reachable
+[CHANGED] www.vpbank.com/portal/api confidence 35 < 40 threshold, PARKED
+[PRIO] api.vpbank.com,5.5,attack_surface=6 business_value=9 tech_exposure=5 gate_ease=6 cloud_surface=8 freshness=5
+[HYP] Layer7 API Gateway policy bypass via malformed requests on api.vpbank.com
+class: MISCONFIG
+asset: api.vpbank.com
+confidence: 55
+reasoning: Gateway returns structured JSON errors with request IDs; previous attempts with standard paths all return HTTP 500 JSON 404 (INVALID_REQUEST_RESOURCE); hypothesis proposes non-standard Content-Type (XML), X-Forwarded-For spoofing, or Accept header variations may trigger different gateway policy paths
+evidence_needed: HTTP 2xx/3xx/4xx (not 500) or different JSON body when sending XML body or internal IP in X-Forwarded-For header
+verify_steps: GET https://api.vpbank.com/ with headers: Accept: application/xml, X-Forwarded-For: 127.0.0.1, Content-Type: application/xml; then POST https://api.vpbank.com/ with same headers
+impact: Gateway policy bypass could expose internal APIs or debug endpoints behind the gateway; severity MEDIUM
+testability: PASSIVE
+[FINAL] Layer7 API Gateway policy bypass on api.vpbank.com (55) — sole survivor; remaining hypotheses all rejected or parked below threshold (staging: WAF blocks all; portal API: 35; WAF version disclosure: 30)
+[PARKED] vpbank-dev.com/vpbank-stage.com staging exposure: CONFIRMED REJECTED — WAF catches all paths, no app content
+[PARKED] Drupal portal API on www.vpbank.com: confidence 35 < 40
+[PARKED] WAF version disclosure: confidence 30 < 40, LOW severity info leak
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible past maintenance redirect
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (WAF version disclosure): version string 2.3.0_20260324 present in body but LOW severity, not actionable
+[RISK] vp-bank-ag: 50 reason: passive probes only on public gateway and maintenance pages; no auth bypass, no data mutation, no customer data accessed

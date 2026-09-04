@@ -49,3 +49,7 @@ www.vpbank.com
 
 ## 2026-09-03 23:51:14 UTC
 - NEW www.vpbank-dev.com and www.vpbank-stage.com ALL paths return identical maintenance page (WAF 2.3.0_20260324) - no application content accessible
+
+## 2026-09-04 02:38:02 UTC
+- CHANGED vpbank-dev.com/vpbank-stage.com staging hypothesis CONFIRMED REJECTED: WAF 2.3.0_20260324 intercepts ALL paths, zero app content reachable
+- CHANGED www.vpbank.com/portal/api confidence 35 < 40 threshold, PARKED
