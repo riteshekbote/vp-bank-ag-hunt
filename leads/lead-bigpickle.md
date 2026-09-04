@@ -473,3 +473,44 @@ testability: PASSIVE
 [LEARN] REJECTED MISCONFIG @ developer.vpbank.com (Drupal admin on PSD2 vhost): /user/login, /admin, /sites/default/files/* all HTTP 404 — dedicated docroot.
 [LEARN] REJECTED MISCONFIG @ openbanking.vpbank.com (anonymous API access): mTLS enforced, anonymous rejected — expected production posture, not a flaw.
 [RISK] vp-bank-ag: 45 — verdict unchanged. New developer.vpbank.com surface (7.1 priority) is a documented-open sandbox on the main front-end, so standalone damage is limited to synthetic data; production PSD2 (openbanking.vpbank.com) is correctly mTLS-locked; www.vpbank.com OAuth remains the only CRITICAL-path lead, still gated on a valid client_id. Confidence in exploitability stays driven by the two surviving PSD2/OAuth chains.
+## 2026-09-04 23:22:53 UTC [target] (model bigpickle)
+[PRIO] developer.vpbank.com,8.40,probable carryover of proven consent/account/ledger BOLA to mTLS-locked production; attack_surface=9 business=9 tech=8 gate=10 cloud=2 fresh=10
+[PRIO] www.vpbank.com,6.25,production OAuth authorize still the only CRITICAL-chain lead; attack_surface=6 business=10 tech=9 gate=2 cloud=2 fresh=4
+[PRIO] openbanking.vpbank.com,5.50,production ASPSP whose authz model the sandbox BOLA questions; attack_surface=3 business=10 tech=8 gate=1 cloud=2 fresh=7
+[HYP] PSD2 sandbox BOLA: consent/account/ledger/payment resources readable cross-session via bearer consentId
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 80
+reasoning: my probes — consent POST anonymously (no basic auth) → 201; fresh anonymous session (no cookie/jar) reads /consents/{id}/status, /consents/{id}, /accounts, /accounts/{iban}/balances, /accounts/{iban}/transactions (Consent-ID header only), and /payments/{paymentId}/status (200 ACSC); spec requires only Consent-ID + X-Request-ID for account/ledger endpoints, defines no securityScheme, self-labels server "PSD2 production server"; docs: sandbox data model identical to production, differences only TPP client auth/user interaction/state changes.
+evidence_needed: sandbox: SATISFIED (final). Live: production openbanking.vpbank.com binds Consent-ID to originating TPP QWAC and rejects cross-TPP reads (requires two eIDAS certs).
+verify_steps: sandbox DONE; production (HUMAN_ONLY, mTLS): TPP-A creates consent; TPP-B sends GET /psd2/berlin-group/v1/consents/{id}/status and GET /accounts/{iban}/balances with TPP-B cert + TPP-A Consent-ID header ∈ openbanking.vpbank.com.
+impact: any party holding a consentId/paymentId reads consent scope + simulated ledger; if prod reuses sandbox authz logic → cross-TPP financial/PII disclosure; severity MEDIUM (sandbox/synthetic) → HIGH (prod carryover).
+testability: AUTH_HELPED (sandbox verified; prod HUMAN_ONLY)
+[HYP] OAuth redirect_uri/state bypass via scaRedirect-pattern client on www.vpbank.com
+class: OATH
+asset: www.vpbank.com/oauth/authorize
+confidence: 45
+reasoning: authorize endpoint returns 303/400 for all tested combos; no client_id in JS bundles (only Usercentrics clientWid) or RAG (GitHub/App Store/npm → only VP Bank Vietnam + generic PSD2 stacks); spec exposes scaRedirect (hrefType) but sandbox returns "not available in sandbox"; docs state scaRedirect carries the user-login URL in the REDIRECT-SCA production flow.
+evidence_needed: any valid client_id (PSD2 or Drupal-scoped) that yields a response differential on redirect_uri.
+verify_steps: RAG GitHub code-search "vpbank" + "authorize_url"/"client_id"; then GET https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x (read-only).
+impact: authorization-code/consent interception → ATO, aggregated-account theft on production bank OAuth; severity HIGH.
+testability: AUTH_HELPED
+[HYP] Production PSD2 reuses sandbox authorization model (Consent-ID unbound from originating TPP)
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: TLS-layer mTLS blocks all anonymous probing (verified prior); docs list only TPP auth/user-interaction/state-changes as sandbox-vs-prod deltas — Consent-ID ownership binding is not listed; sandbox proves the code path accepts the consentId header with zero identity binding.
+evidence_needed: cross-QWAC read test proving bind/absence on production host.
+verify_steps: HUMAN_ONLY — with two licensed TPP certs perform the same cross-identity Consent-ID read listed under the developer.vpbank.com hypothesis, on openbanking.vpbank.com.
+impact: cross-TPP production consent/account/ledger disclosure → PII/financial data; severity HIGH.
+testability: HUMAN_ONLY
+[PARKED] OAuth redirect_uri bypass @ www.vpbank.com: confidence 45 but no client_id exists across JS/RAG/App-Store/npm and the spec defines no OAuth client; no executable verify step without a client_id — cannot advance passively.
+[PARKED] Production BOLA carryover @ openbanking.vpbank.com: confidence 35 < 40; mTLS at TLS layer makes anonymous verification impossible; HUMAN_ONLY requires eIDAS QWAC certs.
+[PARKED] X-Request-ID state-encoding manipulation (BUSLOGIC): deterministic client-controlled state is documented sandbox design for testing, not a vulnerability; probe showed last digit 1 already yields ACSC — encoding not fixed, no security differential.
+[FINAL] 1. [80] PSD2 sandbox BOLA/IDOR — PROVEN end-to-end in sandbox; report artifact plus prod-carryover verification request.
+[NEXT] SCAN: passive CT enumeration via crt.sh (`%.vpbank.com`, `%.vpbank.li`) to catalog PSD2/openbanking/statistics subdomains, then anonymous reachability check of each live host at /psd2/berlin-group/v1/accounts and /psd2/swagger-ui (GET, ≤1 rps) hunting non-mTLS instances of the same consent-authz code line that could carry the proven sandbox BOLA.
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by a fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId.
+[LEARN] REJECTED BUSLOGIC @ developer.vpbank.com (X-Request-ID state encoding): documented deterministic client-driven state for the sandbox; observed ACSC from X-Request-ID ending in 1 (docs claim 1=RCVD) — no security-relevant differential, not reportable.
+[LEARN] REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) and generic PSD2 frameworks; downloaded spec (46KB) contains no OAuth/securitySchemes/client_id — only scaRedirect hrefs ("not available in sandbox"); no client context obtainable, redirect-flow test blocked.
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404 — no anonymous statistics surface exists.
+[RISK] vp-bank-ag: 55 — raised from 45. Confirmed missing authorization binding on the entire PSD2 consent→ledger→payment-status chain in the documented-open sandbox running on the main front-end (developer.vpbank.com); the spec self-labels the server "PSD2 production server", docs claim a data model identical to production with TPP authentication the only named difference, and production openbanking.vpbank.com is unverified because of TLS-layer mTLS — if it mirrors the sandbox, cross-TPP financial data disclosure is a real chain. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted).

