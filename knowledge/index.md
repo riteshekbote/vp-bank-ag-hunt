@@ -29,3 +29,4 @@
 - 2026-09-04 REJECTED OAUTH @ www.vpbank.com (redirect_uri bypass): JS bundles contain no OAuth client_id (only Usercentrics widget clientWid); /oauth/authorize always 303→error page. Cannot advance.
 - 2026-09-04 NEW INFO @ www.vpbank.com/portal/api/: Full LitElement SPA served (403 with body) — separate app from Drupal; POST /portal/api/language/:language sets portal-language cookie; backend is WAF maintenance mode; no exploitable endpoints.
 - 2026-09-04 REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend content accessible.
+- 2026-09-04 OAuth client_id hunt via App Store/Google/GitHub/npm surfaced only VP Bank Vietnam (different entity) + unrelated SDKs — no Liechtenstein client_id.

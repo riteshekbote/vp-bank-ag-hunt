@@ -75,3 +75,28 @@ www.vpbank.com
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED
 - NEW www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); POST /portal/api/language/:language sets portal-language cookie; CSRF token CSRFT759.js present; backend API endpoints (/health,
 - NEW Risk score stabilized at 45 (down from 65) across all models due to failed exploitation of top hypotheses
+
+## 2026-09-04 19:13:22 UTC
+- CHANGED api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered, redirect_uri bypass blocked
+- NEW External attack surface required: Must pivot to mobile app bundles, GitHub, npm packages to discover OAuth client_id for www.vpbank.com
+- CHANGED api.vpbank.com: All probes (XML, SOAP, Host/X-Forwarded-* to 169.254.169.254/localhost/10.0.0.1) return identical HTTP 500 JSON — SSRF and policy bypass CONFIRMED REJECTED by multiple models
+- CHANGED www.vpbank.com: OAuth endpoints return 303/400 for all client_id/redirect_uri combos; no valid client_id in JS bundles (only Usercentrics clientWid); redirect_uri bypass CARRIED at confidence 35 pendi
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED
+- NEW www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); POST /portal/api/language/:language sets portal-language cookie; CSRF token CSRFT759.js present; backend API endpoints (/health,
+- NEW Risk score stabilized at 45 (down from 65) across all models due to failed exploitation of top hypotheses
+- NEW vpbank-dev.com + vpbank-stage.com discovered via production CSP (www.vpbank.com) as trusted origins; both resolve (193.222.70.165/.166) and are live Apache servers
+- NEW www.vpbank.com responds 200 on /en; Drupal + Envoy proxy; robust CSP present; CSRFT759 + AL_SESS cookies
+- NEW www.vpbank-dev.com and www.vpbank-stage.com redirect 302 to /error_path/maintenance.html (real maintenance site, not parked)
+- CHANGED attack surface expanded beyond 3 inventory hosts; dev/stage domains are scoped (company-operated) and in production trust chain
+- CHANGED api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered, redirect_uri bypass blocked
+- NEW External attack surface required: Must pivot to mobile app bundles, GitHub, npm packages to discover OAuth client_id for www.vpbank.com
+- NEW developer.vpbank.com (193.222.70.149) DISCOVERED via RAG — VP Bank PSD2 Developer Portal, live Apache+Envoy, NOT WAF-blocked (unlike dev/stage). Serves /psd2/swagger-ui (200), /psd2/berlin-group/v1/ps
+- NEW Plaintext http://developer.../accounts → 200. Docs: production=mTLS client cert, sandbox=basic auth. /psd2/sandbox/* → 404 (sandbox not on this vhost).
+- NEW External attack surface required: Must pivot to mobile app bundles (iOS/Android), GitHub code search, npm packages to discover OAuth client_id for www.vpbank.com (from 2026-09-04 16:37)
+- NEW www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); POST /portal/api/language/:language sets portal-language cookie; CSRF token CSRFT759.js present; backend API endpoints (/health,
+- CHANGED api.vpbank.com: All attack vectors exhausted (SSRF, policy bypass, error handling) — no exploitable response differentials; all probes return identical HTTP 500 JSON (INVALID_REQUEST_RESOURCE)
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED
+- CHANGED Risk score stabilized at 45 (down from 65) across all models due to failed exploitation of top hypotheses
