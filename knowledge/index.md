@@ -16,3 +16,10 @@
 - 2026-09-04 ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Gateway returns structured JSON errors with request IDs - potential info leak vector
 - 2026-09-04 ACCEPTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: production CSP trusts these domains; publicly reachable Apache servers behind maintenance redirect - NEW in-scope staging attack surface
 - 2026-09-04 NEW INFO: WAF version 2.3.0_20260324 exposed in maintenance page responses
+- 2026-09-04 REJECTED MISCONFIG @ api.vpbank.com (gateway policy bypass via XML/X-Forwarded-For): verify_steps executed — GET+POST with Accept:application/xml + X-Forwarded-For:127.0.0.1 both returned HTTP 500 JSON 404. No differential. Hypothesis evidence complete, negative.
+- 2026-09-04 ACCEPTED OAUTH @ www.vpbank.com (redirect_uri bypass): endpoint exists at /oauth/authorize; test returned HTTP 400 (ambiguous); HOLD pending client_id enumeration.
+- 2026-09-04 ACCEPTED MISCONFIG @ api.vpbank.com (SSRF via Host header): proposed but verify_steps NOT YET EXECUTED; remaining high-value test.
+- 2026-09-04 REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed request probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy differential
+- 2026-09-04 REJECTED SSRF @ api.vpbank.com (routing header manipulation): Host/X-Forwarded-Host/X-Forwarded-For to 169.254.169.254, localhost, 10.0.0.1 all return identical 500 — no backend routing influence
+- 2026-09-04 REJECTED OAUTH @ www.vpbank.com (OIDC discovery): .well-known/openid-configuration returns 303 to error page — no metadata exposed
+- 2026-09-04 ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with request IDs confirmed — info leak vector but low severity

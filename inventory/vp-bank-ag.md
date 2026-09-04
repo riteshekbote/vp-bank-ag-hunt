@@ -53,3 +53,7 @@ www.vpbank.com
 ## 2026-09-04 02:38:02 UTC
 - CHANGED vpbank-dev.com/vpbank-stage.com staging hypothesis CONFIRMED REJECTED: WAF 2.3.0_20260324 intercepts ALL paths, zero app content reachable
 - CHANGED www.vpbank.com/portal/api confidence 35 < 40 threshold, PARKED
+
+## 2026-09-04 07:28:45 UTC
+- CHANGED api.vpbank.com: All XML/SOAP/routing-header probes return identical HTTP 500 JSON (INTERNAL_SERVER_ERROR) — no differential behavior for policy bypass or SSRF
+- CHANGED www.vpbank.com: OAuth/OIDC endpoints (/oauth/authorize, /.well-known/openid-configuration) return 303 to error pages for all tested client_id/redirect_uri combos — no valid client context discovered

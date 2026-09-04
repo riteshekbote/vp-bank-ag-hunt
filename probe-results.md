@@ -47,3 +47,8 @@ https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
 https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
 https://api.vpbank.com/ -> HTTP 500
 https://api.vpbank.com/v1 -> HTTP 500
+
+## 2026-09-04 07:28:50 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/en -> HTTP 400

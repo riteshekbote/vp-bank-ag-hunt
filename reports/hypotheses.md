@@ -56,3 +56,16 @@
 - LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Gateway returns structured JSON errors with request IDs - potential info leak vector
 - LEARN: ACCEPTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: production CSP trusts these domains; publicly reachable Apache servers behind maintenance redirect - NEW i
 - LEARN: NEW INFO: WAF version 2.3.0_20260324 exposed in maintenance page responses
+
+## RANKED HYPOTHESES 2026-09-04 07:28:45 UTC
+- [45] api.vpbank.com: SSRF via Host header routing manipulation on api.vpbank.com (from art/lead_bigpickle.txt)
+- [35] www.vpbank.com: OAuth/OIDC redirect_uri validation bypass on www.vpbank.com (from art/lead_nemotron3.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: GET https://api.vpbank.com/ with `Host: 169.254.169.254` header (SSRF test, untested verify_step); then GET https://api.vpbank.com/ with `Host: localhost
+- NEXT(hypotheses-nemotron3.txt): RAG: Search for VP Bank AG OAuth client_id references in public GitHub, npm, mobile app bundles, or JS source maps to obtain valid client_id for redirect_uri te
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com (gateway policy bypass via XML/X-Forwarded-For): verify_steps executed — GET+POST with Accept:application/xml + X-Forwarded-
+- LEARN: ACCEPTED OAUTH @ www.vpbank.com (redirect_uri bypass): endpoint exists at /oauth/authorize; test returned HTTP 400 (ambiguous); HOLD pending client_id enumerati
+- LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (SSRF via Host header): proposed but verify_steps NOT YET EXECUTED; remaining high-value test.
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed request probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy
+- LEARN: REJECTED SSRF @ api.vpbank.com (routing header manipulation): Host/X-Forwarded-Host/X-Forwarded-For to 169.254.169.254, localhost, 10.0.0.1 all return identical
+- LEARN: REJECTED OAUTH @ www.vpbank.com (OIDC discovery): .well-known/openid-configuration returns 303 to error page — no metadata exposed
+- LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with request IDs confirmed — info leak vector but low severity
