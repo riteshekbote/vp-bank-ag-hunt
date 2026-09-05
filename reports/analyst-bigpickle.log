@@ -8962,3 +8962,120 @@ testability: HUMAN_ONLY
 
 **STEP 7 — RISK**
 [RISK] vp-bank-ag: 57 — unchanged. Confirmed PSD2 sandbox BOLA (reportable, synthetic) remains the flagship; digital-onboarding depth-probe shows the data layer is JWT+signature-enforced (no anonymous data access, no JWT confusion), so the anonymous attack surface is limited to the SPA route map + tenant-config enumeration (low); residual risk concentrated in (a) proven BOLA with unverified prod carryover (mTLS-gated), (b) client-controlled force_tenant mechanism that could enable cross-tenant access for any authenticated low-priv user, (c) ADFS device-flow phishing. OAuth (client_id-gated), staging (WAF), api.vpbank.com (exhausted), openbanking (mTLS), mass-assignment (unverifiable without creds).
+===== ANALYST bigpickle 2026-09-05 16:14:01 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && echo "---" && ls -la art 2>/dev/null; ls -la leads 2>/dev/null; ls -la inventory 2>/dev/null
+total 224
+drwxr-xr-x 12 runner runner  4096 Sep  5 16:07 .
+drwxr-xr-x  3 runner runner  4096 Sep  5 16:06 ..
+drwxr-xr-x  7 runner runner  4096 Sep  5 16:07 .git
+drwxr-xr-x  3 runner runner  4096 Sep  5 16:06 .github
+-rw-r--r--  1 runner runner  1752 Sep  5 16:06 README.md
+-rw-r--r--  1 runner runner    32 Sep  5 16:07 analyst-out.txt
+-rw-r--r--  1 runner runner 67378 Sep  5 16:07 analyst-prompt.txt
+-rw-r--r--  1 runner runner 63563 Sep  5 16:07 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 leads
+-rw-r--r--  1 runner runner  6222 Sep  5 16:06 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 reports
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  5 16:06 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 scripts
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 triage
+---
+total 300
+drwxr-xr-x  2 runner runner   4096 Sep  5 16:06 .
+drwxr-xr-x 12 runner runner   4096 Sep  5 16:07 ..
+-rw-r--r--  1 runner runner 169504 Sep  5 16:06 lead-bigpickle.md
+-rw-r--r--  1 runner runner    765 Sep  5 16:06 lead-laguna.md
+-rw-r--r--  1 runner runner    750 Sep  5 16:06 lead-ling3.md
+-rw-r--r--  1 runner runner    780 Sep  5 16:06 lead-longcat.md
+-rw-r--r--  1 runner runner     18 Sep  5 16:06 lead-mimo.md
+-rw-r--r--  1 runner runner 105618 Sep  5 16:06 lead-nemotron3.md
+-rw-r--r--  1 runner runner   1635 Sep  5 16:06 reposcan-vp-bank-ag.md
+total 36
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 16:07 ..
+-rw-r--r--  1 runner runner 25819 Sep  5 16:06 vp-bank-ag.md
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{remote_ip} %{time_total}s\n" --max-time 15 -I https://digital-onboarding.vpbank.com/ 2>&1; echo "exit=$?"
+301 89.163.182.69 0.456786s
+exit=0
+[0m
+[0m→ [0mRead probe-results.md
+[0m
+[0m$ [0mcat state_bigpickle.json state_laguna.json state_nemotron3.json analyst-out.txt 2>/dev/null; echo ---; git log --oneline -5
+{"phase": "POC", "target": "api"}{"phase": "POC", "target": "api"}{"phase": "POC", "target": "api"}[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && echo "---" && ls -la art 2>/dev/null; ls -la leads 2>/dev/null; ls -la inventory 2>/dev/null
+total 224
+drwxr-xr-x 12 runner runner  4096 Sep  5 16:07 .
+drwxr-xr-x  3 runner runner  4096 Sep  5 16:06 ..
+drwxr-xr-x  7 runner runner  4096 Sep  5 16:07 .git
+drwxr-xr-x  3 runner runner  4096 Sep  5 16:06 .github
+-rw-r--r--  1 runner runner  1752 Sep  5 16:06 README.md
+-rw-r--r--  1 runner runner    32 Sep  5 16:07 analyst-out.txt
+-rw-r--r--  1 runner runner 67378 Sep  5 16:07 analyst-prompt.txt
+-rw-r--r--  1 runner runner 63563 Sep  5 16:07 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 leads
+-rw-r--r--  1 runner runner  6222 Sep  5 16:06 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 reports
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  5 16:06 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 scripts
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  5 16:06 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 triage
+---
+total 300
+drwxr-xr-x  2 runner runner   4096 Sep  5 16:06 .
+drwxr-xr-x 12 runner runner   4096 Sep  5 16:07 ..
+-rw-r--r--  1 runner runner 169504 Sep  5 16:06 lead-bigpickle.md
+-rw-r--r--  1 runner runner    765 Sep  5 16:06 lead-laguna.md
+-rw-r--r--  1 runner runner    750 Sep  5 16:06 lead-ling3.md
+-rw-r--r--  1 runner runner    780 Sep  5 16:06 lead-longcat.md
+-rw-r--r--  1 runner runner     18 Sep  5 16:06 lead-mimo.md
+-rw-r--r--  1 runner runner 105618 Sep  5 16:06 lead-nemotron3.md
+-rw-r--r--  1 runner runner   1635 Sep  5 16:06 reposcan-vp-bank-ag.md
+total 36
+drwxr-xr-x  2 runner runner  4096 Sep  5 16:06 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 16:07 ..
+-rw-r--r--  1 runner runner 25819 Sep  5 16:06 vp-bank-ag.md
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{remote_ip} %{time_total}s\n" --max-time 15 -I https://digital-onboarding.vpbank.com/ 2>&1; echo "exit=$?"
+301 89.163.182.69 0.456786s
+exit=0
+[0m
+[0m→ [0mRead probe-results.md
+---
+826c345 reposcan 2026-09-05-15-23
+[0m
+[0m$ [0mcurl -s --max-time 20 -o /tmp/brand-prod.txt -w "brand prod: %{http_code} %{size_download}B\n" 'https://digital-onboarding.vpbank.com/api/v1/brand'; wc -c /tmp/brand-prod.txt
+brand prod: 200 6369B
+6369 /tmp/brand-prod.txt
+[0m
+[0m$ [0mcurl -s --max-time 20 -o /tmp/cc.html -w "control-center: %{http_code} %{size_download}B\n" 'https://digital-onboarding.vpbank.com/control-center/'; curl -s --max-time 20 -o /dev/null -w "sts metadata: %{http_code}\n" 'https://sts.vpbank.com/adfs/.well-known/openid-configuration'
+control-center: 200 3167B
+sts metadata: 200
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mRead /tmp/cc.html failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

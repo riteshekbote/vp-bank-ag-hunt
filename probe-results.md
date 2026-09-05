@@ -132,3 +132,8 @@ https://digital-onboarding.vpbank.com/api/v1/brand -> 200 len=0
 https://digital-onboarding.vpbank.com/api/v1/users -> HTTP 404
 https://digital-onboarding.vpbank.com/control-center/ -> 200 len=3167
 https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+
+## 2026-09-05 16:14:06 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405

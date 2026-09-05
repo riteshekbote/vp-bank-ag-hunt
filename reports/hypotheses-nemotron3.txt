@@ -1,13 +1,13 @@
-## 2026-09-05 13:18:22 UTC [target] (model nemotron3)
-[NEW] digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA (HTTP 200) with admin modules, /api/v1/brand 200 anonymous, /users/sign_in accepts client-controlled admin/tenant/user_id params
+## 2026-09-05 16:13:51 UTC [target] (model nemotron3)
+[NEW] digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA (HTTP 200) with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt), /api/v1/brand 200 anonymous
 [NEW] sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs), device_code/password/implicit grants exposed, scopes vpn/logon/cert — corporate IdP for VPN/cert auth
-[CHANGED] developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end in official test sandbox (synthetic data) — consent/account/payment cross-session read with zero identity binding on consentId/paymentId
-[CHANGED] openbanking.vpbank.com: Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous surface blocked as designed
+[NEW] developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end in official test sandbox (synthetic data) — consent/account/payment cross-session read with zero identity binding on consentId/paymentId
+[NEW] openbanking.vpbank.com: Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous surface blocked as designed
+[NEW] api-prep.vpbank.com: Layer7 clone of api.vpbank.com (CNAME api-prep-vpbank-com.hdb-cs04.ellb.ch) — SCS-Request-ID, INVALID_REQUEST_RESOURCE JSON 404 for all paths, no new surface
+[NEW] designsystem.vpbank.com: CNAME→vpb-design-system.netlify.app serves HTTP 200 — active Netlify app, no subdomain takeover
 [CHANGED] api.vpbank.com: All vectors exhausted (SSRF, policy bypass, error handling) — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
 [CHANGED] www.vpbank.com: OAuth endpoints fully tested — no valid client_id in JS bundles (only Usercentrics clientWid), /oauth/authorize always 303→error page, redirect_uri bypass blocked without client_id
 [CHANGED] vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable, CONFIRMED REJECTED
-[CHANGED] api-prep.vpbank.com: Layer7 clone of api.vpbank.com (CNAME api-prep-vpbank-com.hdb-cs04.ellb.ch) — SCS-Request-ID, INVALID_REQUEST_RESOURCE JSON 404 for all paths, no new surface
-[CHANGED] designsystem.vpbank.com: CNAME→vpb-design-system.netlify.app serves HTTP 200 — active Netlify app, no subdomain takeover
 [PRIO] digital-onboarding.vpbank.com,9.10,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=4,freshness=10
 [PRIO] sts.vpbank.com,7.15,attack_surface=6,business_value=8,tech_exposure=8,gate_ease=10,cloud_surface=1,freshness=9
 [PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.05,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=8,cloud_surface=2,freshness=9
