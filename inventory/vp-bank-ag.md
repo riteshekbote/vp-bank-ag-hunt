@@ -191,3 +191,21 @@ www.vpbank.com
 - CHANGED api.vpbank.com: 404 on /v1 — all vectors exhausted, uniform INVALID_REQUEST_RESOURCE JSON 500
 - CHANGED www.vpbank.com: /oauth/authorize 303→error page — OAuth dead without client_id
 - CHANGED vpbank-dev.com/vpbank-stage.com: 302→maintenance — WAF 2.3.0_20260324 intercepts ALL paths, confirmed rejected
+
+## 2026-09-05 13:21:01 UTC
+- CHANGED digital-onboarding.vpbank.com: /users/sign_in 200, /control-center/ 200, /api/v1/brand 200 confirmed live — multi-tenant back-office SaaS attack surface verified
+- CHANGED sts.vpbank.com: /adfs/.well-known/openid-configuration 200 confirmed live — ADFS device_code/password/implicit grants exposed
+- CHANGED developer.vpbank.com: PSD2 sandbox endpoints responding (405/400 as expected for auth'd routes) — BOLA surface confirmed accessible
+- CHANGED openbanking.vpbank.com: TLS timeout (mTLS "certificate required") — production PSD2 anonymous surface blocked as designed
+- CHANGED api.vpbank.com: 404 on /v1 — all vectors exhausted, uniform INVALID_REQUEST_RESOURCE JSON 500
+- CHANGED www.vpbank.com: /oauth/authorize 303→error page — OAuth dead without client_id
+- CHANGED vpbank-dev.com/vpbank-stage.com: 302→maintenance — WAF 2.3.0_20260324 intercepts ALL paths, confirmed rejected
+- NEW digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA (HTTP 200) with admin modules, /api/v1/
+- NEW sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs), device_code/password/implicit grants exposed, scopes vpn/logon/cert — corporate IdP for VPN/cert auth
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end in official test sandbox (synthetic data) — consent/account/payment cross-session read with zero identity binding on consentId/paymentId
+- CHANGED openbanking.vpbank.com: Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous surface blocked as designed
+- CHANGED api.vpbank.com: All vectors exhausted (SSRF, policy bypass, error handling) — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id in JS bundles (only Usercentrics clientWid), /oauth/authorize always 303→error page, redirect_uri bypass blocked without client_id
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable, CONFIRMED REJECTED
+- CHANGED api-prep.vpbank.com: Layer7 clone of api.vpbank.com (CNAME api-prep-vpbank-com.hdb-cs04.ellb.ch) — SCS-Request-ID, INVALID_REQUEST_RESOURCE JSON 404 for all paths, no new surface
+- CHANGED designsystem.vpbank.com: CNAME→vpb-design-system.netlify.app serves HTTP 200 — active Netlify app, no subdomain takeover

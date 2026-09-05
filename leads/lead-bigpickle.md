@@ -1111,3 +1111,134 @@ testability: PASSIVE (JS bundle analysis first, then live probe)
 [LEARN] REJECTED OAUTH @ www.vpbank.com: No client_id obtainable — redirect_uri bypass blocked
 [LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths — confirmed rejected
 [RISK] vp-bank-ag: 57 — raised from 55. digital-onboarding.vpbank.com adds anonymous back-office SPA with full admin module visibility (onboarding cases, wire transfers, identity documents) on off-net Rails+Devise infrastructure. Combined with confirmed PSD2 sandbox BOLA (synthetic data, reportable) + potential sandbox-to-production carryover, attack surface now spans three independent financial application stacks. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted), openbanking (mTLS).
+## 2026-09-05 13:20:50 UTC [target] (model bigpickle)
+[PRIO] developer.vpbank.com,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] digital-onboarding.vpbank.com,7.85,attack_surface=8,business_value=8,tech_exposure=7,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] www.vpbank.com,6.25,attack_surface=6,business_value=10,tech_exposure=9,gate_ease=2,cloud_surface=2,freshness=4
+[PRIO] openbanking.vpbank.com,5.50,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=7
+[PRIO] api.vpbank.com,4.50,attack_surface=3,business_value=7,tech_exposure=3,gate_ease=3,cloud_surface=6,freshness=4
+[HYP] digital-onboarding.vpbank.com IDOR via /api/v1/ tenant/admin endpoints
+class: IDOR
+asset: digital-onboarding.vpbank.com/api/v1/
+confidence: 55
+reasoning: /control-center/ SPA serves full back-office with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt) anonymously. /api/v1/brand returns 200 anonymous. /api/v1/tenants returns 403 "Not authorized" — auth exists but is per-endpoint. Rails+Devise stack on off-net hosting (89.163.182.69). sign_in carries client-controlled admin/tenant/user_id parameters. If endpoints like /api/v1/onboarding_cases, /api/v1/bankingtransactions accept tenant_id in request body/query, cross-tenant data access is likely.
+evidence_needed: Enumeration of /api/v1/ routes; any authenticated endpoint that accepts tenant_id/user_id as parameter without server-side validation
+verify_steps: GET https://digital-onboarding.vpbank.com/api/v1/brand (200, baseline). GET https://digital-onboarding.vpbank.com/api/v1/users, /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api/v1/rolemgmt — any 200 = open endpoint. If 403, test sign_in POST with forged tenant_id to create session, then access same endpoints.
+impact: Cross-tenant PII/financial data disclosure (onboarding cases, wire transfers, identity documents); severity HIGH
+testability: AUTH_HELPED (sign_in endpoint accepts client-controlled params; session creation possible without credentials)
+[HYP] PSD2 sandbox-to-production authorization logic carryover
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: Production openbanking.vpbank.com blocks anonymous access via mTLS. Docs list only TPP auth/user-interaction/state-changes as sandbox-vs-prod deltas — Consent-ID ownership binding not listed. Sandbox proves code path accepts consentId header with zero identity binding. If production shares authorization module, cross-TPP reads possible.
+evidence_needed: Cross-QWAC read test proving bind/absence on production host
+verify_steps: HUMAN_ONLY — two licensed TPP certs performing cross-identity Consent-ID read on openbanking.vpbank.com
+impact: Cross-TPP production consent/account/ledger disclosure; severity HIGH
+testability: HUMAN_ONLY
+[HYP] digital-onboarding.vpbank.com mass assignment via sign_in parameter flooding
+class: OTHER
+asset: digital-onboarding.vpbank.com/control-center/
+confidence: 45
+reasoning: SPA includes modules for admin, tenant management, user roles. sign_in flow carries client-controlled admin/tenant/user_id. Rails+Devise with custom devise-lockable may accept additional params not sanitized. If sign_in POST accepts role=admin or is_admin=true, privilege escalation possible.
+evidence_needed: POST /sign_in with role/is_admin parameter resulting in elevated session
+verify_steps: GET https://digital-onboarding.vpbank.com/control-center/ to capture SPA form endpoints. Identify sign_in POST endpoint from JS bundle. POST with role=admin appended.
+impact: Admin access to full back-office (onboarding, wires, identity docs); severity HIGH
+testability: PASSIVE (JS bundle analysis first, then live probe)
+[NEXT] SCAN: passive JS bundle extraction from https://digital-onboarding.vpbank.com/control-center/ — extract all /api/v1/* routes, sign_in endpoint, form action URLs, CSRF tokens, and any hardcoded tenant/user/admin parameters from the SPA JavaScript.
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise), anonymous /control-center/ SPA + /api/v1/brand 200 — off-net hosting (89.163.182.69), client-controlled admin/tenant/user_id in sign_in — NEW high-value attack surface
+[LEARN] NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP, parked
+[LEARN] REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+[LEARN] REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end — consent/account/payment cross-session read, zero binding
+[LEARN] REJECTED OAUTH @ www.vpbank.com: No client_id obtainable — redirect_uri bypass blocked
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths — confirmed rejected
+[RISK] vp-bank-ag: 57 — raised from 55. digital-onboarding.vpbank.com adds anonymous back-office SPA with full admin module visibility (onboarding cases, wire transfers, identity documents) on off-net Rails+Devise infrastructure. Combined with confirmed PSD2 sandbox BOLA (synthetic data, reportable) + potential sandbox-to-production carryover, attack surface now spans three independent financial application stacks. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted), openbanking (mTLS).
+[CHANGED] digital-onboarding.vpbank.com: /users/sign_in 200, /control-center/ 200, /api/v1/brand 200 confirmed live — multi-tenant back-office SaaS attack surface verified
+[CHANGED] sts.vpbank.com: /adfs/.well-known/openid-configuration 200 confirmed live — ADFS device_code/password/implicit grants exposed
+[CHANGED] developer.vpbank.com: PSD2 sandbox endpoints responding (405/400 as expected for auth'd routes) — BOLA surface confirmed accessible
+[CHANGED] openbanking.vpbank.com: TLS timeout (mTLS "certificate required") — production PSD2 anonymous surface blocked as designed
+[CHANGED] api.vpbank.com: 404 on /v1 — all vectors exhausted, uniform INVALID_REQUEST_RESOURCE JSON 500
+[CHANGED] www.vpbank.com: /oauth/authorize 303→error page — OAuth dead without client_id
+[CHANGED] vpbank-dev.com/vpbank-stage.com: 302→maintenance — WAF 2.3.0_20260324 intercepts ALL paths, confirmed rejected
+[PRIO] digital-onboarding.vpbank.com,8.75,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] sts.vpbank.com,6.30,attack_surface=5,business_value=7,tech_exposure=6,gate_ease=10,cloud_surface=1,freshness=8
+[PRIO] www.vpbank.com,6.25,attack_surface=6,business_value=10,tech_exposure=9,gate_ease=2,cloud_surface=2,freshness=4
+[PRIO] openbanking.vpbank.com,5.50,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=7
+[PRIO] www.vpbank.com/portal/api/,5.05,attack_surface=4,business_value=6,tech_exposure=4,gate_ease=5,cloud_surface=2,freshness=10
+[PRIO] api.vpbank.com,4.40,attack_surface=3,business_value=7,tech_exposure=3,gate_ease=3,cloud_surface=6,freshness=4
+[PRIO] vpbank-dev.com/vpbank-stage.com,3.50,attack_surface=2,business_value=5,tech_exposure=2,gate_ease=1,cloud_surface=3,freshness=10
+[HYP] Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 70
+reasoning: /control-center/ SPA serves anonymously (HTTP 200) with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand returns tenant config anonymously; /users/sign_in (Devise) accepts client-controlled admin/tenant/user_id parameters in sign-in payload — Rails mass-assignment protection (strong_parameters) may not filter these if permit_params misconfigured
+evidence_needed: POST /users/sign_in with admin=true or tenant_id=X or user_id=Y in params returns session with elevated privileges or cross-tenant access
+verify_steps: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe response code, Set-Cookie, redirect location, no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] PSD2 sandbox BOLA carries to production via shared consent-authorization code
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1
+confidence: 40
+reasoning: Sandbox on developer.vpbank.com proves consentId/paymentId readable cross-session with zero identity binding; docs state only TPP auth/user-interaction/state-changes differ sandbox→prod; OpenAPI spec self-labels server "PSD2 production server"; production mTLS at TLS layer blocks anonymous verification
+evidence_needed: Cross-QWAC read on openbanking.vpbank.com — TPP-A creates consent, TPP-B reads /consents/{id}/status and /accounts/{iban}/balances with TPP-B cert + TPP-A Consent-ID header
+verify_steps: HUMAN_ONLY — with two licensed eIDAS QWAC certificates perform cross-TPP Consent-ID read on openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}/status and /accounts/{iban}/balances
+impact: Cross-TPP production consent/account/ledger/PII disclosure → HIGH severity if sandbox authz model carries to production
+testability: HUMAN_ONLY
+[HYP] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration HTTP 200 exposes device_code grant + password grant + implicit grant; issuer https://sts.vpbank.com/adfs; scopes include vpn/logon/cert — corporate IdP for VPN/certificate auth; device_code flow vulnerable to phishing (user enters code on attacker-controlled device)
+evidence_needed: Successful device_code authorization request returns user_code/device_code/verification_uri; phishing simulation captures tokens
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/token/devicecode Content-Type: application/x-www-form-urlencoded body: client_id=<unknown>&scope=vpn (read-only: observe 400/401 vs 200; client_id enumeration needed via RAG/mobile apps)
+impact: Corporate VPN/certificate access tokens via device-flow phishing → internal network access; severity HIGH
+testability: AUTH_HELPED
+[PARKED] PSD2 sandbox BOLA carries to production via shared consent-authorization code: confidence 40 < threshold for active pursuit without HUMAN_ONLY eIDAS certs; mTLS at TLS layer makes passive verification impossible; cannot advance without two licensed TPP certificates
+[FINAL] 1. [70] Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office
+[FINAL] 2. [55] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+[NEXT] PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (observe HTTP status, Set-Cookie, redirect, response body — read-only, no account creation)
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id — new in-scope back-office attack surface
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId
+[LEARN] REJECTED BUSLOGIC @ developer.vpbank.com (X-Request-ID state encoding): documented deterministic client-driven state for sandbox; observed ACSC from X-Request-ID ending in 1 (docs claim 1=RCVD) — no security-relevant differential
+[LEARN] REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) + generic PSD2 frameworks; spec contains no OAuth/securitySchemes/client_id — only scaRedirect hrefs ("not available in sandbox")
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404
+[LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy differential
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 with SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend accessible
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector, low severity
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accounts, payments), basic auth only — high-value attack surface not WAF-blocked
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+[LEARN] NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP
+[RISK] vp-bank-ag: 60 — Two new high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise mass-assignment vector on sign-in (admin/tenant/user_id client-controlled) — multi-tenant SaaS with onboarding PII, identity docs, banking transactions; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector. Residual: PSD2 sandbox BOLA proven (80 confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+[HYP] force_tenant cross-tenant session/data IDOR on digital-onboarding back-office
+class: IDOR
+asset: digital-onboarding.vpbank.com/
+confidence: 50
+reasoning: SPA appends client-controlled `force_tenant` to every API request including session creation (bundle code: `o.force_tenant=It.get("FORCE_TENANT")` appended in `Dx` call layer); prod `/api/v1/brand?force_tenant=vpbank` returns HTTP 200 with second tenant config anonymously (tenant scoping honored server-side); `/api/v1/qr_codes/generate` returns "2fa not enabled for provided tenant" — tenant context is read from request. If a low-priv session's JWT tenant claim can be influenced by force_tenant at POST /api/v1/sessions (body `{"user":{...}}` + store `FORCE_TENANT`), cross-tenant onboarding-case/wire/ident reads follow.
+evidence_needed: login to dev/stage sandbox with any account, then repeat the same request with force_tenant=vpbank and observe data set switch or unauthorized access to /admin/api/v1/ident_only_cases, /admin/api/v1/incoming_wires
+verify_steps: GET https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank (200, baseline tenant switch). Login→GET /admin/api/v1/users?force_tenant=vpbank from tenant-A session; 200 with tenant-B records = cross-tenant IDOR (dev sandbox only, requires valid dev creds).
+impact: Cross-tenant PII/financial disclosure (onboarding cases, ident docs, wires, mailing lists) across tenants of a bank onboarding SaaS; severity HIGH
+testability: AUTH_HELPED
+[HYP] ADFS device_code grant token theft via phishing on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration exposes device_code+password+implicit grants (issuer sts.vpbank.com/adfs, scopes vpn/logon/cert); /adfs/oauth2/token/devicecode returns 405 on GET, endpoint exists; device-flow adversariably polls for victim approval (phishing to enter user code on attacker device) yielding vpn/logon tokens.
+evidence_needed: valid client_id + successful devicecode POST to observe user_code/verification_uri; RAG might surface ADFS client_id in VP Bank docs/portal
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/token/devicecode 'client_id=<found>&scope=vpn' → 200 with user_code/verification_uri proves flow usable (requires client_id discovery; token issuance requires HUMAN victim approval)
+impact: Corporate VPN/cert-scope tokens via device-flow phishing → internal network lateral movement; severity HIGH
+testability: AUTH_HELPED
+[HYP] PSD2 sandbox authorization model carries to production (cross-TPP Consent-ID read)
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: Sandbox proves zero session/TPP binding on consentId/paymentId chain; docs list only TPP auth/user-interaction as deltas; production authorizes via TLS mTLS only (blocked anonymously).
+evidence_needed: two QWAC certs cross-reading Consent-ID on production
+verify_steps: HUMAN_ONLY — TPP-A consent, TPP-B reads /consents/{id}/status on openbanking.vpbank.com/psd2/berlin-group/v1
+impact: Cross-TPP production consent/account/ledger disclosure; severity HIGH
+testability: HUMAN_ONLY
+[NEXT] RAG: hunt for a VP Bank/ADFS `client_id` for sts.vpbank.com device_code flow (search VP Bank eBanking/secure docs, GitHub, "vpbank" + "adfs", IT-support KBs); once found → PROBE POST https://sts.vpbank.com/adfs/oauth2/token/devicecode `client_id=<id>&scope=vpn` (200 with user_code/verification_uri = device-flow phishing confirmed).
+[RISK] vp-bank-ag: 57 — unchanged. Confirmed PSD2 sandbox BOLA (reportable, synthetic) remains the flagship; digital-onboarding depth-probe shows the data layer is JWT+signature-enforced (no anonymous data access, no JWT confusion), so the anonymous attack surface is limited to the SPA route map + tenant-config enumeration (low); residual risk concentrated in (a) proven BOLA with unverified prod carryover (mTLS-gated), (b) client-controlled force_tenant mechanism that could enable cross-tenant access for any authenticated low-priv user, (c) ADFS device-flow phishing. OAuth (client_id-gated), staging (WAF), api.vpbank.com (exhausted), openbanking (mTLS), mass-assignment (unverifiable without creds).

