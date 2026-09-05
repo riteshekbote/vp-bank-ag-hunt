@@ -94,3 +94,10 @@ https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirec
 ## 2026-09-04 23:23:08 UTC
 https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
 https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+
+## 2026-09-05 01:11:31 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
+https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login -> HTTP 404

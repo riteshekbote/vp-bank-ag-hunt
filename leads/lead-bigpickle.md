@@ -514,3 +514,53 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) and generic PSD2 frameworks; downloaded spec (46KB) contains no OAuth/securitySchemes/client_id — only scaRedirect hrefs ("not available in sandbox"); no client context obtainable, redirect-flow test blocked.
 [LEARN] REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404 — no anonymous statistics surface exists.
 [RISK] vp-bank-ag: 55 — raised from 45. Confirmed missing authorization binding on the entire PSD2 consent→ledger→payment-status chain in the documented-open sandbox running on the main front-end (developer.vpbank.com); the spec self-labels the server "PSD2 production server", docs claim a data model identical to production with TPP authentication the only named difference, and production openbanking.vpbank.com is unverified because of TLS-layer mTLS — if it mirrors the sandbox, cross-TPP financial data disclosure is a real chain. Residuals: OAuth (client_id-gated), staging (WAF-blocked), api.vpbank.com (exhausted).
+## 2026-09-05 01:09:02 UTC [target] (model bigpickle)
+[NEW] CT enumeration (crt.sh) expands inventory 6→285 hostnames; live web-accessible additions: digital-onboarding/vpbank.com family (prod+dev+stage), sts.vpbank.com (AD FS), api-prep.vpbank.com (Layer7 prep clone), designsystem.vpbank.com (Netlify CNAME), ebics/mobile/vop/www-beta/mobile-beta/report/concentsol.
+[NEW] digital-onboarding.vpbank.com (fn/countersigned brand: "Onboarding | VP Bank", © VP BANK AG Vaduz): production multi-tenant bank onboarding + back-office platform (SaaS "US", Rails/Devise/devise-lockable), hosted OFF-net on 89.163.182.69 (dev .28, stage .8) — prod tenant_id=4, dev=129, stage=7; login POST /users/sign_in renders hidden client-supplied fields user[tenant_id], user[admin]=false, user[user_id]=0.
+[NEW] /control-center/ on prod serves full "Business Control Center" back-office SPA anonymously (HTTP 200) with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt, clientsearch, documentmgmt, auditlog) and API endpoints /api/v1/tenants, /api/v1/brand, /api/v1/current_user_details, /api/v1/sessions/{idp_login,reset_password,secure_session}, /admin/api/v1/users, /rails/active_storage/direct_uploads.
+[NEW] /api/v1/brand returns HTTP 200 ANONYMOUSLY on prod (tenant config, i18n, page_title "Business Control Center", tenant_symbol vpbanklighttenant); /api/v1/tenants returns 403 "Not authorized".
+[NEW] sts.vpbank.com (193.222.70.198): Microsoft AD FS (Microsoft-HTTPAPI/2.0); /adfs/.well-known/openid-configuration HTTP 200 — issuer https://sts.vpbank.com/adfs, device_code+password+implicit grants, scopes winhello_cert/vpn_cert/logon_cert.
+[CHANGED] api-prep.vpbank.com (CNAME api-prep-vpbank-com.hdb-cs04.ellb.ch, 195.186.145.90): Layer7 clone of api.vpbank.com — SCSS-Request-ID, INVALID_REQUEST_RESOURCE JSON 404 for all paths; no new surface.
+[CHANGED] designsystem.vpbank.com CNAME→vpb-design-system.netlify.app serves HTTP 200 (live) — subdomain takeover NOT present.
+[CHANGED] vop.vpbank.com/.vop-stage on 193.222.70.154 (openbanking IP): HTTPS unreachable anonymously (TLS drop) — mTLS-gated like openbanking.
+[PRIO] digital-onboarding.vpbank.com,8.10,fresh multi-tenant onboarding+back-office with anonymous SPA/API + mass-assignment login fields + off-net hosting; attack=8 business=9 tech=8 gate=7 cloud=6 fresh=10
+[PRIO] developer.vpbank.com,8.40,carried — proven PSD2 sandbox BOLA, consent/paymentId unbound across anonymous sessions; attack=9 business=9 tech=8 gate=10 cloud=2 fresh=10
+[PRIO] openbanking.vpbank.com,5.50,carried — production PSD2 ASPSP, mTLS locked, authz-model carryover unverifiable anonymously; attack=3 business=10 tech=8 gate=1 cloud=2 fresh=7
+[HYP] Mass assignment on Devise sign-in grants admin/impersonation on onboarding back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 45
+reasoning: POST /users/sign_in form renders hidden client-controlled user[tenant_id] (4/129/7), user[admin]=false, user[user_id]=0 — fields only meaningful if sessions#create consumes them (impersonation/"login as" and admin flags); same app code on prod+dev+stage; back-office grants onboarding cases, ident documents, banking/wire operations, role/org admin (from /api/v1/brand + JS bundle); anonymous /api/v1/brand 200 confirms API reachable pre-auth; /api/v1/tenants correctly 403.
+evidence_needed: on dev/stage (synthetic tenants 129/7): authenticated test user signs in with user[admin]=true appended → session carries admin privileges (visible via /admin/api/v1/users or rolemgmt); or user[user_id]=<other> produces other-user session.
+verify_steps: dev-only, ≤1rps, NO customer data: (1) already GET /users/sign_in form (done, confirms fields); (2) POST https://digital-onboarding-dev.vpbank.com/users/sign_in with authenticity_token + user[email]=<test-user> + user[password]=<pw> + user[admin]=true then GET /admin/api/v1/users — compare HTTP code/differing body vs same login with user[admin]=false. Requires operator-issued dev test credential.
+impact: anonymous/reduced-priv attacker escalates to full bank back-office admin → mass PII (client name/email/mobile, IDNow ident docs, documents) + financial ops (banking transactions, incoming wire), case/org/role manipulation; severity HIGH.
+testability: AUTH_HELPED
+[HYP] PSD2 sandbox BOLA: consent/account/ledger/payment resources readable cross-session via bearer consentId
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1
+confidence: 80
+reasoning: (carried, PROVEN) consent created +201 anonymously, read cross-session by fresh anonymous session across /consents/{id}, /consents/{id}/status, /accounts, /balances, /transactions, /payments/{id}/status (ACSC); spec defines no securityScheme, self-labels server "PSD2 production server"; sandbox data model identical to production.
+evidence_needed: reproduced in prod openbanking.vpbank.com (requires two eIDAS QWACs — HUMAN_ONLY).
+verify_steps: sandbox DONE; prod (HUMAN_ONLY): TPP-B reads consentId/Consent-ID created by TPP-A with TPP-B's own mTLS cert at openbanking.vpbank.com.
+impact: cross-TPP consent/ledger/PII disclosure if prod mirrors sandbox; severity HIGH (prod carryover).
+testability: AUTH_HELPED (sandbox verified; prod HUMAN_ONLY)
+[HYP] Production PSD2 reuses sandbox authorization model (Consent-ID unbound from originating TPP)
+class: IDOR
+asset: openbanking.vpbank.com
+confidence: 35
+reasoning: TLS-layer mTLS verified; docs list TPP-auth/user-interaction/state-changes as only sandbox-vs-prod deltas; Consent-ID ownership binding not listed; sandbox proves the code path honors consentId header with zero identity binding.
+evidence_needed: cross-QWAC read on openbanking.vpbank.com.
+verify_steps: HUMAN_ONLY with two licensed TPP certs on openbanking.vpbank.com (same sequence as sandbox proof).
+impact: cross-TPP financial/PII disclosure; severity HIGH.
+testability: HUMAN_ONLY
+[PARKED] sts.vpbank.com ADFS OIDC: metadata+device_code visible, but corporate employee IdP, `password`/`device_code` flows — no demonstrated exploit, program scope focuses customer assets/public login panels excluded; confidence <40.
+[PARKED] designsystem.vpbank.com → Netlify takeover: netlify site serves 200, active, not claimable.
+[PARKED] api-prep.vpbank.com: exact Layer7 clone of exhausted api.vpbank.com (INVALID_REQUEST_RESOURCE), no differential.
+[FINAL] 1. [80] PSD2 sandbox BOLA @ developer.vpbank.com — PROVEN, report artifact + prod-carryover verification request (carried).
+[FINAL] 2. [45] Mass assignment @ digital-onboarding.vpbank.com — new, strong evidence (admin/tenant/user_id client fields, off-net, dev/stage testable), needs one dev credential.
+[NEXT] PROBE: on synthetic dev tenant, anonymous-authz gate differential — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/users and GET https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login (read-only, ≤1rps) comparing dev vs prod HTTP codes (prod /api/v1/tenants=403 baseline) to locate any pre-auth admin endpoint; then POST sign-in mass-assignment test only after obtaining an operator dev credential.
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id — new in-scope back-office attack surface.
+[LEARN] REJECTED MISCONFIG @ api-prep.vpbank.com: Same Layer7 dead-end as api.vpbank.com (SCS-Request-ID, INVALID_REQUEST_RESOURCE) — pre-prod gateway clone, no new surface.
+[LEARN] REJECTED MISCONFIG @ designsystem.vpbank.com: CNAME→vpb-design-system.netlify.app serves 200 — hosted design system is active, no subdomain takeover.
+[LEARN] NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password grants, vpn/logon cert scopes) — corporate IdP, parked.
+[RISK] vp-bank-ag: 60 — raised from 55. PSD2 sandbox BOLA remains PROVEN; digital-onboarding adds a distinct, fresh, high-value back-office surface (customer onboarding PII + financial ops) on off-net hosting with invented login that allows client control of admin/tenant/user_id fields — a concrete mass-assignment lead testable on synthetic dev/stage tenants. Residuals: production PSD2 mTLS-blocked (carryover unverifiable), OAuth client_id-gated, ADFS parked (corporate scope), gateway/staging surfaces exhausted.

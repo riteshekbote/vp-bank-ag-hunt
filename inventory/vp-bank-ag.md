@@ -114,3 +114,20 @@ www.vpbank.com
 - CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id discovered in JS bundles (only Usercentrics clientWid); redirect_uri bypass blocked at 303/400.
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable; staging hypothesis CONFIRMED REJECTED.
 - CHANGED www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (/health, /status) return WAF maintenance page — SPA is frontend shell only.
+
+## 2026-09-05 01:11:22 UTC
+- NEW CT enumeration (crt.sh) expands inventory 6→285 hostnames; live web-accessible additions: digital-onboarding/vpbank.com family (prod+dev+stage), sts.vpbank.com (AD FS), api-prep.vpbank.com (Layer7 pre
+- NEW digital-onboarding.vpbank.com (fn/countersigned brand: "Onboarding | VP Bank", © VP BANK AG Vaduz): production multi-tenant bank onboarding + back-office platform (SaaS "US", Rails/Devise/devise-locka
+- NEW /control-center/ on prod serves full "Business Control Center" back-office SPA anonymously (HTTP 200) with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt
+- NEW /api/v1/brand returns HTTP 200 ANONYMOUSLY on prod (tenant config, i18n, page_title "Business Control Center", tenant_symbol vpbanklighttenant); /api/v1/tenants returns 403 "Not authorized".
+- NEW sts.vpbank.com (193.222.70.198): Microsoft AD FS (Microsoft-HTTPAPI/2.0); /adfs/.well-known/openid-configuration HTTP 200 — issuer https://sts.vpbank.com/adfs, device_code+password+implicit grants, sc
+- CHANGED api-prep.vpbank.com (CNAME api-prep-vpbank-com.hdb-cs04.ellb.ch, 195.186.145.90): Layer7 clone of api.vpbank.com — SCSS-Request-ID, INVALID_REQUEST_RESOURCE JSON 404 for all paths; no new surface.
+- CHANGED designsystem.vpbank.com CNAME→vpb-design-system.netlify.app serves HTTP 200 (live) — subdomain takeover NOT present.
+- CHANGED vop.vpbank.com/.vop-stage on 193.222.70.154 (openbanking IP): HTTPS unreachable anonymously (TLS drop) — mTLS-gated like openbanking.
+- NEW developer.vpbank.com PSD2 sandbox BOLA/IDOR **VERIFIED end-to-end** in official test sandbox (synthetic data): consent `6b517824-e5af-4202-b9b0-7f483a68ee9f` created anonymously (POST 201) read by fre
+- NEW openbanking.vpbank.com (193.222.70.154) discovered via TLS cert CN=openbanking.vpbank.com — production PSD2 ASPSP, mTLS "certificate required" at TLS layer, anonymous surface blocked as designed.
+- CHANGED api.vpbank.com: All attack vectors **exhausted** (SSRF Host/X-Forwarded-*, policy bypass XML/SOAP, error handling) — all probes return identical HTTP 500 JSON (INVALID_REQUEST_RESOURCE). CONFIRMED REJ
+- CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id in JS bundles (only Usercentrics clientWid); `/oauth/authorize` always 303→error page; redirect_uri bypass **blocked without client_id
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts **ALL paths** — zero application content reachable; staging hypothesis **CONFIRMED REJECTED**.
+- CHANGED www.vpbank.com/portal/api/: LitElement SPA served (HTTP 403 with body); backend API endpoints (`/health`, `/status`) return WAF maintenance page — SPA is frontend shell only.
+- CHANGED Risk score: **55** (increased from 45) due to confirmed PSD2 sandbox BOLA on developer.vpbank.com — high-value financial API surface with proven authorization bypass.

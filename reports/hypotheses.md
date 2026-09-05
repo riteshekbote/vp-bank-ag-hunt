@@ -182,3 +182,24 @@
 - LEARN: REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status retur
 - LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity.
 - LEARN: NEW INFO @ developer.vpbank.com: PSD2 sandbox uses basic auth (test:test works), X-Request-ID last digit controls state encoding (1=RCVD, 5=ACSC for payments), 
+
+## RANKED HYPOTHESES 2026-09-05 01:11:22 UTC
+- [80] developer.vpbank.com/psd2/berlin-group/v1: PSD2 sandbox BOLA: consent/account/ledger/payment resources readable cross-session via bearer consentId (from art/lead_nemotron3.txt)
+- [45] digital-onboarding.vpbank.com/users/sign_in: Mass assignment on Devise sign-in grants admin/impersonation on onboarding back-office (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: on synthetic dev tenant, anonymous-authz gate differential — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/users and GET https://digital-onb
+- NEXT(hypotheses-nemotron3.txt): SCAN: passive CT enumeration via crt.sh (`%.vpbank.com`, `%.vpbank.li`) to catalog PSD2/openbanking/statistics subdomains, then anonymous reachability check of 
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Same Layer7 dead-end as api.vpbank.com (SCS-Request-ID, INVALID_REQUEST_RESOURCE) — pre-prod gateway clone, no new sur
+- LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: CNAME→vpb-design-system.netlify.app serves 200 — hosted design system is active, no subdomain takeover.
+- LEARN: NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password grants, vpn/logon cert scopes) — corporate IdP, parked.
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+- LEARN: REJECTED BUSLOGIC @ developer.vpbank.com (X-Request-ID state encoding): documented deterministic client-driven state for the sandbox; observed ACSC from X-Reque
+- LEARN: REJECTED OAUTH @ www.vpbank.com/oauth/authorize: RAG GitHub/public-web surfaces only VP Bank Vietnam (separate entity) and generic PSD2 frameworks; downloaded s
+- LEARN: REJECTED MISCONFIG @ www.vpbank.com/developer.vpbank.com (PSD2 statistics pages): /psd2-statistics, /psd2-statistics/, /psd2/statistics/ all HTTP 404 — no anony
+- LEARN: REJECTED SSRF @ api.vpbank.com (Host header routing): verify_steps executed — Host:169.254.169.254, Host:localhost, X-Forwarded-Host:169.254.169.254 all returne
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com (Layer7 policy bypass): All malformed request probes (XML, SOAP, routing headers) return identical HTTP 500 JSON — no policy
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com (staging exposure): WAF 2.3.0_20260324 intercepts ALL paths — no application content accessible past mainte
+- LEARN: REJECTED MISCONFIG @ www.vpbank.com (portal API access): /portal/api/ returns 403 but serves complete SPA shell; /portal/api/health and /portal/api/status retur
+- LEARN: ACCEPTED MISCONFIG @ api.vpbank.com (Layer7 gateway error handling): Structured JSON errors with requestIds confirmed — info leak vector but low severity.
+- LEARN: ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accoun
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): discovered via TLS cert CN=openbanking.vpbank.com; production PSD2 ASPSP, mTLS "certificate required" at TLS
