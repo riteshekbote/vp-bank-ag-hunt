@@ -101,3 +101,17 @@ https://sts.vpbank.com/adfs -> HTTP 503
 https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
 https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login -> HTTP 404
+
+## 2026-09-05 05:51:02 UTC
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+https://api.vpbank.com/_internal -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
