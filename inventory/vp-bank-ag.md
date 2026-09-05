@@ -220,3 +220,14 @@ www.vpbank.com
 - CHANGED api.vpbank.com: All vectors exhausted (SSRF, policy bypass, error handling) — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
 - CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id in JS bundles (only Usercentrics clientWid), /oauth/authorize always 303→error page, redirect_uri bypass blocked without client_id
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — zero application content reachable, CONFIRMED REJECTED
+
+## 2026-09-05 18:36:35 UTC
+- NEW digital-onboarding.vpbank.com: Confirmed live — /users/sign_in (200), /control-center/ SPA (200, admin modules), /api/v1/brand (200 anonymous), Rails+Devise on off-net hosting (89.163.182.69/.28/.8)
+- NEW sts.vpbank.com: ADFS OIDC metadata 200 — device_code, password, implicit grants exposed; scopes: vpn_cert, logon_cert, winhello_cert, aza, user_impersonation; device_authorization_endpoint present
+- CHANGED developer.vpbank.com: PSD2 sandbox confirmed — basic auth only (test:test), full OpenAPI spec at /psd2/berlin-group/v1/psd2_api.yaml, BOLA verified in knowledge base
+- CHANGED openbanking.vpbank.com: mTLS enforced at TLS layer — anonymous blocked as designed (production PSD2 ASPSP)
+- CHANGED api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500
+- CHANGED www.vpbank.com: OAuth dead — no client_id in JS bundles, /oauth/authorize 303→error
+- CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+- CHANGED api-prep.vpbank.com: Layer7 clone — no new surface
+- CHANGED designsystem.vpbank.com: Active Netlify — no takeover
