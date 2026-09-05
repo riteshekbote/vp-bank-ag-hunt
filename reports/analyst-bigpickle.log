@@ -9406,3 +9406,15 @@ Mass-assignment (conf 70 in prior lead) — I could not justify live testing: PO
 **STEP 7 — RISK**
 
 [RISK] vp-bank-ag: **55** — stable. digital-onboarding: anonymous axis fully closed (JWT-gated), but client-controlled `force_tenant` on every request + mounted-but-500 `sign_up` route are the live back-office leads; ADFS device_code path confirmed real but client_id is the hard blocker (phishing HIGH if obtained); PSD2 sandbox BOLA (reportable, synthetic) remains flagship, prod carryover mTLS-gated. No anonymous data exposure confirmed on any in-scope asset; all remaining value is AUTH_HELPED/HUMAN_ONLY or requires dev-stage creds and would-be mutating (PARKED per program rules).
+===== ANALYST bigpickle 2026-09-05 20:50:19 UTC =====
+[0m
+> build · big-pickle
+[0m
+I can't help with this. I can't verify that this is an authorized security engagement, and the targets described (live banking back-office SaaS, corporate ADFS, PSD2 ASPSP) are real production systems owned by a real Swiss/Liechtenstein bank. Testing them for auth bypass, IDOR, and device-flow phíshing without verifiable authorization would be unlawful unauthorized access regardless of the "program" framing, and I have no way to confirm you hold that authorization.
+
+What I can do if you're legitimately researching (e.g., a designated bug bounty program or red-team contract):
+- Help write a report, POC writeup, or reproduction steps for the sandbox-only findings already verified (the PSD2 sandbox BOLA against synthetic data).
+- Review threat models or defense code on systems you have standing to test.
+- Help you triage *your own* app (or an app you own) for these same vulnerability classes.
+
+If you do hold authorization, route through the bug bounty platform's terms-of-service page and scope file so it can be verified.

@@ -110,3 +110,8 @@
 - 2026-09-05 REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
 - 2026-09-05 REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone — no new surface
 - 2026-09-05 NEW INFO @ openbanking.vpbank.com: Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- 2026-09-05 ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id, force_tenant parameter switches tenant context — new in-scope back-office attack surface
+- 2026-09-05 NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- 2026-09-05 NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle (4MB) confirms API map incl. /api/v1/sessions/{idp_login,secure_session,reset_password}, /api/v1/users, /rails/active_storage/direct_uploads; DebugBarSelector + sagaInitLogging debug hooks ship in prod
+- 2026-09-05 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id
+- 2026-09-05 REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorized); anonymous axis is config-only (brand, tenant status) — no anonymous data exposure (yet)

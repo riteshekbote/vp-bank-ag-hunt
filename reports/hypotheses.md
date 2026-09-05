@@ -394,3 +394,19 @@
 - LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone — no new surface
 - LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
 - LEARN: NEW INFO @ openbanking.vpbank.com: Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+
+## RANKED HYPOTHESES 2026-09-05 20:50:19 UTC
+- [80] digital-onboarding.vpbank.com/users/sign_in: Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office (from art/lead_nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): PROBE: GET https://digital-onboarding.vpbank.com/api/v1/onboarding_cases?force_tenant=vpbank; GET https://digital-onboarding.vpbank.com/api/v1/bankingtransactio
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert au
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+- LEARN: REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass bl
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+- LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+- LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorize
