@@ -153,3 +153,16 @@ https://digital-onboarding.vpbank.com/api/v1/onboarding_cases?force_tenant=vpban
 https://digital-onboarding.vpbank.com/api/v1/bankingtransactions?force_tenant=vpbank -> HTTP 404
 https://digital-onboarding.vpbank.com/api/v1/incomingwire?force_tenant=vpbank -> HTTP 404
 https://digital-onboarding.vpbank.com/api/v1/ident_documents?force_tenant=vpbank -> HTTP 404
+
+## 2026-09-05 22:41:14 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/onboarding_cases?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/bankingtransactions?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/incomingwire?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/ident_documents?force_tenant=vpbank -> HTTP 404
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
