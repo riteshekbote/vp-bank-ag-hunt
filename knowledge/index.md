@@ -93,3 +93,10 @@
 - 2026-09-05 ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 Developer Portal exposure): Live PSD2 sandbox API with full OpenAPI spec, functional endpoints (consents, accounts, payments), basic auth only — high-value attack surface not WAF-blocked
 - 2026-09-05 NEW INFO @ openbanking.vpbank.com (193.222.70.154): production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
 - 2026-09-05 NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP
+- 2026-09-05 ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Production multi-tenant back-office SaaS (Rails+Devise), anonymous /control-center/ SPA + /api/v1/brand 200 — off-net hosting (89.163.182.69), client-controlled admin/tenant/user_id in sign_in — NEW high-value attack surface
+- 2026-09-05 NEW INFO @ sts.vpbank.com: ADFS OIDC metadata 200 (issuer sts.vpbank.com/adfs, device_code/password/implicit grants, vpn/logon/cert scopes) — corporate IdP, parked
+- 2026-09-05 REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+- 2026-09-05 REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+- 2026-09-05 ACCEPTED IDOR @ developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end — consent/account/payment cross-session read, zero binding
+- 2026-09-05 REJECTED OAUTH @ www.vpbank.com: No client_id obtainable — redirect_uri bypass blocked
+- 2026-09-05 REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF intercepts ALL paths — confirmed rejected

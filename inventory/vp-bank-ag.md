@@ -182,3 +182,12 @@ www.vpbank.com
 - CHANGED www.vpbank.com: OAuth endpoints fully tested — no valid client_id, redirect_uri bypass blocked without client_id
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
 - CHANGED Risk score: **55** (raised from 45) due to confirmed PSD2 sandbox BOLA + new digital-onboarding back-office attack surface
+
+## 2026-09-05 09:58:15 UTC
+- CHANGED digital-onboarding.vpbank.com: /users/sign_in 200, /control-center/ 200, /api/v1/brand 200 confirmed live — multi-tenant back-office SaaS attack surface verified
+- CHANGED sts.vpbank.com: /adfs/.well-known/openid-configuration 200 confirmed live — ADFS device_code/password/implicit grants exposed
+- CHANGED developer.vpbank.com: PSD2 sandbox endpoints responding (405/400 as expected for auth'd routes) — BOLA surface confirmed accessible
+- CHANGED openbanking.vpbank.com: TLS timeout (mTLS "certificate required") — production PSD2 anonymous surface blocked as designed
+- CHANGED api.vpbank.com: 404 on /v1 — all vectors exhausted, uniform INVALID_REQUEST_RESOURCE JSON 500
+- CHANGED www.vpbank.com: /oauth/authorize 303→error page — OAuth dead without client_id
+- CHANGED vpbank-dev.com/vpbank-stage.com: 302→maintenance — WAF 2.3.0_20260324 intercepts ALL paths, confirmed rejected

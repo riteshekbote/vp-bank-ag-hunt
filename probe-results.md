@@ -115,3 +115,11 @@ https://api.vpbank.com/config -> HTTP 500
 https://api.vpbank.com/management -> HTTP 500
 https://api.vpbank.com/_internal -> HTTP 500
 https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+
+## 2026-09-05 09:58:24 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/users -> HTTP 404
+https://digital-onboarding.vpbank.com/control-center/ -> 200 len=3167
