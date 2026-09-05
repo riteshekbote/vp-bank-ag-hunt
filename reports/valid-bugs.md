@@ -10,3 +10,6 @@
   - | Q7 | Would reasonable triager accept? | **Possibly** — if confirmed, valid finding |
   - **Verdict: HOLD** — PASSIVE testability but requires POST requests to create payments/consents. Documentation explicitly states last digit of X-Request-ID controls sandbox state (1=RCVD, 5=ACSC for pa
   - | **VALID** | 0 | None confirmed |
+
+- 1 lead(s) marked VALID at 2026-09-05 07:45:18 UTC
+  - **Verdict: VALID**
