@@ -1328,3 +1328,65 @@ testability: HUMAN_ONLY
 [LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
 [LEARN] NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle (4MB) confirms API map incl. /api/v1/sessions/{idp_login,secure_session,reset_password}, /api/v1/users, /rails/active_storage/direct_uploads; DebugBarSelector + sagaInitLogging debug hooks ship in prod
 [RISK] vp-bank-ag: 65 — Two high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector (blocked on client_id + service 503). Residual: PSD2 sandbox BOLA proven (high confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+## 2026-09-06 20:34:50 UTC [target] (model nemotron3)
+[CHANGED] digital-onboarding.vpbank.com: Custom Devise SessionsController CONFIRMED — hidden `user[tenant_id]/user[admin]/user[user_id]` consumed by overridden controller, not default Devise sanitizer (RAG-verified)
+[CHANGED] digital-onboarding.vpbank.com: `force_tenant` hypothesis REJECTED for anonymous data access — SPA endpoints (`/current_user_details`, `/qr_codes/generate`, `/sessions/*`, `/tenants`, `/users`) all JWT-gated or 404
+[CHANGED] sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
+[CHANGED] developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+[CHANGED] api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.10,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,9.20,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=8,cloud_surface=7,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.05,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=8,cloud_surface=2,freshness=9
+[PRIO] digital-onboarding.vpbank.com/api/v1/,6.80,attack_surface=8,business_value=10,tech_exposure=7,gate_ease=3,cloud_surface=4,freshness=9
+[PRIO] sts.vpbank.com/adfs,5.90,attack_surface=6,business_value=8,tech_exposure=5,gate_ease=10,cloud_surface=1,freshness=9
+[PRIO] openbanking.vpbank.com,5.65,attack_surface=3,business_value=10,tech_exposure=7,gate_ease=1,cloud_surface=2,freshness=8
+[HYP] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: /users/sign_in form renders hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — custom Users::SessionsController confirmed (RAG 2026-09-06) consumes client-controlled session-context params; /control-center/ SPA serves anonymously with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand?force_tenant=vpbank returns 200 proving tenant context switching works at API layer
+evidence_needed: POST /users/sign_in with user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] Session-context injection via custom Devise sign-in on dev sandbox (looser posture, synthetic data)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 75
+reasoning: Dev /users/sign_in renders hidden `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0`, authenticity_token, `_us_session` cookie pre-auth; /api/v1/tenants returns HTTP 200 `{}` (vs prod 403) proving differential exposure; same custom Users::SessionsController inferred; dev is operator-sanctioned proof venue with synthetic data
+evidence_needed: Dev POST /users/sign_in with injected user[admin]=true/user[tenant_id]=<other>/user[user_id]=<other> yields different Set-Cookie/Location/body vs baseline; GET /api/v1/current_user_details reflects wrong/admin context
+verify_steps: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults); POST baseline vs injected (user[admin]=true&user[tenant_id]=<other>&user[user_id]=1) — read-only, synthetic creds; compare response; then GET /api/v1/current_user_details with resulting cookie
+impact: Wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking/wire ops, role mgmt; severity HIGH
+testability: AUTH_HELPED
+[HYP] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration HTTP 200 exposes device_code + password + implicit grants; issuer https://sts.vpbank.com/adfs; scopes include vpn_cert/logon_cert/winhello_cert/aza/user_impersonation — corporate IdP for VPN/certificate auth; /adfs/oauth2/devicecode returns 405 (GET not allowed) confirming endpoint exists and requires POST; service currently degraded (503 on /adfs)
+evidence_needed: Successful device_code authorization request returns user_code/device_code/verification_uri with valid client_id
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/devicecode Content-Type: application/x-www-form-urlencoded body: client_id=<enumerated>&scope=vpn_cert (passive: observe 400/401 vs 200 with user_code) — requires client_id enumeration first (RAG/mobile apps)
+impact: Corporate VPN/cert auth token theft via device-code phishing → internal network lateral movement; severity HIGH
+testability: HUMAN_ONLY
+[PARKED] force_tenant parameter enables cross-tenant data access on authenticated digital-onboarding API: confidence 45 < 50 threshold; requires authenticated session first (chained dependency on mass assignment POC); anonymous axis already rejected — no independent verify path
+[PARKED] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com: confidence 55 but blocked on client_id enumeration + service 503 degraded — no viable path without valid client_id; metadata exposes no client_id; HUMAN_ONLY to obtain
+[PARKED] PSD2 sandbox BOLA carries over to production openbanking.vpbank.com via mTLS certificate replay: confidence 40 < 50 threshold; requires valid mTLS client certificate (HUMAN_ONLY), no passive verify path; production mTLS posture explicitly blocks anonymous — carryover is speculative without cert access
+[FINAL] 1. [85] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding back-office
+[FINAL] 2. [75] Session-context injection via custom Devise sign-in on dev sandbox (looser posture, synthetic data)
+[FINAL] 3. [55] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+[NEXT] PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): rendered hidden user[tenant_id]/user[admin]/user[user_id] fields prove an overridden Users::SessionsController consumes client-controlled session-context params — vector is session-context injection, not default-Devise model mass-assignment (default sanitizer permits auth keys only per RAG)
+[LEARN] REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default, so `user[admin]` alone cannot escalate without a custom controller — the custom-controller branch is now the only live sub-vector
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com (force_tenant data access): /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api/v1/ident_documents all HTTP 404 — endpoints don't exist; SPA bundle shows actual endpoints are /api/v1/current_user_details, /api/v1/qr_codes/generate, /api/v1/sessions/*, /api/v1/tenants, /api/v1/users — all JWT-gated or 404
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorized); anonymous axis is config-only (brand, tenant status) — no anonymous data exposure (yet)
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id, force_tenant parameter switches tenant context — new in-scope back-office attack surface
+[LEARN] ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert auth
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+[LEARN] REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass blocked
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+[LEARN] REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+[LEARN] NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle (4MB) confirms API map incl. /api/v1/sessions/{idp_login,secure_session,reset_password}, /api/v1/users, /rails/active_storage/direct_uploads; DebugBarSelector + sagaInitLogging debug hooks ship in prod
+[RISK] vp-bank-ag: 65 — Two high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector (blocked on client_id + service 503). Residual: PSD2 sandbox BOLA proven (high confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
