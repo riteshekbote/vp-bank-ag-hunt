@@ -1,5 +1,6 @@
-## 2026-09-06 20:34:50 UTC [target] (model nemotron3)
-[CHANGED] digital-onboarding.vpbank.com: Custom Devise SessionsController CONFIRMED — hidden `user[tenant_id]/user[admin]/user[user_id]` consumed by overridden controller, not default Devise sanitizer (RAG-verified)
+## 2026-09-06 22:19:59 UTC [target] (model nemotron3)
+[NEW] digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` (prod returns 403) — differential unauthenticated tenant enumeration on dev
+[NEW] digital-onboarding-dev.vpbank.com: `/users/sign_in` form captures `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0`, `authenticity_token`, `_us_session` cookie pre-auth — identical custom SessionsController surface with looser posture
 [CHANGED] digital-onboarding.vpbank.com: `force_tenant` hypothesis REJECTED for anonymous data access — SPA endpoints (`/current_user_details`, `/qr_codes/generate`, `/sessions/*`, `/tenants`, `/users`) all JWT-gated or 404
 [CHANGED] sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
 [CHANGED] developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
@@ -37,7 +38,6 @@ evidence_needed: Successful device_code authorization request returns user_code/
 verify_steps: POST https://sts.vpbank.com/adfs/oauth2/devicecode Content-Type: application/x-www-form-urlencoded body: client_id=<enumerated>&scope=vpn_cert (passive: observe 400/401 vs 200 with user_code) — requires client_id enumeration first (RAG/mobile apps)
 impact: Corporate VPN/cert auth token theft via device-code phishing → internal network lateral movement; severity HIGH
 testability: HUMAN_ONLY
-[PARKED] force_tenant parameter enables cross-tenant data access on authenticated digital-onboarding API: confidence 45 < 50 threshold; requires authenticated session first (chained dependency on mass assignment POC); anonymous axis already rejected — no independent verify path
 [PARKED] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com: confidence 55 but blocked on client_id enumeration + service 503 degraded — no viable path without valid client_id; metadata exposes no client_id; HUMAN_ONLY to obtain
 [PARKED] PSD2 sandbox BOLA carries over to production openbanking.vpbank.com via mTLS certificate replay: confidence 40 < 50 threshold; requires valid mTLS client certificate (HUMAN_ONLY), no passive verify path; production mTLS posture explicitly blocks anonymous — carryover is speculative without cert access
 [FINAL] 1. [85] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding back-office

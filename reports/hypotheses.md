@@ -616,3 +616,56 @@
 - LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
 - LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
 - LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 
+
+## RANKED HYPOTHESES 2026-09-06 22:21:35 UTC
+- [85] digital-onboarding.vpbank.com/users/sign_in: Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding back-office (from art/lead_nemotron3.txt)
+- [55] sts.vpbank.com/adfs: Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=t
+- NEXT(hypotheses-nemotron3.txt): PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=t
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): rendered hidden user[tenant_id]/user[admin]/user[user_id] fields prove an overridden Us
+- LEARN: REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default, so `user[admi
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (force_tenant data access): /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorize
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert au
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+- LEARN: REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass bl
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+- LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+- LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-dev.vpbank.com (session-context injection surface): Dev form renders hidden `user[tenant_id]=129/user[admin]=false/user[use
+- LEARN: NEW INFO @ digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` on dev (prod 403); dev `/api/v1/current_user_details` returns HTTP 404; `/
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): rendered hidden user[tenant_id]/user[admin]/user[user_id] fields prove an overridden Us
+- LEARN: REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default, so `user[admi
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (force_tenant data access): /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorize
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert au
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+- LEARN: REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass bl
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+- LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+- LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): rendered hidden user[tenant_id]/user[admin]/user[user_id] fields prove an overridden Us
+- LEARN: REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default, so `user[admi
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (force_tenant data access): /api/v1/onboarding_cases, /api/v1/bankingtransactions, /api/v1/incomingwire, /api
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorize
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert au
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+- LEARN: REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass bl
+- LEARN: REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+- LEARN: REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+- LEARN: REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+- LEARN: NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+- LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 

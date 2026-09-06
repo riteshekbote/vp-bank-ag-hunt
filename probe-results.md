@@ -222,3 +222,9 @@ https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
 https://sts.vpbank.com/adfs -> HTTP 503
 https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-06 22:21:41 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
