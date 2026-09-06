@@ -211,3 +211,8 @@ https://digital-onboarding.vpbank.com/rails/active_storage/direct_uploads -> HTT
 https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details -> HTTP 404
 https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
+
+## 2026-09-06 18:10:35 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405

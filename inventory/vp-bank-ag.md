@@ -301,3 +301,16 @@ www.vpbank.com
 - CHANGED digital-onboarding.vpbank.com: custom Devise SessionsController CONFIRMED (ACCEPTED ACTIVE) — hidden form fields user[tenant_id], user[admin], user[user_id] consumed by overridden controller, not defa
 - CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on /adfs), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
 - CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+
+## 2026-09-06 18:10:30 UTC
+- NEW Dev `/api/v1/tenants` HTTP 200 `{}` — **differential vs prod** (prod 403 "Not authorized"); endpoint unauthenticated on dev but returns empty data
+- NEW Dev `/users/sign_in` form fields captured: `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0`, authenticity_token present, `_us_session` cookie set pre-auth
+- NEW Dev `/admin/api/v1/users` HTTP 401 `{"message":"invalid token","additional":"Nil JSON web token"}` — JWT-gated (same as prod)
+- NEW Dev `/api/v1/current_user_details` HTTP 404 — endpoint doesn't exist on dev (or route not mounted)
+- NEW Dev `/rails/active_storage/direct_uploads` HTTP 404 — ActiveStorage not mounted on dev
+- CHANGED ActiveStorage hypothesis (confidence 40→30): dev returns 404, not reachable — demoted
+- NEW digital-onboarding.vpbank.com: Custom Devise SessionsController CONFIRMED (ACCEPTED ACTIVE) — hidden form fields `user[tenant_id]`, `user[admin]`, `user[user_id]` consumed by overridden controller, no
+- NEW digital-onboarding.vpbank.com: `force_tenant` hypothesis REJECTED for anonymous data access — tested endpoints (/onboarding_cases, /bankingtransactions, /incomingwire, /ident_documents) return 404; ac
+- CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on /adfs), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change

@@ -1588,3 +1588,48 @@ impact: trusted-origin stored XSS / fake document upload in bank back-office; ME
 testability: AUTH_HELPED
 [NEXT] PROBE: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden user[tenant_id]=129/user[admin]/user[user_id] defaults), GET https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details and GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/users (record pre-auth gate 401/403 vs prod baseline) — read-only ≤1rps; then emit exact dev baseline-vs-injected POST diff (user[admin]=true / user[tenant_id]=<other>) for HUMAN synthetic-credential verification
 [RISK] vp-bank-ag: 65 — Live session-context injection surface (client-controlled tenant_id/admin/user_id via custom Devise sign_in) on a multi-tenant bank back-office hosting onboarding PII, ident documents, banking/wire ops, role management, with an operator-sanctioned dev proof venue; compounded by proven PSD2 sandbox BOLA (prod carryover unverifiable, mTLS), anonymous force_tenant tenant-switch, and a fresh ActiveStorage upload angle. Mechanism confidence capped at 70 (reframed to custom-controller persistence; default mass-assignment ruled out), and force_tenant data-access was rejected, so risk holds at 65 rather than rising. api.vpbank.com/www/dev/stage remain exhausted.
+## 2026-09-06 18:03:05 UTC [target] (model bigpickle)
+[NEW] Dev `/api/v1/tenants` HTTP 200 `{}` — **differential vs prod** (prod 403 "Not authorized"); endpoint unauthenticated on dev but returns empty data
+[NEW] Dev `/users/sign_in` form fields captured: `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0`, authenticity_token present, `_us_session` cookie set pre-auth
+[NEW] Dev `/admin/api/v1/users` HTTP 401 `{"message":"invalid token","additional":"Nil JSON web token"}` — JWT-gated (same as prod)
+[NEW] Dev `/api/v1/current_user_details` HTTP 404 — endpoint doesn't exist on dev (or route not mounted)
+[NEW] Dev `/rails/active_storage/direct_uploads` HTTP 404 — ActiveStorage not mounted on dev
+[CHANGED] ActiveStorage hypothesis (confidence 40→30): dev returns 404, not reachable — demoted
+[PRIO] digital-onboarding-dev.vpbank.com,9.2,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=8|cloud_surface=7|freshness=10
+[PRIO] digital-onboarding.vpbank.com,8.5,attack_surface=8|business_value=10|tech_exposure=8|gate_ease=4|cloud_surface=7|freshness=10
+[PRIO] developer.vpbank.com,7.0,attack_surface=7|business_value=8|tech_exposure=7|gate_easy=6|cloud_surface=5|freshness=8
+[PRIO] sts.vpbank.com,5.5,attack_surface=4|business_value=7|tech_exposure=6|gate_ease=5|cloud_surface=4|freshness=6
+[HYP] Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 75
+reasoning: Dev form renders hidden `user[tenant_id]=129/user[admin]=false/user[user_id]=0`; these fields exist ONLY via overridden Users::SessionsController (Devise default sanitizer strips them per RAG); host-specific tenant_id (dev=129 vs prod=4) implies server re-pins; dev `/api/v1/tenants` returns 200 `{}` (vs prod 403), confirming dev is a looser security posture; pre-auth `_us_session` cookie set proves session state exists; form action POSTs to `/users/sign_in`
+evidence_needed: POST baseline (user[email]=syn&user[password]=syn) vs injected (+&user[admin]=true&user[tenant_id]=<other_int>&user[user_id]=<positive_int>); diff Set-Cookie/Location/body; then GET authenticated endpoints reflecting injected context
+verify_steps: HUMAN on dev: (1) GET /users/sign_in capture authenticity_token; (2) POST /users/sign_in with baseline (synthetic creds if available) vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=1; diff 302 Location + Set-Cookie; (3) with resulting session GET /api/v1/tenants or /admin/api/v1/users
+impact: wrong-tenant or admin-privilege session on bank back-office → cross-tenant onboarding PII, ident docs, banking transactions, wire transfers, role management; HIGH
+testability: AUTH_HELPED
+[HYP] Dev tenant listing endpoint unauthenticated (tenant enumeration)
+class: MISCONFIG
+asset: digital-onboarding-dev.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: GET /api/v1/tenants returns HTTP 200 `{}` on dev vs HTTP 403 "Not authorized" on prod; the 200 with empty body suggests the route is mounted without auth guard on dev (prod adds authorization); empty body currently limits impact but if dev has any tenant data this is an info leak
+evidence_needed: Verify with POST or different params if tenant listing populates; try /api/v1/tenants/1, /api/v1/tenants?all=true, or force_tenant variants
+verify_steps: passive GET variations: /api/v1/tenants.json, /api/v1/tenants?force_tenant=vpbank, /api/v1/tenants/1 (dev only)
+impact: tenant enumeration on dev back-office; LOW-MEDIUM standalone, HIGH if chained with session injection to confirm tenant IDs for cross-tenant attacks
+testability: PASSIVE
+[HYP] Dev reports production environment in JS (misconfiguration)
+class: MISCONFIG
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 40
+reasoning: consentManager.env = "production" and consentManager.testServer = false on dev server; sentry_environment=test2, sentry_release=44f61e6… confirm dev is tagged correctly in telemetry but JS public config declares "production" — may cause confusing error routing or consent behavior
+evidence_needed: Confirm same on prod for comparison; determine if consentManager.env affects cookie SameSite/Secure/consent logic
+verify_steps: Compare consentManager.env on prod vs dev; check if cookie consent behavior differs
+impact: minor misconfiguration; LOW
+testability: PASSIVE
+[PARKED] Dev tenant listing (confidence 55): 200 with empty `{}` body means no data exposed currently; cannot confirm if endpoint would populate with tenant data without further testing; hold for chain with session injection.
+[PARKED] Dev production env (confidence 40): informational, not reportable standalone.
+[FINAL] Session-context injection on custom Devise sign_in — 75, AUTH_HELPED, HUMAN_POST_REQUIRED.
+[FINAL] Dev tenant listing unauthenticated — 55, PASSIVE, chains with above.
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-dev.vpbank.com (session-context injection surface): Dev form renders hidden `user[tenant_id]=129/user[admin]=false/user[user_id]=0`; overridden Users::SessionsController confirmed; pre-auth session cookie set; dev is looser posture (tenants endpoint 200 vs prod 403); passive baseline locked, ready for HUMAN POST verification.
+[LEARN] NEW INFO @ digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` on dev (prod 403); dev `/api/v1/current_user_details` returns HTTP 404; `/rails/active_storage/direct_uploads` returns HTTP 404; consentManager.env="production" on dev (misconfig); sentry_environment=test2.
+[RISK] vp-bank-ag: 67 — Session-context injection surface on digital-onboarding-dev.vpbank.com locked at 75 confidence with passive baseline complete; HUMAN POST verification is the single gating action. Dev is confirmed looser posture (tenants 200, same SPA with admin modules). Compounded with PSD2 sandbox BOLA (prod carryover mTLS-blocked), ADFS device_code (service 503 + unknown client_id), and ActiveStorage (dev 404, prod untested). Risk rises 65→67 due to new dev differential (tenants 200) reinforcing the custom-controller hypothesis and reducing uncertainty.
