@@ -1,1 +1,30 @@
-## 2026-09-06 12:56:51 UTC [target] (model bigpickle)
+## 2026-09-06 15:59:47 UTC [target] (model bigpickle)
+[HYP] Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session (session-context injection)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 70
+reasoning: prod+dev render hidden `user[tenant_id]`(4/129)/`user[admin]=false`/`user[user_id]=0` — present only via overridden Users::SessionsController (Devise default sanitizer permits email/password, per RAG); host-scoped tenant id implies server re-pins tenant server-side; `/api/v1/brand` honors anonymous `?force_tenant` proving tenant context is client-directable; back-office modules = onboarding, ident docs, bankingtransactions, incomingwire, rolemgmt
+evidence_needed: dev POST baseline vs `+user[admin]=true&user[tenant_id]=<other>&user[user_id]=<other>` yields different Set-Cookie/Location/body; GET `/api/v1/current_user_details` reflects foreign/admin context
+verify_steps: (pending passive gate-diff) GET dev `/users/sign_in` capture authenticity_token + hidden defaults; GET dev `/api/v1/current_user_details` and `/admin/api/v1/users` for 401/403 baseline; then HUMAN dev-only POST baseline-vs-injected diff with synthetic credential
+impact: wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking/wire ops, role mgmt; HIGH
+testability: AUTH_HELPED
+[HYP] force_tenant re-scopes data tenant under a valid session (post-auth cross-tenant IDOR)
+class: IDOR
+asset: digital-onboarding-dev.vpbank.com/admin/api/v1
+confidence: 45
+reasoning: `?force_tenant=vpbank` honored on anonymous `/api/v1/brand` (200) with no owner check — param reaches server; if authenticated admin resources read force_tenant instead of session tenant, A-tenant token reads B-tenant rows
+evidence_needed: dev sessions A+B; GET dev `/admin/api/v1/<resource>?force_tenant=<other>` returns B rows vs A baseline
+verify_steps: HUMAN_ONLY after dev session minted — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other>; compare tenant ids ±param
+impact: cross-tenant financial/PII disclosure in back-office; HIGH
+testability: HUMAN_ONLY
+[HYP] Unauthenticated ActiveStorage direct-upload or blob endpoints on onboarding back-office (file-upload surface)
+class: MISCONFIG
+asset: digital-onboarding.vpbank.com/rails/active_storage
+confidence: 40
+reasoning: control-center SPA bundle references `/rails/active_storage/direct_uploads`; Rails active_storage exposes signed blob-creation endpoints; if reachable anonymously, attacker stages arbitrary file on trusted origin for stored XSS/phishing or storage abuse
+evidence_needed: anonymous POST `/rails/active_storage/direct_uploads` returns signed blob JSON (signed_id/service_name) vs 401/403; GET/HEAD `/rails/active_storage/disk/<key>` retrieves it
+verify_steps: passive first — GET https://digital-onboarding.vpbank.com/rails/active_storage/direct_uploads and dev mirror (observe 405 vs 401/400); NO upload until dev/operator consent (upload = mutating, dev-only)
+impact: trusted-origin stored XSS / fake document upload in bank back-office; MEDIUM-HIGH
+testability: AUTH_HELPED
+[NEXT] PROBE: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden user[tenant_id]=129/user[admin]/user[user_id] defaults), GET https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details and GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/users (record pre-auth gate 401/403 vs prod baseline) — read-only ≤1rps; then emit exact dev baseline-vs-injected POST diff (user[admin]=true / user[tenant_id]=<other>) for HUMAN synthetic-credential verification
+[RISK] vp-bank-ag: 65 — Live session-context injection surface (client-controlled tenant_id/admin/user_id via custom Devise sign_in) on a multi-tenant bank back-office hosting onboarding PII, ident documents, banking/wire ops, role management, with an operator-sanctioned dev proof venue; compounded by proven PSD2 sandbox BOLA (prod carryover unverifiable, mTLS), anonymous force_tenant tenant-switch, and a fresh ActiveStorage upload angle. Mechanism confidence capped at 70 (reframed to custom-controller persistence; default mass-assignment ruled out), and force_tenant data-access was rejected, so risk holds at 65 rather than rising. api.vpbank.com/www/dev/stage remain exhausted.

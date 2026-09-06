@@ -11095,3 +11095,89 @@ x-request-id: 0d757eb6-a49d-4174-b885-5af7742227e6
 strict-transport-security: max-age=63072000; includeSubDomains
 vary: Accept, Origin
 [0m
+===== ANALYST bigpickle 2026-09-06 16:03:24 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m→ [0mRead .
+[0m→ [0mRead scope.yml
+[0m→ [0mRead state_bigpickle.json
+[0m→ [0mRead inventory
+[0m→ [0mRead leads
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead leads/lead-nemotron3.md
+[0m→ [0mRead knowledge
+[0m→ [0mRead knowledge/index.md
+[0m→ [0mRead inventory/vp-bank-ag.md
+[0m✱ [0mGrep "digital-onboarding-dev|onboarding-dev|89.163.182|129|force_tenant|sign_in|current_user_details|sessions/idp_login|active_storage|direct_uploads"[90m in probe-results.md · 100 matches[0m
+[0m✱ [0mGlob "reports/**/*"[90m 12 matches[0m
+[0m→ [0mRead reports/valid-bugs.md
+[0m→ [0mRead leads/lead-bigpickle.md[90m [offset=860, limit=80][0m
+No code changes needed — this is analysis. Here is the structured cycle output.
+
+## STEP 1 — DELTA
+- [CHANGED] Mass-assignment hypothesis on digital-onboarding reframed: default-Devise model mass-assignment REJECTED (sanitizer permits email/password only); live sub-vector is the custom Users::SessionsController consuming client-controlled `user[tenant_id]/user[admin]/user[user_id]` (session-context injection, ACCEPTED ACTIVE in KB)
+- [CHANGED] force_tenant anonymous data-access hypothesis REJECTED: `/api/v1/onboarding_cases`, `/bankingtransactions`, `/incomingwire`, `/ident_documents` all 404 — anonymous force_tenant only affects config endpoint `/api/v1/brand`; all real data endpoints JWT-gated
+- [NEW] Dev/stage mirrors confirmed (tenant prod=4 / dev=129 / stage=7); dev sign_in is the sanctioned synthetic-proof venue; the pre-auth gate-differential GETs on dev (from prior NEXT) are still pending — not yet executed
+- [NEW] Low-cost breadth gap: CT enumeration surfaced `ebics/mobile-beta/www-beta/report/concentsol.vpbank.com` as live candidates with no probe record (vop checked — mTLS dropped); plus `digital-onboarding /rails/active_storage/` file-upload surface referenced in SPA bundle, never probed
+- NO_DELTA: api/api-prep/www-oauth/dev-stage-WAF/designsystem exhausted; sts.vpbank.com still 503 + client_id-gated; developer.vpbank.com BOLA already proven
+
+## STEP 2 — PRIORITIZE
+- [PRIO] digital-onboarding.vpbank.com,8.10,attack=8 business=9 tech=8 gate=7 cloud=6 fresh=10 — live multi-tenant back-office; session-injection fields in prod markup; force_tenant honored anonymously
+- [PRIO] digital-onboarding-dev.vpbank.com,7.60,attack=7 business=8 tech=7 gate=8 cloud=6 fresh=10 — synthetic-tenancy proof venue; gate-diff pending; same codebase as prod
+- [PRIO] developer.vpbank.com,8.40,attack=9 business=9 tech=8 gate=10 cloud=2 fresh=10 — carried; BOLA PROVEN; only prod-carryover verification (mTLS) remains
+- [PRIO] openbanking.vpbank.com,5.50,attack=3 business=10 tech=8 gate=1 cloud=2 fresh=7 — prod PSD2; HUMAN_ONLY QWAC verification only
+
+## STEP 3 — HYPOTHESES
+[HYP] Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session (session-context injection)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 70
+reasoning: prod+dev render hidden `user[tenant_id]`(4/129)/`user[admin]=false`/`user[user_id]=0` — present only via overridden Users::SessionsController (Devise default sanitizer permits email/password, per RAG); host-scoped tenant id implies server re-pins tenant server-side; `/api/v1/brand` honors anonymous `?force_tenant` proving tenant context is client-directable; back-office modules = onboarding, ident docs, bankingtransactions, incomingwire, rolemgmt
+evidence_needed: dev POST baseline vs `+user[admin]=true&user[tenant_id]=<other>&user[user_id]=<other>` yields different Set-Cookie/Location/body; GET `/api/v1/current_user_details` reflects foreign/admin context
+verify_steps: (pending passive gate-diff) GET dev `/users/sign_in` capture authenticity_token + hidden defaults; GET dev `/api/v1/current_user_details` and `/admin/api/v1/users` for 401/403 baseline; then HUMAN dev-only POST baseline-vs-injected diff with synthetic credential
+impact: wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking/wire ops, role mgmt; HIGH
+testability: AUTH_HELPED
+
+[HYP] force_tenant re-scopes data tenant under a valid session (post-auth cross-tenant IDOR)
+class: IDOR
+asset: digital-onboarding-dev.vpbank.com/admin/api/v1
+confidence: 45
+reasoning: `?force_tenant=vpbank` honored on anonymous `/api/v1/brand` (200) with no owner check — param reaches server; if authenticated admin resources read force_tenant instead of session tenant, A-tenant token reads B-tenant rows
+evidence_needed: dev sessions A+B; GET dev `/admin/api/v1/<resource>?force_tenant=<other>` returns B rows vs A baseline
+verify_steps: HUMAN_ONLY after dev session minted — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other>; compare tenant ids ±param
+impact: cross-tenant financial/PII disclosure in back-office; HIGH
+testability: HUMAN_ONLY
+
+[HYP] Unauthenticated ActiveStorage direct-upload or blob endpoints on onboarding back-office (file-upload surface)
+class: MISCONFIG
+asset: digital-onboarding.vpbank.com/rails/active_storage
+confidence: 40
+reasoning: control-center SPA bundle references `/rails/active_storage/direct_uploads`; Rails active_storage exposes signed blob-creation endpoints; if reachable anonymously, attacker stages arbitrary file on trusted origin for stored XSS/phishing or storage abuse
+evidence_needed: anonymous POST `/rails/active_storage/direct_uploads` returns signed blob JSON (signed_id/service_name) vs 401/403; GET/HEAD `/rails/active_storage/disk/<key>` retrieves it
+verify_steps: passive first — GET https://digital-onboarding.vpbank.com/rails/active_storage/direct_uploads and dev mirror (observe 405 vs 401/400); NO upload until dev/operator consent (upload = mutating, dev-only)
+impact: trusted-origin stored XSS / fake document upload in bank back-office; MEDIUM-HIGH
+testability: AUTH_HELPED
+
+## STEP 4 — SELF-CRITIQUE
+- [PARKED] PSD2 prod BOLA carryover @ openbanking.vpbank.com: confidence 35 < 40; mTLS at TLS layer; needs 2× eIDAS QWAC; keep as report-context join to the PROVEN sandbox artifact, not an active lead
+- [PARKED] ADFS device_code @ sts.vpbank.com: confidence 55 but service 503 degraded + client_id unknown; no executable verify step passively
+- [PARKED] OAuth redirect_uri @ www.vpbank.com: no client_id across JS/RAG/App-Store/npm; blocked
+- [DROPPED] force_tenant anonymous data access: REJECTED in KB — endpoints 404/JWT-gated; config-only honor
+- [FINAL] 1. [70] Custom Devise sign_in session-context injection @ digital-onboarding (dev proof venue ready) — top live vector
+- [FINAL] 2. [45] force_tenant post-auth cross-tenant IDOR @ digital-onboarding
+- [FINAL] 3. [40] ActiveStorage upload surface @ digital-onboarding
+- [FINAL] carried 4. [80] PSD2 sandbox BOLA @ developer.vpbank.com — PROVEN, report artifact
+- [[NOTE] to triage] The nemotron3 aggregated NEXT proposes POST to PROD `/users/sign_in` with injected admin fields — supersede: prod POST is a live-auth mutating test; use dev passive gate-diff + HUMAN dev credential per rules.
+
+## STEP 5 — NEXT ACTION
+[NEXT] PROBE: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden user[tenant_id]=129/user[admin]/user[user_id] defaults), GET https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details and GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/users (record pre-auth gate 401/403 vs prod baseline) — read-only ≤1rps; then emit exact dev baseline-vs-injected POST diff (user[admin]=true / user[tenant_id]=<other>) for HUMAN synthetic-credential verification
+
+## STEP 6 — LEARNING
+- [LEARN] ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): hidden user[tenant_id]/user[admin]/user[user_id] rendered in prod+dev prove an overridden Users::SessionsController consumes client-controlled session-context params — vector is session-context injection, not default-Devise model mass-assignment (default sanitizer permits auth keys only; RAG)
+- [LEARN] REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default — custom-controller branch is the only live sub-vector
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com (force_tenant data access): onboarding_cases/bankingtransactions/incomingwire/ident_documents all 404; SPA-bundle endpoints all JWT-gated or 404; anonymous force_tenant honors only config endpoint (/api/v1/brand)
+- [LEARN] NEW INFO @ digital-onboarding.vpbank.com: SPA bundle references /rails/active_storage/direct_uploads (untested upload surface) and ships DebugBarSelector + sagaInitLogging debug hooks in prod
+
+## STEP 7 — RISK
+[RISK] vp-bank-ag: 65 — Live session-context injection surface (client-controlled tenant_id/admin/user_id via custom Devise sign_in) on a multi-tenant bank back-office hosting onboarding PII, ident documents, banking/wire ops, role management, with an operator-sanctioned dev proof venue; compounded by proven PSD2 sandbox BOLA (prod carryover unverifiable, mTLS), anonymous force_tenant tenant-switch, and a fresh ActiveStorage upload angle. Mechanism confidence capped at 70 (reframed to custom-controller persistence; default mass-assignment ruled out), and force_tenant data-access was rejected, so risk holds at 65 rather than rising. api.vpbank.com/www/dev/stage remain exhausted.

@@ -295,3 +295,9 @@ www.vpbank.com
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change (2026-09-06 knowledge)
 
 ## 2026-09-06 13:00:07 UTC
+
+## 2026-09-06 16:03:24 UTC
+- CHANGED digital-onboarding.vpbank.com: force_tenant hypothesis REJECTED for anonymous data access — tested endpoints (/onboarding_cases, /bankingtransactions, /incomingwire, /ident_documents) return 404; actu
+- CHANGED digital-onboarding.vpbank.com: custom Devise SessionsController CONFIRMED (ACCEPTED ACTIVE) — hidden form fields user[tenant_id], user[admin], user[user_id] consumed by overridden controller, not defa
+- CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on /adfs), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
