@@ -1445,3 +1445,31 @@ evidence_needed: two QWAC certs cross-reading a Consent-ID on production
 verify_steps: HUMAN_ONLY — TPP-A consent, TPP-B reads /psd2/berlin-group/v1/consents/{id} and /accounts
 impact: Cross-TPP production consent/account/ledger disclosure; HIGH
 testability: HUMAN_ONLY
+## 2026-09-06 00:14:21 UTC [target] (model bigpickle)
+[HYP] Devise mass assignment on sign_in grants admin/tenant escalation on back-office
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 75
+reasoning: Bundle confirms real routes are JWT-gated (admin/api/v1/users → 401 "invalid token"); /api/v1/brand honors anonymous ?force_tenant config selector proving server reads client-controlled tenant params; Devise user[]-namespaced params on sign_in; if permit_params overbroad, admin/tenant_id ride the create
+evidence_needed: dev-sandbox POST with injected user[admin]=true&user[tenant_id]=1 yields Set-Cookie/BEARER or redirect implying elevated/wrong-tenant session vs baseline POST
+verify_steps: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (confirm reachable + form fields); POST /users/sign_in Content-Type: application/x-www-form-urlencoded body user[email]=test@test.com&user[password]=test (baseline) then same + &user[admin]=true&user[tenant_id]=1&user[user_id]=1; compare status/Set-Cookie/redirect Location/body; if session minted, with JWT GET /admin/api/v1/users offline
+impact: Admin/impersonation across onboarding tenants → PII, identity docs, banking transactions; HIGH
+testability: AUTH_HELPED
+[HYP] force_tenant switches data tenant under a valid session (post-auth IDOR)
+class: IDOR
+asset: digital-onboarding.vpbank.com/admin/api/v1/
+confidence: 45
+reasoning: Anonymous data axis falsified today (static 404/401/403); /api/v1/brand honors force_tenant anonymously proving param reaches server; admin modules (rolemgmt, bankingtransactions, incomingwire) exist in bundle under auth; if controller reads force_tenant without re-scoping to session tenant, legit A-tenant token reads B-tenant rows
+evidence_needed: dev-sandbox session for tenant A; GET /admin/api/v1/bankingtransactions?force_tenant=vpbank returns cross-tenant rows
+verify_steps: HUMAN_ONLY once dev session obtained — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank; compare rowset tenant ids with/without force_tenant
+impact: Cross-tenant financial/PII disclosure in bank onboarding back-office; HIGH
+testability: AUTH_HELPED
+[HYP] ADFS device_code grant usable with any registered client for vpn/logon cert scopes
+class: OATH
+asset: sts.vpbank.com/adfs
+confidence: 45
+reasoning: /adfs/.well-known/openid-configuration 200 lists device_code+password+implicit, scopes vpn_cert/logon_cert/winhello_cert/aza/user_impersonation; /adfs/oauth2/devicecode 405 (POST enabled); service currently 503
+evidence_needed: valid client_id → 200 user_code/device_code/verification_uri
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/devicecode Content-Type: application/x-www-form-urlencoded body client_id=<found>&scope=vpn (RAG MS-native/ADFS client_ids; observe 400 invalid_client vs 200)
+impact: Corporate VPN/cert token via device-flow phishing → internal network lateral movement; HIGH if client_id found
+testability: AUTH_HELPED

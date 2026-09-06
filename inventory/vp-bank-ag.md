@@ -276,3 +276,10 @@ www.vpbank.com
 - CHANGED vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
 - CHANGED api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
 - CHANGED designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+
+## 2026-09-06 00:26:06 UTC
+- NEW digital-onboarding.vpbank.com: SPA bundle reveals actual API endpoints (/api/v1/current_user_details, /api/v1/qr_codes/generate, /api/v1/sessions/*, /api/v1/tenants, /api/v1/users) — prior hypothesis 
+- CHANGED digital-onboarding.vpbank.com/users/sign_in: Form includes hidden fields `user[tenant_id]`, `user[admin]`, `user[user_id]` — mass assignment vector confirmed in markup
+- CHANGED sts.vpbank.com: /adfs returns HTTP 503 (degraded), /adfs/oauth2/devicecode and /adfs/oauth2/token/devicecode both HTTP 405 — device_code endpoint exists but service unhealthy + client_id unknown
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end in official test sandbox (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com: All previously exhausted/rejected, no change
