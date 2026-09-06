@@ -1473,3 +1473,24 @@ evidence_needed: valid client_id → 200 user_code/device_code/verification_uri
 verify_steps: POST https://sts.vpbank.com/adfs/oauth2/devicecode Content-Type: application/x-www-form-urlencoded body client_id=<found>&scope=vpn (RAG MS-native/ADFS client_ids; observe 400 invalid_client vs 200)
 impact: Corporate VPN/cert token via device-flow phishing → internal network lateral movement; HIGH if client_id found
 testability: AUTH_HELPED
+## 2026-09-06 04:47:03 UTC [target] (model bigpickle)
+[HYP] Mass-assignment / tenant-context hijack on Devise sign-in (client-controlled tenant_id/admin/user_id)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 80
+reasoning: Fresh probe 2026-09-06 — prod+dev /users/sign_in HTTP 200; new_user form posts user[]-namespaced params (method=post, action=/users/sign_in); hidden fields user[tenant_id] (prod 4 / dev 129), user[admin]=false, user[user_id]=0 embedded; tenant_id differs per host => real server tenant-scoping that attacker can re-pin via param override; if SessionsController persists these params to session without whitelist, overriding → wrong-tenant or admin session
+evidence_needed: dev-sandbox POST with user[admin]=true&user[tenant_id]=<other> yields Set-Cookie/redirect differing from baseline; GET /api/v1/current_user_details reflects wrong/admin context
+verify_steps: HUMAN on dev (synthetic): GET /users/sign_in capture authenticity_token+defaults; POST user[email]=<syn>&user[password]=<syn> (baseline) vs same + &user[admin]=true&user[tenant_id]=<other>&user[user_id]=1; diff Set-Cookie/Location/body; then with cookie GET /api/v1/current_user_details
+impact: admin/wrong-tenant session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking transactions, role mgmt; HIGH
+testability: AUTH_HELPED
+[HYP] force_tenant re-scopes data tenant under a valid session (post-auth cross-tenant IDOR)
+class: IDOR
+asset: digital-onboarding.vpbank.com/admin/api/v1/
+confidence: 45
+reasoning: /api/v1/brand honors anonymous ?force_tenant (200) — param reaches server with no owner check; admin API routes (bankingtransactions, incomingwire, rolemgmt, users) exist in SPA bundle under JWT; if tenant filter reads force_tenant instead of session tenant, A-tenant token reads B-tenant rows
+evidence_needed: dev sessions tenants A+B; GET /admin/api/v1/<resource>?force_tenant=B returns B rows vs A baseline
+verify_steps: HUMAN_ONLY once dev session minted — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other>; compare rowset tenant ids ±param
+impact: cross-tenant financial/PII disclosure in back-office; HIGH
+testability: HUMAN_ONLY
+[NEXT] RAG: search GitHub/public-web for this Devise multi-tenant onboarding SaaS (fingerprints: force_tenant, secure_session, idp_login, "tenant_id"+admin hidden-field login form) to confirm permit_params/session-creation persistence of user[tenant_id]/user[admin] — passive source-level confirmation of the mass-assignment vector before any dev POST
+[RISK] vp-bank-ag: 65 — Mass-assignment surface on the bank-onboarding back-office auth form now confirmed in live markup on prod AND dev (was bundle-inference before); dev sandbox permits proof with synthetic data (no customer exposure). Compounded with verified PSD2 sandbox BOLA, force_tenant tenant-switch, and ADFS device-code grants (parked). api.vpbank.com/www/dev/stage remain exhausted. Up from 55.

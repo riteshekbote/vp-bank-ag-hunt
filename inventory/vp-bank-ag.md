@@ -283,3 +283,5 @@ www.vpbank.com
 - CHANGED sts.vpbank.com: /adfs returns HTTP 503 (degraded), /adfs/oauth2/devicecode and /adfs/oauth2/token/devicecode both HTTP 405 — device_code endpoint exists but service unhealthy + client_id unknown
 - CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end in official test sandbox (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com: All previously exhausted/rejected, no change
+
+## 2026-09-06 04:47:14 UTC
