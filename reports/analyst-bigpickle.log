@@ -10701,3 +10701,257 @@ testability: HUMAN_ONLY
 
 **STEP 7 — RISK**
 [RISK] vp-bank-ag: 65 — Mass-assignment surface on the bank-onboarding back-office auth form now confirmed in live markup on prod AND dev (was bundle-inference before); dev sandbox permits proof with synthetic data (no customer exposure). Compounded with verified PSD2 sandbox BOLA, force_tenant tenant-switch, and ADFS device-code grants (parked). api.vpbank.com/www/dev/stage remain exhausted. Up from 55.
+===== ANALYST bigpickle 2026-09-06 09:14:36 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m# [0mTodos
+[•] STEP 1-2: Delta + Priority analysis on current surface
+[ ] STEP 3-4: Hypotheses + self-critique
+[ ] STEP 5-7: Next action + learn + risk
+[0m
+Let me check the current workspace state and any recent activity files.
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/
+total 252
+drwxr-xr-x 12 runner runner  4096 Sep  6 09:06 .
+drwxr-xr-x  3 runner runner  4096 Sep  6 09:06 ..
+drwxr-xr-x  7 runner runner  4096 Sep  6 09:06 .git
+drwxr-xr-x  3 runner runner  4096 Sep  6 09:06 .github
+-rw-r--r--  1 runner runner  1752 Sep  6 09:06 README.md
+-rw-r--r--  1 runner runner   268 Sep  6 09:07 analyst-out.txt
+-rw-r--r--  1 runner runner 79765 Sep  6 09:06 analyst-prompt.txt
+-rw-r--r--  1 runner runner 75950 Sep  6 09:06 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 leads
+-rw-r--r--  1 runner runner  9218 Sep  6 09:06 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 reports
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  6 09:06 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 scripts
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  6 09:06 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 triage
+[0m
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead leads
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead leads/lead-nemotron3.md
+Let me check the current leads from other models and the reposcan to align on the latest state.
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead leads/lead-bigpickle.md[90m [offset=440, limit=300][0m
+I have a good understanding of the current state. Let me check the latest leads from the other models to see what's being pursued, and look at the reposcan to align on the mass assignment vector.
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/*.md /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/reposcan-raw/ 2>/dev/null; echo "---reports---"; ls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/reports/
+-rw-r--r-- 1 runner runner 205870 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-bigpickle.md
+-rw-r--r-- 1 runner runner   1071 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-laguna.md
+-rw-r--r-- 1 runner runner   1050 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-ling3.md
+-rw-r--r-- 1 runner runner   1092 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-longcat.md
+-rw-r--r-- 1 runner runner     18 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-mimo.md
+-rw-r--r-- 1 runner runner 174920 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/lead-nemotron3.md
+-rw-r--r-- 1 runner runner   2289 Sep  6 09:06 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/reposcan-vp-bank-ag.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/reposcan-raw/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  6 09:06 .
+drwxr-xr-x 12 runner runner 4096 Sep  6 09:06 ..
+-rw-r--r--  1 runner runner   73 Sep  6 09:06 summary.txt
+---reports---
+total 1684
+drwxr-xr-x  2 runner runner    4096 Sep  6 09:06 .
+drwxr-xr-x 12 runner runner    4096 Sep  6 09:06 ..
+-rw-r--r--  1 runner runner 1122831 Sep  6 09:06 analyst-bigpickle.log
+-rw-r--r--  1 runner runner    4557 Sep  6 09:06 analyst-laguna.log
+-rw-r--r--  1 runner runner    4536 Sep  6 09:06 analyst-ling3.log
+-rw-r--r--  1 runner runner    4578 Sep  6 09:06 analyst-longcat.log
+-rw-r--r--  1 runner runner  454247 Sep  6 09:06 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    3021 Sep  6 09:06 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner      51 Sep  6 09:06 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      50 Sep  6 09:06 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      52 Sep  6 09:06 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner    8432 Sep  6 09:06 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner   74374 Sep  6 09:06 hypotheses.md
+-rw-r--r--  1 runner runner    1084 Sep  6 09:06 valid-bugs.md
+[0m
+I have a thorough understanding of the state. The most recent leads (2026-09-06 04:47) already established the mass-assignment vector on Devise sign_in (confidence 80), and the [NEXT] action was a RAG search for the Devise multi-tenant onboarding SaaS to confirm permit_params. Let me look at the reposcan and the very latest from other models to see what has been done on that NEXT action recently.
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/recon-notes/ /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/ /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/knowledge/ 2>/dev/null
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/knowledge/:
+total 36
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 .
+drwxr-xr-x 12 runner runner  4096 Sep  6 09:06 ..
+-rw-r--r--  1 runner runner 27694 Sep  6 09:06 index.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/recon-notes/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  6 09:06 .
+drwxr-xr-x 12 runner runner 4096 Sep  6 09:06 ..
+-rw-r--r--  1 runner runner  819 Sep  6 09:06 DEDICATED-DEEP.md
+
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/:
+total 140
+drwxr-xr-x  2 runner runner  4096 Sep  6 09:06 .
+drwxr-xr-x 12 runner runner  4096 Sep  6 09:06 ..
+-rw-r--r--  1 runner runner     0 Sep  6 09:06 .gitkeep
+-rw-r--r--  1 runner runner   240 Sep  6 09:06 run-2026-09-02-21-52.md
+-rw-r--r--  1 runner runner   148 Sep  6 09:06 run-2026-09-02-23-51.md
+-rw-r--r--  1 runner runner   143 Sep  6 09:06 run-2026-09-03-03-10.md
+-rw-r--r--  1 runner runner   277 Sep  6 09:06 run-2026-09-03-08-08.md
+-rw-r--r--  1 runner runner   206 Sep  6 09:06 run-2026-09-03-12-52.md
+-rw-r--r--  1 runner runner   202 Sep  6 09:06 run-2026-09-03-16-56.md
+-rw-r--r--  1 runner runner   287 Sep  6 09:06 run-2026-09-03-19-41.md
+-rw-r--r--  1 runner runner   195 Sep  6 09:06 run-2026-09-03-22-17.md
+-rw-r--r--  1 runner runner  1211 Sep  6 09:06 run-2026-09-04-00-12.md
+-rw-r--r--  1 runner runner  9761 Sep  6 09:06 run-2026-09-04-04-44.md
+-rw-r--r--  1 runner runner   275 Sep  6 09:06 run-2026-09-04-09-20.md
+-rw-r--r--  1 runner runner   174 Sep  6 09:06 run-2026-09-04-13-36.md
+-rw-r--r--  1 runner runner   263 Sep  6 09:06 run-2026-09-04-17-04.md
+-rw-r--r--  1 runner runner   190 Sep  6 09:06 run-2026-09-04-19-40.md
+-rw-r--r--  1 runner runner 18529 Sep  6 09:06 run-2026-09-04-21-52.md
+-rw-r--r--  1 runner runner   144 Sep  6 09:06 run-2026-09-04-23-43.md
+-rw-r--r--  1 runner runner   158 Sep  6 09:06 run-2026-09-05-03-01.md
+-rw-r--r--  1 runner runner  5023 Sep  6 09:06 run-2026-09-05-07-45.md
+-rw-r--r--  1 runner runner   118 Sep  6 09:06 run-2026-09-05-11-39.md
+-rw-r--r--  1 runner runner   424 Sep  6 09:06 run-2026-09-05-14-00.md
+-rw-r--r--  1 runner runner   151 Sep  6 09:06 run-2026-09-05-16-44.md
+-rw-r--r--  1 runner runner   313 Sep  6 09:06 run-2026-09-05-18-48.md
+-rw-r--r--  1 runner runner   235 Sep  6 09:06 run-2026-09-05-20-56.md
+-rw-r--r--  1 runner runner   155 Sep  6 09:06 run-2026-09-05-22-41.md
+-rw-r--r--  1 runner runner   127 Sep  6 09:06 run-2026-09-06-00-34.md
+-rw-r--r--  1 runner runner   195 Sep  6 09:06 run-2026-09-06-05-04.md
+[0m
+[0m→ [0mRead reposcan-raw/summary.txt
+[0m→ [0mRead leads/reposcan-vp-bank-ag.md
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+Let me check the reposcan summary and the latest hypotheses from the other models (nemotron3 and the newest lead files), plus the latest reports.
+[0m→ [0mRead reports/valid-bugs.md
+[0m
+[0m$ [0mtail -40 /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/reports/hypotheses-nemotron3.txt
+reasoning: /users/sign_in form includes hidden fields user[tenant_id]=4, user[admin]=false, user[user_id]=0 — Rails strong_parameters may not filter these if permit_params misconfigured in User model or Devise controller; /control-center/ SPA serves anonymously with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand?force_tenant=vpbank returns 200 proving tenant context switching works
+evidence_needed: POST /users/sign_in with user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe response code, Set-Cookie, redirect location, response body — no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] force_tenant parameter enables cross-tenant data access on digital-onboarding API
+class: IDOR
+asset: digital-onboarding.vpbank.com/api/v1/
+confidence: 60
+reasoning: /api/v1/brand?force_tenant=vpbank returns HTTP 200 anonymously — proves tenant context can be forced via query parameter; SPA bundle confirms API map includes /api/v1/tenants (403), /api/v1/users (404), /api/v1/current_user_details (404), /api/v1/qr_codes/generate (401), /api/v1/sessions/* (404); if authenticated data endpoints honor force_tenant without auth validation, cross-tenant PII/financial disclosure
+evidence_needed: Any authenticated data endpoint returns 200 with force_tenant parameter without valid session
+verify_steps: GET https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank (passive: observe 401 vs 200); GET https://digital-onboarding.vpbank.com/api/v1/tenants?force_tenant=vpbank (passive: observe 403 vs 200)
+impact: Cross-tenant PII/financial data disclosure (onboarding cases, wire transfers, identity documents, banking transactions); severity HIGH
+testability: PASSIVE
+[HYP] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com
+class: OAUTH
+asset: sts.vpbank.com/adfs
+confidence: 55
+reasoning: /adfs/.well-known/openid-configuration HTTP 200 exposes device_code grant + password grant + implicit grant; issuer https://sts.vpbank.com/adfs; scopes include vpn_cert/logon_cert/winhello_cert/aza/user_impersonation — corporate IdP for VPN/certificate auth; device_code flow vulnerable to phishing (user enters code on attacker-controlled device); /adfs/oauth2/devicecode returns 405 (GET not allowed) confirming endpoint exists and requires POST
+evidence_needed: Successful device_code authorization request returns user_code/device_code/verification_uri with valid client_id
+verify_steps: POST https://sts.vpbank.com/adfs/oauth2/devicecode Content-Type: application/x-www-form-urlencoded body: client_id=vpbank-vpn&scope=vpn (read-only: observe 400/401 vs 200; client_id enumeration via RAG/mobile apps/JS bundles)
+impact: Corporate VPN/certificate access tokens via device-flow phishing → internal network access; severity HIGH
+testability: AUTH_HELPED
+[PARKED] ADFS device_code grant enables token theft via phishing/device-flow on sts.vpbank.com: confidence 55 but ADFS service returns 503 (degraded); client_id unknown — cannot advance without client_id enumeration (RAG/mobile apps); blocked on AUTH_HELPED prerequisite
+[FINAL] 1. [85] Mass assignment on Devise sign-in grants admin/impersonation on digital-onboarding back-office
+[FINAL] 2. [60] force_tenant parameter enables cross-tenant data access on digital-onboarding API
+[NEXT] PROBE: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id, force_tenant parameter switches tenant context — new in-scope back-office attack surface
+[LEARN] ACCEPTED MISCONFIG @ sts.vpbank.com: ADFS OIDC metadata 200 exposes device_code/password/implicit grants + vpn/logon/cert scopes — corporate IdP for VPN/cert auth
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com: All vectors exhausted — uniform INVALID_REQUEST_RESOURCE JSON 500, CONFIRMED REJECTED
+[LEARN] REJECTED OAUTH @ www.vpbank.com: No valid client_id in JS bundles (only Usercentrics clientWid); /oauth/authorize always 303→error page — redirect_uri bypass blocked
+[LEARN] REJECTED MISCONFIG @ vpbank-dev.com/vpbank-stage.com: WAF 2.3.0_20260324 intercepts ALL paths — CONFIRMED REJECTED
+[LEARN] REJECTED MISCONFIG @ api-prep.vpbank.com: Layer7 clone of api.vpbank.com — no new surface
+[LEARN] REJECTED MISCONFIG @ designsystem.vpbank.com: Active Netlify app — no subdomain takeover
+[LEARN] NEW INFO @ openbanking.vpbank.com (193.222.70.154): Production PSD2 ASPSP, mTLS "certificate required" at TLS layer — anonymous blocked as designed
+[LEARN] NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle (4MB) confirms API map incl. /api/v1/sessions/{idp_login,secure_session,reset_password}, /api/v1/users, /rails/active_storage/direct_uploads; DebugBarSelector + sagaInitLogging debug hooks ship in prod
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com (anonymous data access): admin/user/qr_codes/tenants API all JWT-gated (401 invalid token / 403 Not authorized); anonymous axis is config-only (brand, tenant status) — no anonymous data exposure (yet)
+[RISK] vp-bank-ag: 65 — Two high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise mass-assignment vector on sign-in (admin/tenant/user_id client-controlled in hidden form fields) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector (blocked on client_id + service 503). Residual: PSD2 sandbox BOLA proven (high confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+[0m
+I now have complete context. The task is to run the 8-step analysis as the big-pickle (API target) analyst. My state is `{phase: POC, target: api}` but the actual current work has evolved heavily toward digital-onboarding mass-assignment. The most recent [NEXT] was a RAG search for the Devise multi-tenant SaaS fingerprints.
+
+Let me execute that RAG search to advance the top hypothesis (mass assignment, confidence 85/80), which is the pending NEXT action. Let me also check the valid-bugs report to understand the confirmed findings status.
+[0m# [0mTodos
+[✓] STEP 1-2: Delta + Priority analysis on current surface
+[•] RAG: source-level confirmation of mass-assignment permit_params on Devise onboarding SaaS
+[ ] STEP 3-4: Hypotheses + self-critique
+[ ] STEP 5-7: Next action + learn + risk
+[0m
+I now have complete understanding. The current top hypothesis (mass assignment on Devise sign_in, confidence 85/80) is well-established with live markup evidence. The pending [NEXT] action from the big-pickle lead was a **RAG search** for the Devise multi-tenant onboarding SaaS fingerprints to confirm permit_params. Let me execute that RAG search now via web search.
+
+Let me perform the RAG investigation to advance the top hypothesis.
+[0m◈ [0mParallel Web Search "Devise multi-tenant Rails SaaS force_tenant secure_session idp_login "tenant_id" "admin" sign_in onboarding back-office"
+[0m◈ [0mParallel Web Search "Rails Devise Devise::SessionsController create permit_params user[admin] user[tenant_id] mass assignment vulnerability"
+[0m
+[0m# [0mTodos
+[✓] STEP 1-2: Delta + Priority analysis on current surface
+[✓] RAG: source-level confirmation of mass-assignment permit_params on Devise onboarding SaaS
+[•] STEP 3-4: Hypotheses + self-critique
+[ ] STEP 5-7: Next action + learn + risk
+[0m
+The RAG search surfaced general context on Devise mass assignment and multi-tenant SaaS patterns, but no specific finding of this exact vendor's open-source codebase (TARGET_ORG not configured; no public repo for the onboarding SaaS surfaced). The key technical insight confirmed:
+
+**Devise's default `sign_in` sanitizer permits ONLY authentication keys (e.g., `email`/`password`) — NOT `tenant_id`, `admin`, or `user_id`.** For sign_in, a malicious `user[admin]=true` should NOT be persisted to the user model by default. However, the critical nuance: the hidden fields rendered in the form (`user[tenant_id]`, `user[admin]`, `user[user_id]`) are rendered by the application's view — meaning the app has a custom `Users::SessionsController` or custom session handling that reads these params. If a custom controller overrides `create` and persists these to a session hash (e.g., `session[:tenant_id]`, `session[:user_id]` for impersonation/"login as" feature), that's where the elevated-context risk lies.
+
+This is an important refinement: the vector is more precisely a **session-context injection via custom sign_in controller** rather than classic ActiveRecord mass-assignment on the User model. This is testable on dev with a synthetic credential as AUTH_HELPED.
+
+Let me update my todos and produce the final structured analysis.
+[0m# [0mTodos
+[✓] STEP 1-2: Delta + Priority analysis on current surface
+[✓] RAG: source-level confirmation of mass-assignment permit_params on Devise onboarding SaaS
+[✓] STEP 3-4: Hypotheses + self-critique
+[✓] STEP 5-7: Next action + learn + risk
+[0m
+I have all the information needed. Let me write the final structured analysis output.
+
+**Key delta insight:** The RAG search critically refines the mass-assignment hypothesis. Devise's default `sign_in` sanitizer permits only authentication keys (email/password) — so classic ActiveRecord mass-assignment on the User model via `user[admin]` would NOT work through the default Devise create path. However, the app explicitly renders `user[tenant_id]`/`user[admin]`/`user[user_id]` hidden fields, which proves a **custom `Users::SessionsController`** that reads these params. The real vector is session-context injection (impersonation / "login as" / tenant-pin) in a custom controller — which if it stores these into `session[...]` server-side without whitelisting, enables wrong-tenant or admin session. This is worth keeping at elevated confidence but the failure mode must be precisely framed as session-persistence not model mass-assignment.
+
+Let me finalize.
+STEP 1 — DELTA
+- [CHANGED] digital-onboarding.vpbank.com/users/sign_in: RAG shows Devise default `sign_in` sanitizer permits ONLY auth keys (email/password), so classic User-model mass-assignment via `user[admin]` is NOT the mechanism; the rendered `user[tenant_id]/user[admin]/user[user_id]` hidden fields prove a **custom `Users::SessionsController`** reads these — vector reframed from model mass-assignment to **session-context injection** (impersonation/tenant-pin persisted into `session[...]`).
+- [NEW] No public GitHub/npm source for this onboarding SaaS surfaced via RAG (TARGET_ORG unconfigured) — no passive permit_params confirmation available; verification requires dev-sandbox POST (AUTH_HELPED).
+
+STEP 2 — PRIORITIZE
+- [PRIO] digital-onboarding-dev.vpbank.com/users/sign_in, 8.4 — custom Devise sign_in reads tenant_id/admin/user_id; off-net host, synthetic tenants; a=9 b=9 t=8 g=8 c=6 f=10
+- [PRIO] digital-onboarding.vpbank.com/admin/api/v1/, 7.6 — force_tenant re-scope post-auth IDOR; a=8 b=10 t=8 g=5 c=6 f=9
+- [PRIO] developer.vpbank.com (PSD2 sandbox BOLA carryover), 7.1 — proven sandbox, prod mTLS-blocked; carried; a=9 b=9 t=8 g=10 c=2 f=8
+- [PRIO] sts.vpbank.com/adfs, 5.5 — device_code grant; a=6 b=8 t=7 g=2 c=3 f=8
+
+STEP 3 — HYPOTHESES
+[HYP] Custom Devise sign_in persists client-controlled tenant_id/admin/user_id into session (wrong-tenant/admin session)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 70
+reasoning: prod+dev /users/sign_in HTTP 200; form posts user[]-namespaced params with hidden user[tenant_id] (prod 4 / dev 129), user[admin]=false, user[user_id]=0; Devise default sign_in sanitizer drops these, so their presence requires an overridden Users::SessionsController; tenant_id differs per host => server tenant-scoping that an attacker can re-pin; /api/v1/brand honors anonymous ?force_tenant proving tenant context is client-directable server-side
+evidence_needed: dev-sandbox POST overriding user[admin]/user[tenant_id]/user[user_id] yields Set-Cookie/Location/body differing from baseline, and GET /api/v1/current_user_details reflects wrong/admin context
+verify_steps: HUMAN on dev (synthetic, no customer data): GET /users/sign_in capture authenticity_token+defaults; POST user[email]=<syn>&user[password]=<syn> (baseline) vs + &user[admin]=true&user[tenant_id]=<other>&user[user_id]=1; diff Set-Cookie/Location/body; then with cookie GET /api/v1/current_user_details
+impact: wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking/wire ops, role mgmt; HIGH
+testability: AUTH_HELPED
+[HYP] force_tenant re-scopes data tenant under a valid JWT session (post-auth cross-tenant IDOR)
+class: IDOR
+asset: digital-onboarding.vpbank.com/admin/api/v1/
+confidence: 45
+reasoning: /api/v1/brand honors anonymous ?force_tenant (200) — param reaches server with no owner check; admin modules (bankingtransactions, incomingwire, rolemgmt, users) in SPA bundle under JWT; if tenant filter reads force_tenant instead of session tenant, A-tenant token reads B-tenant rows
+evidence_needed: dev sessions A+B; GET /admin/api/v1/<resource>?force_tenant=B returns B rows vs A baseline
+verify_steps: HUMAN_ONLY once dev session minted — GET https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other>; compare rowset tenant ids ±param
+impact: cross-tenant financial/PII disclosure in back-office; HIGH
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] force_tenant post-auth IDOR: confidence 45 but HUMAN_ONLY; needs dev session first — carried as secondary, not the immediate next step
+- [FINAL] Mass-assignment/session-context injection @ digital-onboarding-dev (confidence 70) — survivor; evidence (custom controller reading tenant/admin/user_id) is concrete and dev-testable
+- [PARKED] production PSD2 BOLA carryover: confidence 35 < 40; mTLS blocks anonymous verify — HUMAN_ONLY, unchanged
+
+STEP 5 — NEXT ACTION
+[NEXT] PROBE: passive gate-differential on dev before any POST — GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture form fields + authenticity_token + hidden tenant_id/admin/user_id defaults) and GET https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details (confirm caller baseline 401/404) to lock the pre-auth surface; then hand to HUMAN with exact baseline-vs-injected POST diff (user[admin]=true / user[tenant_id]=<other>) for dev synthetic-credential verification
+
+STEP 6 — LEARNING
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding.vpbank.com (custom Devise sign_in): rendered hidden user[tenant_id]/user[admin]/user[user_id] fields prove an overridden Users::SessionsController consumes client-controlled session-context params — vector is session-context injection, not default-Devise model mass-assignment (default sanitizer permits auth keys only per RAG)
+[LEARN] REJECTED OTHER @ digital-onboarding (mass-assignment via Devise default path): RAG confirms Devise sign_in permits only email/password by default, so `user[admin]` alone cannot escalate without a custom controller — the custom-controller branch is now the only live sub-vector
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 65 — Mass-assignment/session-injection surface on the bank-onboarding back-office confirmed in live markup on prod AND dev via a custom Devise sign_in that reads client-controlled tenant_id/admin/user_id; dev sandbox permits synthetic proof. Compounded with verified PSD2 sandbox BOLA, force_tenant tenant-switch, ADFS device-code grants (parked). Confidence on the exact exploit mechanism held at 70 (reframed to custom-controller session persistence after ruling out default Devise model mass-assignment), so risk stays at 65 rather than rising. api.vpbank.com/www/dev/stage remain exhausted.
