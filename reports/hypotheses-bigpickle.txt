@@ -1,1 +1,30 @@
-## 2026-09-07 19:24:07 UTC [target] (model bigpickle)
+## 2026-09-07 22:19:12 UTC [target] (model bigpickle)
+[HYP] mobile.vpbank.com exposes an anonymous-reachable mobile-banking backend/API surface (distinct host in core /24, unborn in KB)
+class: MISCONFIG
+asset: mobile.vpbank.com/
+confidence: 55
+reasoning: Dedicated core-IP 193.222.70.152 (vpbank.com /24, same block as www/.149, sts/.198, vop/.154) vs www-beta/mobile-beta/report/blog/vpfundsolutions all collapsed onto .149 (marketing/dev cluster) and developer/ebics out-of-band — implies a distinct product vhost. KB has zero records of it ever being probed; only DNS was resolved. Mobile-banking backends in this class commonly ship an app-gateway with session/JWT logic and v1/v2 APIs.
+evidence_needed: HEAD/GET / returns 2xx/3xx/401/403 (not TLS drop, WAF maintenance, or NXDOMAIN); any app API path (/api, /api/v1, /rest, /app, /oauth, /v1) returning distinct status vs www; TLS cert SAN reveals product name.
+verify_steps: HEAD https://mobile.vpbank.com/ then GET if 2xx/3xx/401/403 (≤1 rps); if live, GET /api, /api/v1, /rest/v1, /oauth/authorize, /.well-known/openid-configuration; capture Server header + cert SAN.
+impact: unprobed in-scope online/mobile banking asset — the crown-jewel class for this program; anonymous API surface = new auth/session/IDOR test bed. severity HIGH (potential), unknown until probed
+testability: PASSIVE
+[HYP] Off-net EBICS endpoint (ebics.vpbank.com) reachable anonymously with server/version surface or inactive-tenant takeover
+class: MISCONFIG
+asset: ebics.vpbank.com/
+confidence: 45
+reasoning: EBICS (corporate H2H file transfer) vhost resolves to 188.92.53.225 — outside VP Bank core /24, off-net hosting (like digital-onboarding pattern). EBICS servers commonly answer unauthenticated handshake/version endpoints before client-cert exchange; an inactive/expired tenant at a third-party EBICS provider is a takeover-eligible signal. No KB record of any probe.
+evidence_needed: GET/HEAD / returns non-connection-error; /ebicsweb or /ebics/version or protocol greeting exposes server product/version; response differs from a dead host.
+verify_steps: HEAD https://ebics.vpbank.com/ then GET if 2xx/3xx/401/403; then GET /ebicsweb, /ebics/version, /EBICSWeb/Servlet/EBICSStart; capture Server header (≤1 rps).
+impact: corporate payment-channel version disclosure → known-vuln chaining, or takeover/impersonation of the EBICS peer identity. severity MEDIUM-HIGH (unknown until probed)
+testability: PASSIVE
+[HYP] Custom Devise sign_in persists client-injected tenant/admin/user_id into session on stage (unpinned fields = cleanest injection proof)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 78
+reasoning: Stage renders hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 with NO consistent pinning (dev=129, prod=4) → overridden Users::SessionsController active, values flow from POST body; /api/v1/tenants 200 {} looser than prod 403; /api/v1/* bypasses the HTTP-Basic gate that guards only /control-center/; consentManager.env="production" misconfig on stage.
+evidence_needed: baseline vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=999 POST produces divergent 302/Set-Cookie; winning cookie flips /api/v1/tenants from `{}` to populated or /admin/api/v1/users from 401 to 200.
+verify_steps: HUMAN: (1) GET /users/sign_in → authenticity_token + _us_session cookie; (2) baseline POST `authenticity_token=<tok>&user[email]=<syn>&user[password]=<syn>`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff 302/Set-Cookie; (4) replay each cookie on GET /api/v1/tenants + /admin/api/v1/users; stage before dev/prod + operator consent only.
+impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH chained to prod
+testability: HUMAN_ONLY
+[NEXT] PROBE: anonymous reachability sweep (HEAD→GET if 2xx/3xx/401/403, ≤1 rps) of CT-resolved-but-unprobed hosts, primary target `https://mobile.vpbank.com/` (+ `/api`, `/api/v1`, `/rest/v1`, `/oauth/authorize`, `/.well-known/openid-configuration`); secondary `https://ebics.vpbank.com/` (+ `/ebicsweb`, `/ebics/version`), then `https://concentsol.vpbank.com/`, `https://tracking.vpbank.com/`, `https://www-beta.vpbank.com/`, `https://mobile-beta.vpbank.com/` — record status/content-type/Server/cert-SAN; do NOT post or authenticate.
+[RISK] vp-bank-ag: 72 — Discovery of an unprobed, in-CIDR mobile-banking vhost (mobile.vpbank.com, 193.222.70.152) plus off-net EBICS endpoint raises the unexplored-surface factor; combined with the confirmed 3-venue custom-Devise session-context injection surface pending HUMAN proof and the proven PSD2 sandbox BOLA (prod carryover mTLS-blocked), practical likelihood of a reporting-grade finding is materially above prior estimate. Carried: api/www/portal/dev-stage-WAF/ADFS-client_id exhausted.

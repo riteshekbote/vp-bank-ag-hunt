@@ -255,3 +255,16 @@ https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 22:19:43 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://mobile.vpbank.com/ -> HTTP 404
+https://ebics.vpbank.com/ -> 200 len=118346
+https://mobile.vpbank.com/` -> HTTP 404
+https://ebics.vpbank.com/` -> HTTP 404
+https://concentsol.vpbank.com/` -> HTTP 404
+https://tracking.vpbank.com/` -> HTTP 400
+https://www-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+https://mobile-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
