@@ -344,3 +344,15 @@ www.vpbank.com
 - CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
 - CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change
+
+## 2026-09-07 04:51:46 UTC
+- NEW digital-onboarding-stage.vpbank.com (89.163.182.8) live Rails/Devise sibling of prod/dev — probed this cycle: /users/sign_in 200 (24260B; same overridden custom controller with hidden `user[tenant_id]
+- CHANGED Three live venues (prod/dev/stage) now confirmed rendering the custom-Devise session-context injection fields; stage is the cleanest proof venue (unpinned fields → injected values flow purely from POS
+- CHANGED kyc.vpbank.com / onboarding.vpbank.com / digital-onboarding-staging.vpbank.com: NO-DNS (no further family members)
+- NEW digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` (prod returns 403) — differential unauthenticated tenant enumeration on dev
+- NEW digital-onboarding-dev.vpbank.com: `/users/sign_in` form captures `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0`, `authenticity_token`, `_us_session` cookie pre-auth — identical custom 
+- CHANGED digital-onboarding.vpbank.com: Custom Devise SessionsController CONFIRMED (ACCEPTED ACTIVE) — hidden `user[tenant_id]/user[admin]/user[user_id]` consumed by overridden controller, not default Devise s
+- CHANGED digital-onboarding.vpbank.com: `force_tenant` hypothesis REJECTED for anonymous data access — SPA endpoints (`/current_user_details`, `/qr_codes/generate`, `/sessions/*`, `/tenants`, `/users`) all JWT
+- CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change

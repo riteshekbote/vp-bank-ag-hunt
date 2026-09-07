@@ -12279,3 +12279,276 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 65 — Two high-value attack surfaces confirmed: (1) digital-onboarding.vpbank.com exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) sts.vpbank.com ADFS exposes device_code/password/implicit grants for corporate VPN/cert auth — phishing vector (blocked on client_id + service 503). Residual: PSD2 sandbox BOLA proven (high confidence) but production carryover blocked by mTLS (HUMAN_ONLY); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+===== ANALYST bigpickle 2026-09-07 04:51:46 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && git log --oneline -5 2>/dev/null; ls art/ leads/ 2>/dev/null
+total 284
+drwxr-xr-x 12 runner runner  4096 Sep  7 04:48 .
+drwxr-xr-x  3 runner runner  4096 Sep  7 04:48 ..
+drwxr-xr-x  7 runner runner  4096 Sep  7 04:48 .git
+drwxr-xr-x  3 runner runner  4096 Sep  7 04:48 .github
+-rw-r--r--  1 runner runner  1752 Sep  7 04:48 README.md
+-rw-r--r--  1 runner runner    32 Sep  7 04:48 analyst-out.txt
+-rw-r--r--  1 runner runner 96340 Sep  7 04:48 analyst-prompt.txt
+-rw-r--r--  1 runner runner 92525 Sep  7 04:48 ctx.txt
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 inventory
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 knowledge
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 leads
+-rw-r--r--  1 runner runner 11895 Sep  7 04:48 probe-results.md
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 recon-notes
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 reports
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 reposcan-raw
+-rw-r--r--  1 runner runner  3228 Sep  7 04:48 scope.yml
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 scripts
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_bigpickle.json
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_laguna.json
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_ling3.json
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_longcat.json
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_mimo.json
+-rw-r--r--  1 runner runner    33 Sep  7 04:48 state_nemotron3.json
+drwxr-xr-x  2 runner runner  4096 Sep  7 04:48 triage
+abf2fa4 reposcan 2026-09-07-00-49
+leads/:
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-mimo.md
+lead-nemotron3.md
+reposcan-vp-bank-ag.md
+[0m
+[0m✱ [0mGlob "**/scope.*"[90m 1 match[0m
+[0m→ [0mRead state_bigpickle.json
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m
+[0m$ [0mls knowledge/ inventory/ scripts/ recon-notes/ 2>/dev/null
+inventory/:
+vp-bank-ag.md
+
+knowledge/:
+index.md
+
+recon-notes/:
+DEDICATED-DEEP.md
+
+scripts/:
+sync-issues.py
+[0m
+[0m→ [0mRead knowledge/index.md[90m [limit=80][0m
+[0m
+[0m$ [0mfor u in https://digital-onboarding.vpbank.com/users/sign_in https://digital-onboarding-dev.vpbank.com/users/sign_in https://digital-onboarding-dev.vpbank.com/api/v1/tenants https://sts.vpbank.com/adfs/.well-known/openid-configuration https://developer.vpbank.com/psd2/swagger-ui; do echo "== $u"; curl -sk -o /dev/null -w '%{http_code} %{size_download}\n' --max-time 12 "$u"; done
+== https://digital-onboarding.vpbank.com/users/sign_in
+200 37328
+== https://digital-onboarding-dev.vpbank.com/users/sign_in
+200 43270
+== https://digital-onboarding-dev.vpbank.com/api/v1/tenants
+200 2
+== https://sts.vpbank.com/adfs/.well-known/openid-configuration
+200 1898
+== https://developer.vpbank.com/psd2/swagger-ui
+404 53
+[0m
+[0m$ [0mfor u in \
+"https://developer.vpbank.com/" \
+"https://developer.vpbank.com/psd2/swagger-ui/" \
+"https://developer.vpbank.com/psd2/" \
+"https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" \
+"https://digital-onboarding.vpbank.com/api/v1/brand" \
+"https://digital-onboarding-dev.vpbank.com/api/v1/tenants.json" \
+"https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank" ; do \
+echo "== $u"; curl -sk -o /dev/null -w '%{http_code} %{size_download} %{content_type}\n' --max-time 12 "$u"; done
+== https://developer.vpbank.com/
+302 272 text/html; charset=iso-8859-1
+== https://developer.vpbank.com/psd2/swagger-ui/
+200 1385 text/html;charset=UTF-8
+== https://developer.vpbank.com/psd2/
+404 53 text/html; charset=utf-8
+== https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml
+200 46112 application/x-yaml
+== https://digital-onboarding.vpbank.com/api/v1/brand
+200 6369 application/json; charset=utf-8
+== https://digital-onboarding-dev.vpbank.com/api/v1/tenants.json
+200 2 application/json; charset=utf-8
+== https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank
+200 6380 application/json; charset=utf-8
+[0m
+[0m✱ [0mGrep "onboarding|digital-onboarding"[90m in inventory · 39 matches[0m
+[0m
+[0m$ [0mfor h in digital-onboarding-stage.vpbank.com digital-onboarding-staging.vpbank.com onboarding.vpbank.com kyc.vpbank.com onboarding-stage.vpbank.com; do echo "== $h"; getent hosts $h || echo NO-DNS; done
+== digital-onboarding-stage.vpbank.com
+89.163.182.8    digital-onboarding-stage.vpbank.com
+== digital-onboarding-staging.vpbank.com
+NO-DNS
+== onboarding.vpbank.com
+NO-DNS
+== kyc.vpbank.com
+NO-DNS
+== onboarding-stage.vpbank.com
+NO-DNS
+[0m
+Prompt engineering OK. Let me probe the fresh stage host — digital-onboarding-stage.vpbank.com resolves but shows no probe history.
+[0m$ [0mfor u in \
+"https://digital-onboarding-stage.vpbank.com/users/sign_in" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/brand" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/tenants" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/tenants.json" \
+"https://digital-onboarding-stage.vpbank.com/control-center/" \
+"https://digital-onboarding-stage.vpbank.com/admin/api/v1/users" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/current_user_details" ; do \
+echo "== $u"; curl -sk -o /tmp/o.txt -w '%{http_code} %{size_download} %{content_type}\n' --max-time 12 "$u"; head -c 200 /tmp/o.txt; echo; done
+== https://digital-onboarding-stage.vpbank.com/users/sign_in
+200 24057 text/html; charset=utf-8
+<!DOCTYPE html><html lang="en"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /><meta content="width=device-width, initial-scale=1" name="viewport" /><title>Onboarding | VP B
+== https://digital-onboarding-stage.vpbank.com/api/v1/brand
+200 6381 application/json; charset=utf-8
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warni
+== https://digital-onboarding-stage.vpbank.com/api/v1/tenants
+200 2 application/json; charset=utf-8
+{}
+== https://digital-onboarding-stage.vpbank.com/api/v1/tenants.json
+200 2 application/json; charset=utf-8
+{}
+== https://digital-onboarding-stage.vpbank.com/control-center/
+401 112 text/html
+<html><body><h1>401 Unauthorized</h1>
+You need a valid user and password to access this content.
+</body></html>
+
+== https://digital-onboarding-stage.vpbank.com/admin/api/v1/users
+401 61 application/json; charset=utf-8
+{"message":"invalid token","additional":"Nil JSON web token"}
+== https://digital-onboarding-stage.vpbank.com/api/v1/current_user_details
+404 1793 text/html; charset=UTF-8
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+[0m
+[0m$ [0mcurl -sk --max-time 12 "https://digital-onboarding-stage.vpbank.com/users/sign_in" -o /tmp/stage_signin.html; echo "bytes: $(wc -c < /tmp/stage_signin.html)"; grep -oE 'name="user\[[a-z_]+\]" value="[^"]*"' /tmp/stage_signin.html | head; grep -oE 'name="authenticity_token" value="[^"]+"' /tmp/stage_signin.html | head -c 120; echo; grep -oE 'hidden[^>]*' /tmp/stage_signin.html | head -8
+bytes: 24260
+name="authenticity_token" value="-CR7WgLjmjruQicrccOEXDRGB6GzHLlSk6_6UppNg9eW_g8OOz5c1yPDQWHqB2QbJeuhEHCcgPMUSHpmeC6KOw"
+hidden" name="authenticity_token" value="-CR7WgLjmjruQicrccOEXDRGB6GzHLlSk6_6UppNg9eW_g8OOz5c1yPDQWHqB2QbJeuhEHCcgPMUSHpmeC6KOw" autocomplete="off" /
+hidden" name="user[tenant_id]" id="user_tenant_id" /
+hidden" name="user[admin]" id="user_admin" /
+hidden" name="user[user_id]" id="user_user_id" /
+[0m
+[0m$ [0mfor u in \
+"https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/users" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/tenants?tenant_id=129" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/brand?force_tenant=vpbank" \
+"https://digital-onboarding-stage.vpbank.com/api/v1/tenants?keyword=vp" ; do \
+echo "== $u"; curl -sk -o /tmp/o.txt -w '%{http_code} %{size_download}\n' --max-time 12 "$u"; head -c 150 /tmp/o.txt; echo; sleep 1; done
+== https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+404 1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="con
+== https://digital-onboarding-stage.vpbank.com/api/v1/users
+404 1793
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="con
+== https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate
+401 48
+{"status":"2fa not enabled for provided tenant"}
+== https://digital-onboarding-stage.vpbank.com/api/v1/tenants?tenant_id=129
+200 2
+{}
+== https://digital-onboarding-stage.vpbank.com/api/v1/brand?force_tenant=vpbank
+200 6359
+{"id":"vpbank","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"
+== https://digital-onboarding-stage.vpbank.com/api/v1/tenants?keyword=vp
+200 2
+{}
+[0m
+[0m$ [0mfor h in digital-onboarding.vpbank.com digital-onboarding-stage.vpbank.com; do for p in "/api/v1/qr_codes/generate" "/api/v1/qr_codes/generate?force_tenant=vpbank"; do echo "== $h$p"; curl -sk -o /tmp/o.txt -w '%{http_code} %{size_download}\n' --max-time 12 "https://$h$p"; head -c 200 /tmp/o.txt; echo; sleep 1; done; done
+== digital-onboarding.vpbank.com/api/v1/qr_codes/generate
+401 48
+{"status":"2fa not enabled for provided tenant"}
+== digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank
+401 48
+{"status":"2fa not enabled for provided tenant"}
+== digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate
+401 48
+{"status":"2fa not enabled for provided tenant"}
+== digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank
+401 48
+{"status":"2fa not enabled for provided tenant"}
+[0m
+[0m$ [0mgrep -oiE '[a-z0-9.-]+\.vpbank\.com' recon-notes/DEDICATED-DEEP.md 2>/dev/null | sort -u | head -60
+(no output)
+[0m
+[0m→ [0mRead recon-notes/DEDICATED-DEEP.md
+STEP 1 — DELTA
+[NEW] digital-onboarding-stage.vpbank.com (89.163.182.8) live Rails/Devise sibling of prod/dev — probed this cycle: /users/sign_in 200 (24260B; same overridden custom controller with hidden `user[tenant_id]/user[admin]/user[user_id]` fields but UNPINNED — no default values vs dev=129/prod=4), /api/v1/tenants 200 `{}` (same looser posture as dev, prod=403), /api/v1/brand 200 anon (force_tenant=vpbank flips to tenant id "vpbank"), /control-center/ 401 HTTP-Basic (prod=200 SPA), /admin/api/v1/users 401 JWT, /api/v1/qr_codes/generate 401 `{"status":"2fa not enabled for provided tenant"}` identical to prod — basic auth fronts only the static SPA path, NOT the /api/v1/* namespace
+[CHANGED] Three live venues (prod/dev/stage) now confirmed rendering the custom-Devise session-context injection fields; stage is the cleanest proof venue (unpinned fields → injected values flow purely from POST, loose tenants endpoint, basic-auth inconsistency)
+[CHANGED] kyc.vpbank.com / onboarding.vpbank.com / digital-onboarding-staging.vpbank.com: NO-DNS (no further family members)
+[NO_DELTA] sts.vpbank.com ADFS metadata 200 (1898B) stable; developer.vpbank.com /psd2/swagger-ui/ 200 (no-slash 404 is plain redirect artifact); all previously rejected surfaces unchanged (api.vpbank.com uniform 500, OAuth dead, dev/stage WAF, PSD2 BOLA carried)
+
+STEP 2 — PRIORITIZE
+[PRIO] digital-onboarding.vpbank.com,8.55,attack_surface=10 business_value=10 tech_exposure=8 gate_ease=7 cloud_surface=3 freshness=10
+[PRIO] digital-onboarding-dev.vpbank.com,8.10,attack_surface=9 business_value=8 tech_exposure=8 gate_ease=9 cloud_surface=3 freshness=10
+[PRIO] digital-onboarding-stage.vpbank.com,7.85,attack_surface=8 business_value=8 tech_exposure=8 gate_ease=9 cloud_surface=3 freshness=10
+[PRIO] sts.vpbank.com,4.50,attack_surface=5 business_value=7 tech_exposure=6 gate_ease=3 cloud_surface=2 freshness=5
+
+STEP 3 — HYPOTHESES
+[HYP] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: Form renders hidden user[tenant_id]=4/user[admin]=false/user[user_id]=0; overridden Users::SessionsController confirmed (default Devise sanitizer strips these per RAG); anonymous /control-center/ SPA + force_tenant 200 prove tenant plumbing at API layer; all data endpoints JWT-gated pre-auth at 401/403
+evidence_needed: POST with injected user[admin]=true/user[tenant_id]=<other>/user[user_id]=N yields divergent 302/Set-Cookie vs baseline; authenticated GET then reflects injected tenant/admin context
+verify_steps: HUMAN on dev/stage first (synthetic creds, looser gate): GET /users/sign_in capture authenticity_token → POST baseline vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=1 (diff Location/Set-Cookie) → replay cookie on GET /api/v1/tenants and /admin/api/v1/users; prod POST only after dev/stage proof + operator consent
+impact: cross-tenant PII/ident-docs/banking-wire/role-mgmt access in bank back-office; HIGH
+testability: HUMAN_ONLY
+[HYP] Stage custom Devise sign_in persists client-injected tenant_id/admin/user_id into session (unpinned fields = cleanest injection proof)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 78
+reasoning: Stage renders hidden user[tenant_id]/user[admin]/user[user_id] with NO default values (vs dev=129, prod=4) → overridden controller active, no host re-pin masks injection origin; /api/v1/tenants 200 `{}` is looser than prod 403; /control-center/ is 401 basic-auth but /api/v1/* has NO basic auth (inconsistent gate); brand config anon 200
+evidence_needed: baseline vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=1 POST produces divergent session; winning cookie flips /api/v1/tenants from `{}` to populated or /admin/api/v1/users from 401 to 200 (or grant JWT)
+verify_steps: HUMAN: (1) GET /users/sign_in → authenticity_token; (2) POST baseline `authenticity_token=<tok>&user[email]=<syn>&user[password]=<syn>` vs injected `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff 302/Set-Cookie; (3) GET /api/v1/tenants + /admin/api/v1/users with each cookie; stage/dev before any prod attempt
+impact: wrong-tenant/admin session on bank-onboarding back-office (stage = isolated synthetic proof venue); HIGH chained to prod
+testability: HUMAN_ONLY
+[HYP] Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session on dev sandbox
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 75
+reasoning: Dev renders hidden user[tenant_id]=129/user[admin]=false/user[user_id]=0 (host-specific re-pin = custom controller); pre-auth _us_session cookie set (HttpOnly+Secure+Lax); dev looser posture — /api/v1/tenants(.json) 200 `{}` vs prod 403; consentManager.env="production" misconfig on dev; sentry_environment=test2
+evidence_needed: baseline vs injected POST produces divergent session; winning cookie flips /api/v1/tenants populated or /admin/api/v1/users 200
+verify_steps: HUMAN: (1) GET /users/sign_in → authenticity_token + defaults; (2) POST baseline vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=1; diff 302/Set-Cookie; (3) GET /api/v1/tenants + /admin/api/v1/users with each cookie
+impact: wrong-tenant/admin session on bank-onboarding back-office (dev = sanctioned proof venue, synthetic data); HIGH chained to prod
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+[PARKED] ADFS device_code grant on sts.vpbank.com (55): still blocked on client_id enumeration — none in OIDC metadata/JS, /adfs service 503 degraded; no passive path, carry forward unchanged
+[PARKED] digital-onboarding prod + dev injections: carried from prior cycle (85/75), no regression observed this cycle
+[PARKED] Stage qr_codes/tenants anonymous data axis: /api/v1/qr_codes/generate 401 `2fa not enabled for provided tenant` identical on prod+stage, /api/v1/tenants `{}` empty — no anonymous data exposure on stage either; config-only axis
+[FINAL] 1. [85] Session-context injection via custom Devise sign-in on digital-onboarding prod back-office — HUMAN_ONLY
+[FINAL] 2. [78] Stage sign_in persists client-injected tenant/admin/user_id into session (unpinned fields, inconsistent basic-auth gate) — HUMAN_ONLY
+[FINAL] 3. [75] Dev sign_in persists client-injected tenant/admin/user_id into session — HUMAN_ONLY
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded (read-only: observe HTTP status/Set-Cookie/302 Location/body only, NO account creation): (1) GET /users/sign_in → capture authenticity_token + _us_session cookie; (2) baseline POST `authenticity_token=<tok>&user[email]=test@test.com&user[password]=test`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff Set-Cookie/302; (4) replay winning cookie on GET /api/v1/tenants and /admin/api/v1/users; escalate to dev then prod only after stage proof + operator consent
+
+STEP 6 — LEARNING
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding-stage.vpbank.com: stage is live and inconsistent — HTTP-Basic 401 gates /control-center/ static SPA only while /api/v1/* (tenants 200 `{}`, brand 200, qr_codes 401-msg) is reachable anonymously without basic auth; custom Devise sign_in hidden fields present but unpinned (no default tenant_id=129/4)
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com (anonymous data axis): /api/v1/tenants 200 `{}` (empty), /api/v1/qr_codes/generate 401 identical to prod, /admin/api/v1/users 401 JWT, sessions/users/current_user_details 404 — no anonymous data exposure, config-only surface
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devise sign_in form with default values differing per host (4/129/none) — overridden Users::SessionsController active across the fleet; strongest single signal for the session-context injection class
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 70 — New third live venue (stage) confirmed with same custom-Devise session-context injection surface at a looser posture (unpinned injected fields, basic-auth inconsistency, tenants 200 {} vs prod 403) — boosts confidence the custom controller consumes client-controlled session context and raises the practical probability of a working HUMAN proof. Carried: prod/dev/stage custom sign_in injection (AUTH, HIGH) ready for sanctioned POST verification on synthetic creds; PSD2 sandbox BOLA proven but prod carryover mTLS-blocked; ADFS device_code phishing blocked on client_id; api.vpbank.com/www/portal/dev-stage-WAF exhausted.
