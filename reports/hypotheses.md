@@ -718,3 +718,17 @@
 - LEARN: NEW INFO @ digital-onboarding.vpbank.com: /api/v1/brand?force_tenant=vpbank returns 200 — tenant context switching works anonymously; control-center SPA bundle 
 - LEARN: ACCEPTED ACTIVE @ digital-onboarding-dev.vpbank.com (session-context injection surface): Dev form renders hidden `user[tenant_id]=129/user[admin]=false/user[use
 - LEARN: NEW INFO @ digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` on dev (prod 403); dev `/api/v1/current_user_details` returns HTTP 404; `/
+
+## RANKED HYPOTHESES 2026-09-07 09:57:14 UTC
+- [85] digital-onboarding.vpbank.com/users/sign_in: Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office (from art/lead_nemotron3.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded (read-only: observe HTTP status/Set-Cookie
+- NEXT(hypotheses-nemotron3.txt): PROBE: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden field defaults) → then POST https://digital-onboarding
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding-stage.vpbank.com: stage is live and inconsistent — HTTP-Basic 401 gates /control-center/ static SPA only while /api/v1/*
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com (anonymous data axis): /api/v1/tenants 200 {} (empty), /api/v1/qr_codes/generate 401 identical to prod,
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devi
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage confirmed live Rails/Devise sibling with same overridden custom
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com (anonymous data axis): /api/v1/tenants 200 `{}` (empty), /api/v1/qr_codes/generate 401 identical to pro
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devi
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48

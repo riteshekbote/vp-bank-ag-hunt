@@ -356,3 +356,12 @@ www.vpbank.com
 - CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
 - CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change
+
+## 2026-09-07 09:57:14 UTC
+- NEW digital-onboarding-stage.vpbank.com (89.163.182.8) confirmed live Rails/Devise sibling — /users/sign_in 200 with same overridden custom controller rendering hidden `user[tenant_id]`, `user[admin]`, `u
+- CHANGED Three venues (prod/dev/stage) now confirmed rendering custom Devise session-context injection fields; stage is cleanest proof venue (unpinned defaults → injected values flow purely from POST body)
+- CHANGED kyc.vpbank.com / onboarding.vpbank.com / digital-onboarding-staging.vpbank.com: NO-DNS (no further family members)
+- CHANGED digital-onboarding-dev.vpbank.com: `/api/v1/tenants` returns HTTP 200 `{}` (prod 403) — differential unauthenticated tenant enumeration on dev
+- CHANGED sts.vpbank.com: ADFS service degraded (HTTP 503 on `/adfs`), device_code endpoints exist (405 GET) but block on unknown client_id — no viable path without client_id enumeration
+- CHANGED developer.vpbank.com: PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: All previously exhausted/rejected, no change
