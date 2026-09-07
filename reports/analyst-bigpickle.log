@@ -12749,3 +12749,181 @@ testability: HUMAN_ONLY
 ## STEP 7 — RISK
 
 [RISK] vp-bank-ag: 70 — Three live venues (prod/dev/stage) confirmed with same custom-Devise session-context injection surface; stage has unpinned injected fields (tenant_id=7, not pinned like dev=129/prod=4) and looser posture (basic-auth inconsistency, tenants 200 {} vs prod 403) — boosts confidence the custom controller consumes client-controlled session context and raises practical probability of working HUMAN proof. Carried: PSD2 sandbox BOLA proven (high confidence) but prod carryover mTLS-blocked; ADFS device_code phishing blocked on client_id + 503; api.vpbank.com/www/portal/dev-stage-WAF exhausted.
+===== ANALYST bigpickle 2026-09-07 19:26:52 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m✱ [0mGlob "**/*.txt"[90m in . · 9 matches[0m
+[0m✱ [0mGlob "**/*.md"[90m in . · 50 matches[0m
+[0m→ [0mRead reports/hypotheses-bigpickle.txt
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead triage/run-2026-09-07-16-39.md
+[0m✗ [0mRead reports/hypotheses-bigpickle.txt failed[90m [offset=446][0m
+[91m[1mError: [0mOffset 446 is out of range for this file (43 lines)
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead probe-results.md[90m [limit=100][0m
+[0m→ [0mRead ctx.txt
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code} %{redirect_url}" https://digital-onboarding-dev.vpbank.com/users/sign_in 2>/dev/null
+200
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code} %{redirect_url}" https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null
+200
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code} %{redirect_url}" https://digital-onboarding.vpbank.com/users/sign_in 2>/dev/null
+200
+[0m
+Let me do some passive probes to check for any delta since last cycle, then produce the structured output.
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code}" https://digital-onboarding-dev.vpbank.com/api/v1/tenants 2>/dev/null
+200
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code}" https://digital-onboarding-stage.vpbank.com/api/v1/tenants 2>/dev/null
+200
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "%{http_code}" https://sts.vpbank.com/adfs/.well-known/openid-configuration 2>/dev/null
+200
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[(tenant_id|admin|user_id)\]"[^>]*value="[^"]*"' | head -10
+(no output)
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-dev.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[(tenant_id|admin|user_id)\]"[^>]*value="[^"]*"' | head -10
+(no output)
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[(tenant_id|admin|user_id)\]"[^>]*value="[^"]*"' | head -10
+(no output)
+[0m
+[0m$ [0mcurl -sk -D- https://digital-onboarding-stage.vpbank.com/api/v1/tenants 2>/dev/null | head -20
+HTTP/2 200 
+date: Mon, 07 Sep 2026 19:23:22 GMT
+content-type: application/json; charset=utf-8
+content-length: 2
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+x-content-type-options: nosniff
+x-permitted-cross-domain-policies: none
+referrer-policy: strict-origin-when-cross-origin
+x-robots-tag: none, noarchive, nosnippet, noimageindex
+pragma: no-cache
+expires: 0
+cache-control: private, no-store
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-dLSnCnM1ypg/ykVyU7rVyQ=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.sentry.io/api/4506139526955009/security/?sentry_key=94032977b82e5066a63980fb795ab821&sentry_release=5e237eae6a37e53b56d775c1b2d888364b3473d9&sentry_environment=stage-vpbank
+set-cookie: session_expiry=1788810802000; path=/; expires=Mon, 07 Sep 2026 19:53:22 GMT; SameSite=Lax; secure
+set-cookie: _us_session=os7N9wQ9qBB5O4YZsqcM08L2t0BdqmEhdath1hxIlGzTn6lu9LauDlyV8UDUryBPRgVf9VQldSy5vmqtz48D6jlwm%2B5cNdrO7JqErcaRgwWIB2cFNEs0xKNpnoqHeNbcTdogeA0X%2BaJCgYpcp9cQ%2BPSbTduXhsmhcixrane5QpkJSnfrgrQp43qypqf1FyXcYbBDWXqsnLHwbeAFUwEvODtlagj1bHVexI7aSl7l%2Fe8rgD3F5p2zs5vfmc5gJlpJYWhvJdM%3D--BW%2F8Tp%2BITw9ftR2J--NEnd%2BfOjgtRvKFNHFsWNjw%3D%3D; path=/; expires=Mon, 07 Sep 2026 19:53:22 GMT; secure; HttpOnly; SameSite=Lax
+x-request-id: 1305112a-24bb-474b-912e-05f824872e27
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Accept, Origin
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[[^]]+\]"' | head -20
+name="user[tenant_id]"
+name="user[admin]"
+name="user[user_id]"
+name="user[email]"
+name="user[password]"
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-dev.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[[^]]+\]"' | head -20
+name="user[tenant_id]"
+name="user[admin]"
+name="user[user_id]"
+name="user[email]"
+name="user[password]"
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[[^]]+\]"' | head -20
+name="user[tenant_id]"
+name="user[admin]"
+name="user[user_id]"
+name="user[email]"
+name="user[password]"
+[0m
+[0m$ [0mcurl -sk -D- https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | head -30
+HTTP/2 200 
+date: Mon, 07 Sep 2026 19:23:32 GMT
+content-type: text/html; charset=utf-8
+content-length: 25117
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+x-content-type-options: nosniff
+x-permitted-cross-domain-policies: none
+referrer-policy: strict-origin-when-cross-origin
+link: </assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css>; rel=preload; as=style; nopush,</assets/vpbank/application-3a93eac5a0dded7d9f624c9f037db9618eebf2ca81780dc8888f8d248b7b42de.css>; rel=preload; as=style; nopush,</assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css>; rel=preload; as=style; nopush,</assets/vpbank/application-3a93eac5a0dded7d9f624c9f037db9618eebf2ca81780dc8888f8d248b7b42de.css>; rel=preload; as=style; nopush,</assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js>; rel=preload; as=script; nopush,</assets/vpbank/elements/floating-placeholder-43e83ead8b15424c1d8317311cf26d899d6ed4f6606966d9332017774a147d4c.css>; rel=preload; as=style; nopush,</assets/vpbank/elements/floating-placeholder-43e83ead8b15424c1d8317311cf26d899d6ed4f6606966d9332017774a147d4c.css>; rel=preload; as=style; nopush
+x-robots-tag: none, noarchive, nosnippet, noimageindex
+pragma: no-cache
+expires: 0
+cache-control: private, no-store
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-WMdplzBZ5rYgJsL0elIn5g=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.sentry.io/api/4506139526955009/security/?sentry_key=94032977b82e5066a63980fb795ab821&sentry_release=5e237eae6a37e53b56d775c1b2d888364b3473d9&sentry_environment=stage-vpbank
+set-cookie: session_expiry=1788810812000; path=/; expires=Mon, 07 Sep 2026 19:53:32 GMT; SameSite=Lax; secure
+set-cookie: _us_session=CkIfvuj8x%2FNt5S6hlu1Uh74DxEUHx1OunQ8HNz5loJOl49jRHBe79YektSnGSQS%2BIGFQ%2B%2B0B1gAOGOIt37PcRCAePWP%2Bs4m03Wk0aIjN6QcJJr6J4QsmOmgQIdQ7RseV86lTaL%2BmlMxdCYOQCXONFGKUfv64AgadVt7rKoNzH4drZ6YZ9z%2Bas4MzUuBOqqhTv1RhKnSuO6FD4hrKTZ6%2BJTuV0oHpu34bIJZKJxInx7enEJT0kxc9PETHrpiGKixFq31jeG2eafvIMdRmAc6Zmy1QJU%2Bxs1Tv6hkdLeb4G%2BWWhDsOFwxGsoI%3D--SB8HlvbW9de561mw--y%2FmaxmE9PG%2B%2F7BffRsQZ9A%3D%3D; path=/; expires=Mon, 07 Sep 2026 19:53:32 GMT; secure; HttpOnly; SameSite=Lax
+x-request-id: 988e2664-f929-479a-8da8-3d38c65ea0fb
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Accept, Origin
+
+<!DOCTYPE html><html lang="en"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /><meta content="width=device-width, initial-scale=1" name="viewport" /><title>Onboarding | VP Bank</title><link rel="icon" type="image/png" href="/assets/base/vpbank/favicon-6ec6cf6571a84a1b70c1593210d2db269fddb4b30c50cb4d3369a4eb09a86809.png" /><meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="aWsF2PoZJAaC0K1kZuuTz4HooEJFYaOHgznVwVnfREY0ymGXyT4kiSzzILRlWM8fw5QoKdAd8G4S0_detjhMjA" /><meta name="csp-nonce" content="WMdplzBZ5rYgJsL0elIn5g==" /><link rel="stylesheet" href="/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css" media="all" /><link rel="stylesheet" href="/assets/vpbank/application-3a93eac5a0dded7d9f624c9f037db9618eebf2ca81780dc8888f8d248b7b42de.css" media="all" data-turbolinks-track="reload" /><script nonce="WMdplzBZ5rYgJsL0elIn5g==">
+//<![CDATA[
+var consentManager = {};
+
+consentManager.gaTrackingId = "";
+// Rails.application.config.ga_tracking_id_internal
+consentManager.gaTrackingIdInternal = ""
+consentManager.tenantUsesGoogleAnalytics = consentManager.gaTrackingId !== ""
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP '(user\[tenant_id\]|user\[admin\]|user\[user_id\])" value="[^"]*"'
+(no output)
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-dev.vpbank.com/users/sign_in 2>/dev/null | grep -oP '(user\[tenant_id\]|user\[admin\]|user\[user_id\])" value="[^"]*"'
+(no output)
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding.vpbank.com/users/sign_in 2>/dev/null | grep -oP '(user\[tenant_id\]|user\[admin\]|user\[user_id\])" value="[^"]*"'
+(no output)
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP 'name="user\[tenant_id\]"[^>]*|name="user\[admin\]"[^>]*|name="user\[user_id\]"[^>]*' | head -10
+name="user[tenant_id]" id="user_tenant_id" /
+name="user[admin]" id="user_admin" /
+name="user[user_id]" id="user_user_id" /
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP '<input[^>]*user\[tenant_id\][^>]*>' | head -5
+<input value="7" autocomplete="off" type="hidden" name="user[tenant_id]" id="user_tenant_id" />
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-dev.vpbank.com/users/sign_in 2>/dev/null | grep -oP '<input[^>]*user\[tenant_id\][^>]*>' | head -5
+<input value="129" autocomplete="off" type="hidden" name="user[tenant_id]" id="user_tenant_id" />
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding.vpbank.com/users/sign_in 2>/dev/null | grep -oP '<input[^>]*user\[tenant_id\][^>]*>' | head -5
+<input value="4" autocomplete="off" type="hidden" name="user[tenant_id]" id="user_tenant_id" />
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP '<input[^>]*user\[admin\][^>]*>' | head -3
+<input value="false" autocomplete="off" type="hidden" name="user[admin]" id="user_admin" />
+[0m
+[0m$ [0mcurl -sk https://digital-onboarding-stage.vpbank.com/users/sign_in 2>/dev/null | grep -oP '<input[^>]*user\[user_id\][^>]*>' | head -3
+<input value="0" autocomplete="off" type="hidden" name="user[user_id]" id="user_user_id" />
+[0m
+[0m$ [0mcurl -sk -D- https://digital-onboarding-stage.vpbank.com/api/v1/brand 2>/dev/null | head -30
+HTTP/2 200 
+date: Mon, 07 Sep 2026 19:23:58 GMT
+content-type: application/json; charset=utf-8
+content-length: 6381
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+x-content-type-options: nosniff
+x-permitted-cross-domain-policies: none
+referrer-policy: strict-origin-when-cross-origin
+x-robots-tag: none, noarchive, nosnippet, noimageindex
+pragma: no-cache
+expires: 0
+cache-control: private, no-store
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-2CnyQMSsXyB8tSPExS6OaA=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.sentry.io/api/4506139526955009/security/?sentry_key=94032977b82e5066a63980fb795ab821&sentry_release=5e237eae6a37e53b56d775c1b2d888364b3473d9&sentry_environment=stage-vpbank
+set-cookie: session_expiry=1788810838000; path=/; expires=Mon, 07 Sep 2026 19:53:58 GMT; SameSite=Lax; secure
+set-cookie: _us_session=dZ38quMIMxRZYq7f%2BAg7n7tzWhojCRtAp5nrhMMpT0r0ubTFFtObvsZGaTHKL492dlMyrZcl4otpMjqG3xMRSYUpR%2Bg3T4diAzGPfBXiWzKqUIoWVN9x%2B2Zy28RD8PY6k15gl9ZSe5cBfsL72YfCE1N%2BPlDOyNcZqJApX7oE2WE44O9ct5fOuTc9Mqnq9SrLjgQCrPBvVRlqyumcqwO4m9uvatLb%2BJKTqvbNf%2FvG%2BH8ar2urgmUSlZXrbw1crEPgW1ToZsA%3D--mNURbvm1MTpRMGGM--SI%2BoOMn2TzqLWtb5sUPMoA%3D%3D; path=/; expires=Mon, 07 Sep 2026 19:53:58 GMT; secure; HttpOnly; SameSite=Lax
+x-request-id: 6aba4751-4a84-413e-a592-a9004376575c
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Accept, Origin
+
+{"id":"vpbanklighttenant","company":"VP BANK AG","theme":{"typography":{"fontFamily":["Poppins"]},"palette":{"primary":{"main":"#00376E","contrastText":"#FFFFFF"},"secondary":{"main":"#00376E"},"warning":{"main":"#00376E"}}},"locales":["en","de"],"page_title":"Business Control Center","tenant_symbol":"vpbanklighttenant","messages":{"en-GB":{"common-menu-userlist":"Onboarding cases","breadcrumb-userlist":"Onboarding cases","devexpress-columntitle-created_at":"CREATION DATE","devexpress-columntitle-tenant":"EAM","devexpress-columntitle-customer_name":"CLIENT FULL NAME","devexpress-columntitle-jurisdiction":"BANKING LOCATION","devexpress-columntitle-client_process_status":"TAX 1. CLIENT","devexpress-columntitle-i2_client_process_status":"TAX 2. CLIENT","devexpress-columntitle-automatic_welcome_email":"RELEASE-EMAIL","atom-detailsrow-created_at":"CREATION DATE","atom-detailsrow-customer_name":"CLIENT FULL NAME","atom-detailsrow-mobile_phone":"TELEPHONE","atom-detailsrow-client_process":"1. CLIENT PROCESS","atom-detailsrow-i2_client_process":"2. CLIENT PROCESS","atom-detailsrow-id_now_status":"IDNOW STATUS 1. CLIENT","atom-detailsrow-secondary_user_id_now_status":"IDNOW STATUS 2. CLIENT","atom-detailsrow-ident_documents":"1. CLIENT IDENT FILES","atom-detailsrow-secondary_user_ident_documents":"2. CLIENT IDENT FILES","atom-userlist-newsigningcase-save":"Create Onboarding Case","atom-userlist-newsigningcase-cancel":"Cancel","atom-userlist-newsigningcase-contractual_relationship":"Type of Business Relationship","atom-userlist-newsigningcase-client_details":"Client Details","atom-userlist-newsigningcase-first_client":"First Client","atom-userlist-newsigningcase-second_client":"Second Client","atom-userlist-newsigningcase-first_name":"Given Name","atom-userlist-newsigningcase-last_name":"Surname","atom-userlist-newsigningcase-email":"E-Mail Address","atom-userlist-newsigningcase-phone_number":"Mobile Number","api-value-editsign_onboarding_process_status-sent_to_client":"SENT TO CLIENT","api-value-editsign_onboarding_process_status-in_progress":"IN PROGRESS","api-value-editsign_onboarding_process_status-signed":"SIGNED","api-value-editsign_onboarding_process_status-partially_signed":"PARTIALLY SIGNED","api-value-editsign_onboarding_process_status-rejected":"REJECTED","api-value-editsign_onboarding_process_status-expired":"EXPIRED","api-value-editsign_onboarding_process_status-failed":"FAILED","api-value-editsign_onboarding_process_status-draft":"DRAFT","api-value-editsign_onboarding_process_status-to_be_verified":"TO BE VERIFIED","molecule-userlist-newsigningcase-create":"Start New Onboarding","molecule-userlist-newsigningcase-title":"Create New Client Onboarding Case","breadcrumb-roleadminlist":"Users","common-menu-roleadminlist":"Users","molecule-roleadminlist-newroleadmin-create":"Create new user","molecule-roleadminlist-newroleadmin-title":"Create new user","molecule-roleadminlist-newroleadmin-admin_role_title":"User Role","molecule-rolegrouplist-newrolegroup-create":"Create new organization group","molecule-rolegrouplist-newrolegroup-title":"Create new organization group","molecule-organizationlist-delete-dialog-confirmation":"Deleting this organization will delete all users and all onboarding cases belonging to this organization!\n","molecule-organizationlist-delete-dialog-title":"Delete Organization","devexpress-columntitle-ident_only_id":"ID","devexpress-columntitle-ident_only_created_at":"LAST INTERACTION","devexpress-columntitle-ident_only_jurisdiction":"BOOKING CENTER","devexpress-columntitle-ident_only_customer_name":"CLIENT FULL NAME","devexpress-columntitle-ident_only_email":"EMAIL","devexpress-columntitle-ident_only_phone":"MOBILE NUMBER","breadcrumb-identOnlyList":"IDENTIFICATION CASES","common-menu-identlist":"Identification cases","molecule-userlist-download-button":"Export to Excel"},"de-DE":{"atom-detailsrow-client_process":"1. KUNDENPROZESS","atom-detailsrow-i2_client_process":"2. KUNDENPROZESS","breadcrumb-userlist":"Onboardingvorgänge","common-menu-userlist":"Onboardingvorgänge","devexpress-columntitle-created_at":"ERSTELL-DATUM","devexpress-columntitle-tenant":"EAM","molecule-organizationlist-delete-dialog-confirmation":"Durch das Löschen dieser Organisation werden alle Benutzer und alle Onboarding-Fälle gelöscht, die zu dieser Organisation gehören!\n","molecule-organizationlist-delete-dialog-title":"Organisation löschen","molecule-userlist-newsigningcase-title":"Neues Onboarding starten","atom-userlist-newsigningcase-contractual_relationship":"Art der Bankbeziehung","atom-userlist-newsigningcase-client_details":"Kundendetails","atom-userlist-newsigningcase-first_client":"Erster Kunde","atom-userlist-newsigningcase-second_client":"Zweiter Kunde","atom-userlist-newsigningcase-first_name":"Vorname","atom-userlist-newsigningcase-last_name":"Nachname","atom-userlist-newsigningcase-email":"E-Mail Adresse","api-value-editsign_onboarding_process_status-sent_to_client":"AN KUNDEN GESENDET","api-value-editsign_onboarding_process_status-in_progress":"IN BEARBEITUNG","api-value-editsign_onboarding_process_status-signed":"UNTERSCHRIEBEN","api-value-editsign_onboarding_process_status-partially_signed":"TEILWEISE SIGNIERT","api-value-editsign_onboarding_process_status-rejected":"ABGELEHNT","api-value-editsign_onboarding_process_status-expired":"ABGELAUFEN","api-value-editsign_onboarding_process_status-failed":"FEHLGESCHLAGEN","api-value-editsign_onboarding_process_status-draft":"ENTWURF","api-value-editsign_onboarding_process_status-to_be_verified":"MUSS BESTÄTIGT WERDEN","molecule-userlist-newsigningcase-create":"Neues Onboarding starten","molecule-loginform-title":"Login","devexpress-columntitle-jurisdiction":"BANKSTANDORT","molecule-selectrow-option-choose-one":"Bitte auswählen","devexpress-columntitle-ident_only_id":"ID","devexpress-columntitle-ident_only_created_at":"LETZTE AKTIVITÄT","devexpress-columntitle-ident_only_jurisdiction":"BANKSTANDORT","devexpress-columntitle-ident_only_customer_name":"NAME","devexpress-columntitle-ident_only_email":"E-MAIL","devexpress-columntitle-ident_only_phone":"MOBILE NUMMER","devexpress-columntitle-automatic_welcome_email":"Versand E-Mail","breadcrumb-identOnlyList":"IDENTIFIKATIONS-VORGÄNGE","common-menu-identlist":"Identifikations-Vorgänge","molecule-userlist-download-button":"Export in Excel"}},"demo":true}
+[0m
+Now I have full current state. Let me produce the structured analysis.
+
+```
+## 2026-09-07 19:24:00 UTC [target] (model bigpickle)
+
+STEP 1 — DELTA
+
+NO_DELTA — all endpoints stable since last cycle (15:28 UTC). Re-confirmed live:
+- digital-onboarding[-dev|-stage].vb
