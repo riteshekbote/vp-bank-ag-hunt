@@ -16,3 +16,7 @@
 
 - 1 lead(s) marked VALID at 2026-09-07 11:39:24 UTC
   - **Verdict: HOLD** — High-severity if exploitable (CVSS ~8.8), but requires POST with valid credentials to prove. Passive proof only shows the form fields exist. Needs: POST `user[admin]=true&user[tena
+
+- 2 lead(s) marked VALID at 2026-09-07 20:10:45 UTC
+  - **Verdict: VALID**
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 5.3–7.5 | Report to program |
