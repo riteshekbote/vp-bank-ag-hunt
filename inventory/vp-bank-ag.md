@@ -440,3 +440,15 @@ www.vpbank.com
 - CHANGED tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content (REJECTED)
 - CHANGED www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products (REJECTED)
 - CHANGED concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes (REJECTED)
+
+## 2026-09-08 20:53:03 UTC
+- NEW concentsol.vpbank.com re-probed this cycle (.well-known/openid-configuration, /api/version, /swagger/v1/swagger.json) — all uniform empty 404 (no content-type/body), further confirming parked Kestrel 
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed live this cycle (HTTP 200, 25225B) with hidden user[tenant_id]/user[admin]/user[user_id], authenticity_token x3, _us_session + session_ex
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token — completes 3/3 venue confirmation for ses
+- NEW digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — prod default tenant_id=4
+- NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0` — dev default tenant_id=129
+- CHANGED mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths incl /oauth/authorize + OIDC — maintenance-gated, no mobile-banking backend (REJECTED)
+- CHANGED ebics.vpbank.com: Swisscom-hosted static EBICS info page, all protocol paths 404 — active product, no takeover (REJECTED)
+- CHANGED tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content (REJECTED)
+- CHANGED www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products (REJECTED)
+- CHANGED concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes (REJECTED)

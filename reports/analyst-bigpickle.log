@@ -14044,3 +14044,172 @@ testability: HUMAN_ONLY
 ## STEP 7 — RISK
 
 [RISK] vp-bank-ag: 68 — Crown-jewel thread unchanged: three live digital-onboarding venues render client-controlled Devise session-context fields and await single HUMAN stage proof. PSD2 BOLA proven in sandbox but prod carryover mTLS-gated. CT-reachability sweep closed negatively (mobile/ebics/tracking/beta all maintenance or static; concentsol parked). Practical route to reporting-grade finding remains the stage-sign_in POST verification. All api/www/portal/dev-stage-WAF/ADFS vectors exhausted.
+===== ANALYST bigpickle 2026-09-08 20:53:03 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m# [0mTodos
+[•] STEP 1-7 structured analysis for api target phase POC
+[0m
+[0m→ [0mRead .
+[0m
+[0m$ [0mfind /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt -maxdepth 2 -type f -name "*.txt" -o -name "*.md" -o -name "*.json" | head -30
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/analyst-out.txt
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_nemotron3.json
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-07-16-39.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-05-22-41.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-07-11-39.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-23-43.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-07-05-41.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-04-44.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-09-20.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-13-36.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-02-21-52.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-07-00-41.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-16-20.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-05-18-48.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-05-20-56.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-05-16-44.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-22-41.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-08-00-54.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-19-40.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-03-22-17.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-04-17-04.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-07-20-10.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-03-08-08.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-05-04.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-05-03-01.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-03-16-56.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-08-14-37.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-00-34.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-13-06.md
+/home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/run-2026-09-06-18-26.md
+[0m
+[0m→ [0mRead leads
+[0m→ [0mRead scope.yml
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/triage/ | tail -5
+-rw-r--r--  1 runner runner   170 Sep  8 20:45 run-2026-09-08-00-54.md
+-rw-r--r--  1 runner runner  8006 Sep  8 20:45 run-2026-09-08-05-37.md
+-rw-r--r--  1 runner runner   244 Sep  8 20:45 run-2026-09-08-10-04.md
+-rw-r--r--  1 runner runner   213 Sep  8 20:45 run-2026-09-08-14-37.md
+-rw-r--r--  1 runner runner   169 Sep  8 20:45 run-2026-09-08-18-05.md
+[0m
+[0m→ [0mRead triage/run-2026-09-08-18-05.md
+[0m→ [0mRead state_bigpickle.json
+[0m→ [0mRead triage/run-2026-09-08-14-37.md
+[0m→ [0mRead triage/run-2026-09-08-05-37.md
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead inventory/vp-bank-ag.md
+Let me look at the discovery probes state and probe-results to understand the current actual surface, and check whether concentsol was fully explored.
+I have a comprehensive picture now. Let me do a bit of exploratory live probing to see if there's any fresh surface to add value this cycle, focusing on the concentsol Kestrel host (which was parked with low confidence but may warrant one more check for admin/OIDC discovery) and re-verifying the stage venue's current state. Let me also check the developer PSD2 sandbox for any unexplored endpoint classes.
+
+Given the rules (passive-first, <=1 rps, GET/HEAD/OPTIONS only for live probes, no mutating tests against live customer data), I should be careful. The main remaining actionable vector is the stage sign_in POST which is HUMAN_ONLY and requires operator consent. Let me do a couple of constrained read-only GET probes on the concentsol Kestrel host to see if there's a fresh discovery signal, plus confirm current reachability of the stage venue.
+[0m
+[0m$ [0mfor u in "https://concentsol.vpbank.com/.well-known/openid-configuration" "https://concentsol.vpbank.com/api/version" "https://concentsol.vpbank.com/swagger/v1/swagger.json"; do echo "=== $u ==="; curl -sk -o /dev/null -w "HTTP %{http_code} type=%{content_type} size=%{size_download}\n" --max-time 15 "$u"; done
+=== https://concentsol.vpbank.com/.well-known/openid-configuration ===
+HTTP 404 type= size=0
+=== https://concentsol.vpbank.com/api/version ===
+HTTP 404 type= size=0
+=== https://concentsol.vpbank.com/swagger/v1/swagger.json ===
+HTTP 404 type= size=0
+[0m
+Concentsol remains uniformly empty 404 (no content-type, no body) — consistent with a parked Kestrel host, no route map. No new signal. Let me confirm stage reachability and check the sign_in form defaults once more (read-only GET), which is the cleanest proof venue.
+[0m$ [0mecho "=== stage /users/sign_in ==="; curl -sk -D - -o /tmp/stage_signin.html --max-time 20 "https://digital-onboarding-stage.vpbank.com/users/sign_in" | head -25; echo "--- hidden fields ---"; grep -oE 'name="user\[(tenant_id|admin|user_id)\]"[^>]*' /tmp/stage_signin.html | head; echo "--- authenticity_token present ---"; grep -c 'authenticity_token' /tmp/stage_signin.html; echo "--- cookie ---"; grep -i '^set-cookie' /tmp/stage_signin.html 2>/dev/null | head
+=== stage /users/sign_in ===
+HTTP/2 200 
+date: Tue, 08 Sep 2026 20:46:44 GMT
+content-type: text/html; charset=utf-8
+content-length: 25225
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+x-content-type-options: nosniff
+x-permitted-cross-domain-policies: none
+referrer-policy: strict-origin-when-cross-origin
+link: </assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css>; rel=preload; as=style; nopush,</assets/vpbank/application-3a93eac5a0dded7d9f624c9f037db9618eebf2ca81780dc8888f8d248b7b42de.css>; rel=preload; as=style; nopush,</assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css>; rel=preload; as=style; nopush,</assets/vpbank/application-3a93eac5a0dded7d9f624c9f037db9618eebf2ca81780dc8888f8d248b7b42de.css>; rel=preload; as=style; nopush,</assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js>; rel=preload; as=script; nopush,</assets/vpbank/elements/floating-placeholder-43e83ead8b15424c1d8317311cf26d899d6ed4f6606966d9332017774a147d4c.css>; rel=preload; as=style; nopush,</assets/vpbank/elements/floating-placeholder-43e83ead8b15424c1d8317311cf26d899d6ed4f6606966d9332017774a147d4c.css>; rel=preload; as=style; nopush
+x-robots-tag: none, noarchive, nosnippet, noimageindex
+pragma: no-cache
+expires: 0
+cache-control: private, no-store
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-NEBPIQxgPzlITMjFjHdZDg=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.sentry.io/api/4506139526955009/security/?sentry_key=94032977b82e5066a63980fb795ab821&sentry_release=5e237eae6a37e53b56d775c1b2d888364b3473d9&sentry_environment=stage-vpbank
+set-cookie: session_expiry=1788902204000; path=/; expires=Tue, 08 Sep 2026 21:16:44 GMT; SameSite=Lax; secure
+set-cookie: _us_session=pwAzAjrrY0hvrJurzUIb4exCHItE%2BHSScQiP%2FPNkt87LfC1gk2YGtUJZ%2B3EViYf6WwWpwrzung1s1RSHVK1%2Bc1QmoirWctx4bVoBXidesooQbE6PpeRm3gDx3AuU7n3IoXAxKqkRtL%2FrELvITdqRD4yLe9xPhKON6xsKjIIYCe7lh4K6lPYGGvdDM9jb20KN4i4gLZNQ9XQwk2etbizJei1%2FV6COJ2o5SQu6klu1n6YvlZ7SrQB3Z3l97OfMVMBeKXf3BuYeUS895FeqboAC8yXEldtH764Iooav29RgRajSJ8UE2A6Cm8M%3D--eCrboywnF%2Fcp4TaL--gxEKoScXzGCzi%2FYyWOAjPA%3D%3D; path=/; expires=Tue, 08 Sep 2026 21:16:44 GMT; secure; HttpOnly; SameSite=Lax
+x-request-id: d11ec067-08d0-4e2c-a212-6c2706ac43c6
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Accept, Origin
+
+--- hidden fields ---
+name="user[tenant_id]" id="user_tenant_id" /
+name="user[admin]" id="user_admin" /
+name="user[user_id]" id="user_user_id" /
+--- authenticity_token present ---
+3
+--- cookie ---
+[0m
+[0m# [0mTodos
+[✓] STEP 1-7 structured analysis for api target phase POC
+[0m
+The stage venue is confirmed live with the exact hidden fields (tenant_id/admin/user_id), authenticity_token, and _us_session cookie. This is the read-only baseline captured. I have enough to produce my analysis.
+
+I have completed the passive read-only recon for this cycle. Now let me write the structured output.
+STEP 1 — DELTA
+[NEW] concentsol.vpbank.com re-probed this cycle (.well-known/openid-configuration, /api/version, /swagger/v1/swagger.json) — all uniform empty 404 (no content-type/body), further confirming parked Kestrel host; still no route map or CDI surface
+[CHANGED] digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed live this cycle (HTTP 200, 25225B) with hidden user[tenant_id]/user[admin]/user[user_id], authenticity_token x3, _us_session + session_expiry cookies, CSP report-uri to sentry ingest (stage-vpbank env) — baseline locked, still awaiting HUMAN POST proof
+
+STEP 2 — PRIORITIZE
+[PRIO] digital-onboarding-stage.vpbank.com,8.2,AUTH+GATE+BUS: custom Devise sign_in renders unpinned hidden fields (tenant_id=7/admin=false/user_id=0); overridden SessionsController confirmed fleet-wide; /api/v1/tenants 200 {} anon (prod 403); HTTP-Basic only guards /control-center/ static SPA, not /users/sign_in POST; cleanest proof venue
+[PRIO] digital-onboarding.vpbank.com,7.8,AUTH+BUS+VALUE: prod back-office (bank onboarding); same injection class; highest business value; force_tenant switches context anonymously; /api/v1/brand 200 anon
+[PRIO] developer.vpbank.com,6.5,IDOR+GATE: PSD2 sandbox BOLA proven end-to-end; cross-session consent/account/payment read, zero binding; prod carryover mTLS-gated
+[PRIO] digital-onboarding-dev.vpbank.com,6.0,AUTH+GATE: dev injection venue; tenants 200 {} vs prod 403; looser posture; same controller class
+[PRIO] sts.vpbank.com,4.2,OAUTH: ADFS OIDC metadata 200 with device_code/password/implicit grants + vpn/logon/cert scopes; device_code endpoint 405 but blocks on unknown client_id; parked
+[PRIO] concentsol.vpbank.com,3.5,MISCONFIG: Kestrel host uniform empty 404 no content-type on all paths incl OIDC/swagger/version this cycle; no anonymous routes; parked
+
+STEP 3 — HYPOTHESES
+[HYP] Session-context injection via custom Devise sign_in on digital-onboarding-stage
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 82
+reasoning: Stage renders hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 with no pinning (confirmed again this cycle, HTTP 200 25225B, authenticity_token x3, _us_session+session_expiry cookies); overridden Users::SessionsController confirmed across 3-venue fleet (prod=4/dev=129/stage=7); /api/v1/tenants 200 {} anon (prod 403) proves looser backend gate; HTTP-Basic only guards /control-center/ static SPA, not /users/sign_in POST or /api/v1/*
+evidence_needed: (1) baseline POST (email+password only) vs injected POST (+admin=true&tenant_id=1&user_id=999) yields divergent 302/Location/Set-Cookie; (2) replay winning cookie on GET /api/v1/tenants returns populated response vs {}; (3) replay on /admin/api/v1/users returns 200 vs 401
+verify_steps: HUMAN: (1) GET /users/sign_in → capture authenticity_token + _us_session cookie + hidden field defaults; (2) baseline POST authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic; (3) injected POST +&user[admin]=true&user[tenant_id]=1&user[user_id]=999; (4) diff 302/Location/Set-Cookie between baseline and injected; (5) replay each cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, read-only, no account creation
+impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH (CVSS ~8.8) if chained to prod
+testability: HUMAN_ONLY
+
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: Sandbox proof is end-to-end (consent 6b517824… read cross-session, zero binding); production shares same Berlin Group surface per docs; mTLS stops anonymous access; carryover requires client cert + shared object store
+evidence_needed: credentialed-session replay of /consents/{id}, /accounts, /payments/{id}/status against foreign object id returns 200 instead of 403/404
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = BOLA in prod
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL if confirmed
+testability: HUMAN_ONLY
+
+[HYP] Stage/prod API differential reveals tenant-isolation flaw
+class: BUSLOGIC
+asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: Stage returns HTTP 200 {} (empty) vs prod 403 "Not authorized" on identical path; same API version, same controller class; if session-context injection succeeds (HYP #1), populated tenants response would confirm cross-tenant enumeration
+evidence_needed: injected admin session on stage returns populated /api/v1/tenants array (not just {}); or /admin/api/v1/users 200 with user list
+verify_steps: HUMAN: chained from HYP #1 — replay injected-admin cookie on GET /api/v1/tenants; compare response body to baseline {}; if populated → cross-tenant data leak confirmed
+impact: enumeration of all tenant configurations in onboarding SaaS; MEDIUM standalone, HIGH chained with injection
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+[PARKED] concentsol Kestrel app discovery: confidence 30 < 40; re-probe added no route map (OIDC/swagger/version all uniform empty 404, no content-type); no CM/CT evidence — watch-list only
+[PARKED] ADFS device_code: client_id enumeration blocked (prior cycles), service degraded (503 on /adfs); no new signal — parked
+[FINAL] 1. [82] Session-context injection via custom Devise sign_in on stage — cleanest proof venue, unpinned fields, 3/3 fleet confirmed, stage baseline re-verified this cycle
+[FINAL] 2. [60] PSD2 sandbox BOLA production carryover — proven in sandbox, mTLS-blocked, needs credentialed verification
+[FINAL] 3. [55] Stage/prod tenant-isolation differential — chained from #1, dependent proof
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded — read-only observe (status/302/Location/Set-Cookie/body), NO account creation: (1) GET /users/sign_in → capture authenticity_token + _us_session cookie + user[tenant_id]=7/user[admin]/user[user_id] defaults; (2) baseline POST `authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; (4) diff 302/Location/Set-Cookie between baseline and injected; (5) replay winning cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, operator consent required
+
+STEP 6 — LEARNING
+[LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: OIDC/swagger/version re-probed this cycle all uniform empty 404 (no content-type) — parked Kestrel host, no anonymous routes
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: stage /users/sign_in re-confirmed HTTP 200 25225B with unpinned hidden user[tenant_id]/user[admin]/user[user_id], authenticity_token x3, _us_session+session_expiry cookies — baseline locked, awaiting HUMAN POST proof
+[LEARN] NEW INFO @ digital-onboarding-stage.vpbank.com: CSP report-uri points to sentry ingest (sentry_environment=stage-vpbank, release 5e237eae...) — debug/telemetry config ships in stage; not directly exploitable
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 68 — Crown-jewel thread unchanged: three live digital-onboarding venues (prod=4/dev=129/stage=7) render client-controlled Devise session-context fields and await single HUMAN stage POST proof, which is the only practical route to a reporting-grade finding. PSD2 BOLA proven in sandbox but prod carryover mTLS-gated (HUMAN_ONLY). CT-reachability sweep closed negative (mobile/ebics/tracking/beta maintenance/static; concentsol re-confirmed parked with no route map). All api/www/portal/dev-stage-WAF/ADFS vectors exhausted. Risk held at 68 pending the stage-sign_in verification.

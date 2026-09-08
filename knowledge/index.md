@@ -181,3 +181,6 @@
 - 2026-09-08 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" page on ALL paths — maintenance-gated, no mobile-banking backend
 - 2026-09-08 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
 - 2026-09-08 NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- 2026-09-08 REJECTED MISCONFIG @ concentsol.vpbank.com: OIDC/swagger/version re-probed this cycle all uniform empty 404 (no content-type) — parked Kestrel host, no anonymous routes
+- 2026-09-08 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: stage /users/sign_in re-confirmed HTTP 200 25225B with unpinned hidden user[tenant_id]/user[admin]/user[user_id], authenticity_token x3, _us_session+session_expiry cookies — baseline locked, awaiting HUMAN POST proof
+- 2026-09-08 NEW INFO @ digital-onboarding-stage.vpbank.com: CSP report-uri points to sentry ingest (sentry_environment=stage-vpbank, release 5e237eae...) — debug/telemetry config ships in stage; not directly exploitable
