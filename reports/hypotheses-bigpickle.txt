@@ -1,4 +1,4 @@
-## 2026-09-08 14:05:12 UTC [target] (model bigpickle)
+## 2026-09-08 17:58:58 UTC [target] (model bigpickle)
 [PRIO] digital-onboarding-stage.vpbank.com,8.2,AUTH+GATE+BUS: custom Devise sign_in renders unpinned hidden fields (tenant_id=7/admin=false/user_id=0); overridden SessionsController confirmed; /api/v1/tenants 200 {} anon; cleanest proof venue; HTTP-Basic only guards /control-center/ SPA not /users/sign_in POST
 [PRIO] digital-onboarding.vpbank.com,7.8,AUTH+BUS+VALUE: prod back-office (bank onboarding); same injection class; off-net hosting 89.163.182.69; highest business value; force_tenant param switches context anonymously; /api/v1/brand 200 anon
 [PRIO] developer.vpbank.com,6.5,IDOR+GATE: PSD2 sandbox BOLA proven end-to-end; cross-session consent/account/payment read with zero binding; prod carryover mTLS-gated

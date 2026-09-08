@@ -430,3 +430,13 @@ www.vpbank.com
 - NEW digital-onboarding-stage.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token — matches last leads 3/3 venue confirmatio
 - NEW digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — prod default tenant_id=4
 - NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0` — dev default tenant_id=129
+
+## 2026-09-08 18:00:34 UTC
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token — completes 3/3 venue confirmation for ses
+- NEW digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — prod default tenant_id=4
+- NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0` — dev default tenant_id=129
+- CHANGED mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths incl /oauth/authorize + OIDC — maintenance-gated, no mobile-banking backend (REJECTED)
+- CHANGED ebics.vpbank.com: Swisscom-hosted static EBICS info page, all protocol paths 404 — active product, no takeover (REJECTED)
+- CHANGED tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content (REJECTED)
+- CHANGED www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products (REJECTED)
+- CHANGED concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes (REJECTED)
