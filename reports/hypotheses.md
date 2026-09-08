@@ -905,3 +905,18 @@
 - LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303 -> /error_path/400.html?al_req_id=<id> — same WAF maintenance family as vpbank-dev/stage, no content
 - LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both on 193.222.70.149 (www cluster) with shared www.vpbank.com SAN — aliases, not distinct beta products
 - LEARN: NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel host uniform empty 404 (no content-type) on / /swagger /api /health /Account/Login /consent — no anon
+
+## RANKED HYPOTHESES 2026-09-08 23:11:52 UTC
+- [85] digital-onboarding-stage.vpbank.com/users/sign_in: Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof) (from art/lead_nemotron3.txt)
+- [82] digital-onboarding-stage.vpbank.com/users/sign_in: Session-context injection via custom Devise sign_in on stage (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded — read-only observe (status/302/Location/S
+- NEXT(hypotheses-nemotron3.txt): PROBE: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden field defaults) → then POST https://digital-onboarding
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage confirmed live Rails/Devise sibling with same overridden custom
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devi
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths incl /oauth/authorize + OIDC — ma
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-sessio
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev

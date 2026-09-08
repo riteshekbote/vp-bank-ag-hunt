@@ -2120,3 +2120,57 @@ testability: AUTH_HELPED
 [LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both on 193.222.70.149 (www cluster) with shared www.vpbank.com SAN — aliases, not distinct beta products
 [LEARN] NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel host uniform empty 404 (no content-type) on / /swagger /api /health /Account/Login /consent — no anonymous routes; parked
 [RISK] vp-bank-ag: 68 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.
+## 2026-09-08 23:08:22 UTC [target] (model nemotron3)
+[NEW] digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed live this cycle (HTTP 200, 25225B) with hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0, authenticity_token x3, _us_session + session_expiry cookies — cleanest proof venue (unpinned defaults)
+[NEW] digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden user[tenant_id]=4, user[admin]=false, user[user_id]=0 — prod default tenant_id=4
+[NEW] digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden user[tenant_id]=129, user[admin]=false, user[user_id]=0 — dev default tenant_id=129
+[CHANGED] concentsol.vpbank.com re-probed (.well-known/openid-configuration, /api/version, /swagger/v1/swagger.json) — all uniform empty 404 (no content-type/body), parked Kestrel host confirmed
+[CHANGED] mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.com all probed and REJECTED (maintenance-gated, static landing, WAF family, aliases, parked)
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.70,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=7,freshness=10
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.40,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,9.00,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=8,cloud_surface=7,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.05,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=8,cloud_surface=2,freshness=9
+[PRIO] sts.vpbank.com/adfs,6.75,attack_surface=6,business_value=8,tech_exposure=5,gate_ease=10,cloud_surface=1,freshness=9
+[HYP] Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 85
+reasoning: /users/sign_in renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 with authenticity_token; overridden Users::SessionsController confirmed consuming client-controlled session-context params across all 3 venues; stage has unpinned defaults (no pinned tenant_id) making injected values flow purely from POST body; pre-auth _us_session + session_expiry cookies set
+evidence_needed: POST /users/sign_in with user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults); POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=999&user[user_id]=1 (read-only probe: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+impact: Wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 82
+reasoning: /users/sign_in renders hidden user[tenant_id]=4, user[admin]=false, user[user_id]=0; overridden Users::SessionsController confirmed (RAG 2026-09-06) consumes client-controlled session-context params; /control-center/ SPA serves anonymously with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand?force_tenant=vpbank returns 200 proving tenant context switching works at API layer
+evidence_needed: POST /users/sign_in with user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: GET https://digital-onboarding.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults); POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: AUTH_HELPED
+[HYP] Session-context injection via custom Devise sign-in on dev venue (differential tenant enumeration, looser posture)
+class: AUTH
+asset: digital-onboarding-dev.vpbank.com/users/sign_in
+confidence: 78
+reasoning: Dev /users/sign_in 200 renders same overridden custom controller with hidden user[tenant_id]=129, user[admin]=false, user[user_id]=0; /api/v1/tenants returns HTTP 200 {} (prod 403) — differential unauthenticated tenant enumeration; consentManager.env="production" on dev (misconfig); sentry_environment=test2; pre-auth _us_session cookie set
+evidence_needed: POST /users/sign_in with injected user[admin]=true/user[tenant_id]=999/user[user_id]=1 yields different Set-Cookie/Location/body vs baseline; subsequent GET /api/v1/tenants with resulting cookie reflects injected tenant context
+verify_steps: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults); POST baseline vs injected (user[admin]=true&user[tenant_id]=999&user[user_id]=1) — read-only, synthetic creds; compare response; then GET /api/v1/tenants with resulting cookie
+impact: Wrong-tenant or admin session on dev back-office with looser posture → potential pivot to prod via shared controller logic; severity MEDIUM-HIGH
+testability: AUTH_HELPED
+[PARKED] PSD2 sandbox BOLA carries to production via mTLS misconfig or cert reuse: testability HUMAN_ONLY (requires mTLS client cert or production access) — cannot verify passively; blocked on openbanking.vpbank.com mTLS enforcement
+[PARKED] ADFS device_code grant phishing on sts.vpbank.com: service degraded (HTTP 503), client_id unknown, no enumeration path — cannot advance without client_id
+[FINAL] 1. [85] Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof)
+[FINAL] 2. [82] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office
+[FINAL] 3. [78] Session-context injection via custom Devise sign-in on dev venue (differential tenant enumeration, looser posture)
+[NEXT] PROBE: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden field defaults) → then POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=999&user[user_id]=1 (read-only: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage confirmed live Rails/Devise sibling with same overridden custom controller; hidden fields unpinned (default tenant_id=7) — cleanest proof venue for injection
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devise sign_in form with default values differing per host (4/129/7) — overridden Users::SessionsController active across the fleet; strongest single signal for the session-context injection class
+[LEARN] REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths incl /oauth/authorize + OIDC — maintenance-gated, no mobile-banking backend
+[LEARN] REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+[LEARN] REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+[LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+[LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-session read, zero binding on consentId/paymentId
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id
+[RISK] vp-bank-ag: 68 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.

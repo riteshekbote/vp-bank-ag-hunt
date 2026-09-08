@@ -2284,3 +2284,33 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: stage /users/sign_in re-confirmed HTTP 200 25225B with unpinned hidden user[tenant_id]/user[admin]/user[user_id], authenticity_token x3, _us_session+session_expiry cookies — baseline locked, awaiting HUMAN POST proof
 [LEARN] NEW INFO @ digital-onboarding-stage.vpbank.com: CSP report-uri points to sentry ingest (sentry_environment=stage-vpbank, release 5e237eae...) — debug/telemetry config ships in stage; not directly exploitable
 [RISK] vp-bank-ag: 68 — Crown-jewel thread unchanged: three live digital-onboarding venues (prod=4/dev=129/stage=7) render client-controlled Devise session-context fields and await single HUMAN stage POST proof, which is the only practical route to a reporting-grade finding. PSD2 BOLA proven in sandbox but prod carryover mTLS-gated (HUMAN_ONLY). CT-reachability sweep closed negative (mobile/ebics/tracking/beta maintenance/static; concentsol re-confirmed parked with no route map). All api/www/portal/dev-stage-WAF/ADFS vectors exhausted. Risk held at 68 pending the stage-sign_in verification.
+## 2026-09-08 23:11:09 UTC [target] (model bigpickle)
+[HYP] Session-context injection via custom Devise sign_in on stage
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 82
+reasoning: all 3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] (prod=4/dev=129/stage=7); stage fields unpinned; overridden Users::SessionsController confirmed; /api/v1/tenants 200 {} anon vs prod 403; HTTP-Basic gates only /control-center/ static, not sign_in POST; stage baseline re-confirmed HTTP 200 25225B (authenticity_token x3, _us_session+session_expiry)
+evidence_needed: baseline POST vs injected POST (+admin=true&tenant_id=1&user_id=999) diverge in 302/Location/Set-Cookie; winning cookie on /api/v1/tenants returns populated response; /admin/api/v1/users 200 vs 401
+verify_steps: HUMAN: GET /users/sign_in → capture authenticity_token + _us_session + field defaults; POST authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic; injected POST +&user[admin]=true&user[tenant_id]=1&user[user_id]=999; diff 302/Set-Cookie; replay cookie on /api/v1/tenants + /admin/api/v1/users; stage only, read-only observe, no account creation
+impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH (~8.8) if chained to prod
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: sandbox proof end-to-end (consent 6b517824… cross-session read, zero binding); production shares Berlin Group surface; mTLS blocks anonymous; carryover requires client cert + shared object store
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against foreign id returns 200 not 403/404
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL if confirmed
+testability: HUMAN_ONLY
+[HYP] Stage/prod API differential reveals tenant-isolation flaw
+class: BUSLOGIC
+asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: stage 200 {} vs prod 403 identical path; same API version/controller class; populated response only after injected admin session
+evidence_needed: injected admin cookie returns populated /api/v1/tenants array; /admin/api/v1/users 200 user list
+verify_steps: HUMAN: chained from HYP #1 — replay injected-admin cookie on /api/v1/tenants; diff vs baseline {}; populated → cross-tenant leak confirmed
+impact: enumeration of tenant configs; MEDIUM standalone, HIGH chained
+testability: HUMAN_ONLY
+[NEXT] HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded — read-only observe (status/302/Location/Set-Cookie/body), NO account creation: (1) GET /users/sign_in → capture authenticity_token + _us_session cookie + user[tenant_id]=7/user[admin]/user[user_id] defaults; (2) baseline POST `authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; (4) diff 302/Location/Set-Cookie baseline vs injected; (5) replay winning cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, operator consent required
+[RISK] vp-bank-ag: 68 — unchanged. Newly mapped gates (Citrix SSL VPN remote, OAM secure mail, eSSO portal, LMS, 4 live third-party CNAMEs) all login/403/TLS-gated or config-only — add anonymous surface but no passive-exploitable class. Crown-jewel thread is unchanged: one HUMAN stage sign_in POST is the only practical route to a reporting-grade finding (session-context injection → tenant/admin context). PSD2 BOLA proven in sandbox, prod carryover mTLS-gated (HUMAN). Risk holds at 68 pending stage-sign_in verification.

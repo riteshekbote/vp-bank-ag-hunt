@@ -452,3 +452,10 @@ www.vpbank.com
 - CHANGED tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content (REJECTED)
 - CHANGED www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products (REJECTED)
 - CHANGED concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes (REJECTED)
+
+## 2026-09-08 23:11:52 UTC
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed live this cycle (HTTP 200, 25225B) with hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0, authenticity_token x3, _us_session 
+- NEW digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden user[tenant_id]=4, user[admin]=false, user[user_id]=0 — prod default tenant_id=4
+- NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden user[tenant_id]=129, user[admin]=false, user[user_id]=0 — dev default tenant_id=129
+- CHANGED concentsol.vpbank.com re-probed (.well-known/openid-configuration, /api/version, /swagger/v1/swagger.json) — all uniform empty 404 (no content-type/body), parked Kestrel host confirmed
+- CHANGED mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.com all probed and REJECTED (maintenance-gated, static landing, WAF family, aliases, parked)

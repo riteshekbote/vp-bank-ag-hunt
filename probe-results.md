@@ -296,3 +296,8 @@ https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 23:11:57 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
