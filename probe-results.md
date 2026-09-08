@@ -278,3 +278,7 @@ https://mobile.vpbank.com/api/ -> HTTP 404
 ## 2026-09-08 05:17:11 UTC
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 09:50:38 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0

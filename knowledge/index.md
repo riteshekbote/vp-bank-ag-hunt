@@ -178,3 +178,4 @@
 - 2026-09-08 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: unpinned hidden fields (default tenant_id=7) on custom Devise sign_in — cleanest injection proof venue
 - 2026-09-08 ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
 - 2026-09-08 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" page on ALL paths incl /oauth/authorize + OIDC — maintenance-gated like dev/stage, no mobile-banking backend
+- 2026-09-08 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" page on ALL paths — maintenance-gated, no mobile-banking backend

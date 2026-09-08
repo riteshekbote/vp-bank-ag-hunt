@@ -413,3 +413,15 @@ www.vpbank.com
 - CHANGED sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path
 - CHANGED developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change
+
+## 2026-09-08 09:50:34 UTC
+- NEW digital-onboarding-stage.vpbank.com confirmed as third venue with custom Devise SessionsController (hidden `user[tenant_id]=7`, unpinned defaults) — completes 3/3 venue confirmation for session-contex
+- NEW mobile.vpbank.com probed: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths incl /oauth/authorize + OIDC — maintenance-gated, no mobile-banking backend
+- NEW ebics.vpbank.com probed: Swisscom-hosted static EBICS info landing page, /ebicsweb /EBICSWeb/Servlet/EBICSStart /ebics/version all 404 — no handshake surface
+- NEW tracking.vpbank.com probed: 303 → /error_path/400.html?al_req_id — same WAF maintenance family as vpbank-dev/stage, no content
+- NEW www-beta.vpbank.com/mobile-beta.vpbank.com probed: both resolve 193.222.70.149 with shared www.vpbank.com SAN — aliases, not distinct beta products
+- NEW concentsol.vpbank.com probed: Kestrel host, uniform empty 404 (no content-type) on / /swagger /api /health /Account/Login /consent — no anonymous routes; parked
+- CHANGED digital-onboarding family now 3/3 venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with overridden Users::SessionsController consuming client-controlled session-context params
+- CHANGED sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path
+- CHANGED developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change
