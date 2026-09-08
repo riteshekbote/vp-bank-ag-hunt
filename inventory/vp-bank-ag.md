@@ -425,3 +425,8 @@ www.vpbank.com
 - CHANGED sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path
 - CHANGED developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change
+
+## 2026-09-08 14:12:34 UTC
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token — matches last leads 3/3 venue confirmatio
+- NEW digital-onboarding.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — prod default tenant_id=4
+- NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden `user[tenant_id]=129`, `user[admin]=false`, `user[user_id]=0` — dev default tenant_id=129

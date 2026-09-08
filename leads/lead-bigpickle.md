@@ -2142,3 +2142,51 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 [LEARN] NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type on all tested paths — parked, no anonymous routes
 [RISK] vp-bank-ag: 68 — Crown-jewel thread unchanged: three live digital-onboarding venues render client-controlled Devise session-context fields and await single HUMAN stage proof. PSD2 BOLA proven in sandbox but prod carryover mTLS-gated. CT-reachability sweep closed negatively (mobile/ebics/tracking/beta all maintenance or static; concentsol parked). Practical route to reporting-grade finding remains the stage-sign_in POST verification. All api/www/portal/dev-stage-WAF/ADFS vectors exhausted.
+## 2026-09-08 14:05:12 UTC [target] (model bigpickle)
+[PRIO] digital-onboarding-stage.vpbank.com,8.2,AUTH+GATE+BUS: custom Devise sign_in renders unpinned hidden fields (tenant_id=7/admin=false/user_id=0); overridden SessionsController confirmed; /api/v1/tenants 200 {} anon; cleanest proof venue; HTTP-Basic only guards /control-center/ SPA not /users/sign_in POST
+[PRIO] digital-onboarding.vpbank.com,7.8,AUTH+BUS+VALUE: prod back-office (bank onboarding); same injection class; off-net hosting 89.163.182.69; highest business value; force_tenant param switches context anonymously; /api/v1/brand 200 anon
+[PRIO] developer.vpbank.com,6.5,IDOR+GATE: PSD2 sandbox BOLA proven end-to-end; cross-session consent/account/payment read with zero binding; prod carryover mTLS-gated
+[PRIO] digital-onboarding-dev.vpbank.com,6.0,AUTH+GATE: dev injection venue; tenants 200 {} vs prod 403; looser posture; lower business value; same controller class
+[PRIO] sts.vpbank.com,4.2,OAUTH: ADFS OIDC metadata 200 with device_code/password/implicit grants + vpn/logon/cert scopes; device_code endpoint exists (405 GET) but blocks on unknown client_id; parked
+[PRIO] concentsol.vpbank.com,3.5,MISCONFIG: Kestrel (.NET Core) host; uniform empty 404 no content-type on all paths; no anonymous routes; parked
+[HYP] Session-context injection via custom Devise sign_in on digital-onboarding-stage
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 82
+reasoning: Stage renders hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 with no pinning; overridden Users::SessionsController confirmed across 3-venue fleet (prod=4/dev=129/stage=7); /api/v1/tenants 200 {} anon (prod 403) proves looser backend gate; HTTP-Basic only guards /control-center/ static SPA not /users/sign_in POST handler or /api/v1/*
+evidence_needed: (1) baseline POST (email+password only) vs injected POST (+admin=true&tenant_id=1&user_id=999) yields divergent 302/Location/Set-Cookie; (2) replay winning cookie on GET /api/v1/tenants returns populated response vs {}; (3) replay on /admin/api/v1/users returns 200 vs 401
+verify_steps: HUMAN: (1) GET /users/sign_in → capture authenticity_token + _us_session cookie + hidden field defaults; (2) baseline POST authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic; (3) injected POST +&user[admin]=true&user[tenant_id]=1&user[user_id]=999; (4) diff 302/Location/Set-Cookie between baseline and injected; (5) replay each cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, read-only, no account creation
+impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH if chained to prod
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: Sandbox proof is end-to-end (consent 6b517824… read cross-session, zero binding); production shares same Berlin Group surface per docs; mTLS stops anonymous access; carryover requires client cert + shared object store
+evidence_needed: credentialed-session replay of /consents/{id}, /accounts, /payments/{id}/status against foreign object id returns 200 instead of 403/404
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = BOLA in prod
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL if confirmed
+testability: HUMAN_ONLY
+[HYP] Stage/prod API differential reveals tenant-isolation flaw
+class: BUSLOGIC
+asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: Stage returns HTTP 200 {} (empty) vs prod 403 "Not authorized" on identical path; same API version, same controller class; if session-context injection succeeds (HYP #1), populated tenants response would confirm cross-tenant enumeration
+evidence_needed: injected admin session on stage returns populated /api/v1/tenants array (not just {}); or /admin/api/v1/users 200 with user list
+verify_steps: HUMAN: chained from HYP #1 — replay injected-admin cookie on GET /api/v1/tenants; compare response body to baseline {}; if populated → cross-tenant data leak confirmed
+impact: enumeration of all tenant configurations in onboarding SaaS; MEDIUM standalone, HIGH chained with injection
+testability: HUMAN_ONLY
+[FINAL] 1. [82] Session-context injection via custom Devise sign_in on stage — cleanest proof venue, unpinned fields, 3/3 fleet confirmed
+[FINAL] 2. [60] PSD2 sandbox BOLA production carryover — proven in sandbox, mTLS-blocked, needs credentialed verification
+[FINAL] 3. [55] Stage/prod tenant-isolation differential — chained from #1, dependent proof
+[PARKED] concentsol Kestrel app discovery: confidence 30 < 40 — no route map, no CM/CT evidence, drop to watch-list
+[PARKED] ADFS device_code: client_id enumeration blocked (from prior cycles), no new signal
+[NEXT] HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded — read-only observe (status/302/Location/Set-Cookie/body), NO account creation: (1) GET /users/sign_in → capture authenticity_token + _us_session cookie + user[tenant_id]=7/user[admin]/user[user_id] defaults; (2) baseline POST `authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; (4) diff 302/Location/Set-Cookie between baseline and injected; (5) replay winning cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, operator consent required
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: unpinned hidden fields (default tenant_id=7) on custom Devise sign_in — cleanest injection proof venue
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
+[LEARN] REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
+[LEARN] REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info page, all protocol paths 404 — active product, no takeover
+[LEARN] REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+[LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+[LEARN] NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+[RISK] vp-bank-ag: 68 — Crown-jewel thread unchanged: three live digital-onboarding venues render client-controlled Devise session-context fields and await single HUMAN stage proof. PSD2 BOLA proven in sandbox but prod carryover mTLS-gated. CT-reachability sweep closed negatively (mobile/ebics/tracking/beta all maintenance or static; concentsol parked). Practical route to reporting-grade finding remains the stage-sign_in POST verification. All api/www/portal/dev-stage-WAF/ADFS vectors exhausted.
