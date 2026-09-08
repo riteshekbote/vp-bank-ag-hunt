@@ -20,3 +20,8 @@
 - 2 lead(s) marked VALID at 2026-09-07 20:10:45 UTC
   - **Verdict: VALID**
   - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 5.3–7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-08 05:37:40 UTC
+  - **Verdict: VALID**
+  - | Q7 | Reasonable triager? | **NO** — metadata exposure alone is informational, not exploitable without valid client_id + user interaction |
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 7.5 | Report to program |
