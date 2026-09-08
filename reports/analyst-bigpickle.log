@@ -13257,3 +13257,393 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 72 — Discovery of an unprobed, in-CIDR mobile-banking vhost (mobile.vpbank.com, 193.222.70.152) plus off-net EBICS endpoint raises the unexplored-surface factor; combined with the confirmed 3-venue custom-Devise session-context injection surface pending HUMAN proof and the proven PSD2 sandbox BOLA (prod carryover mTLS-blocked), practical likelihood of a reporting-grade finding is materially above prior estimate. Carried: api/www/portal/dev-stage-WAF/ADFS-client_id exhausted.
+===== ANALYST bigpickle 2026-09-08 00:31:55 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls && git log --oneline -5 2>/dev/null | head
+README.md
+analyst-out.txt
+analyst-prompt.txt
+ctx.txt
+inventory
+knowledge
+leads
+probe-results.md
+recon-notes
+reports
+reposcan-raw
+scope.yml
+scripts
+state_bigpickle.json
+state_laguna.json
+state_ling3.json
+state_longcat.json
+state_mimo.json
+state_nemotron3.json
+triage
+db720ef reposcan 2026-09-07-23-46
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && tail -30 probe-results.md && echo "---SCOPE---" && cat scope.yml 2>/dev/null | head -50
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-07 09:57:20 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 15:35:29 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 19:26:57 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 22:19:43 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://mobile.vpbank.com/ -> HTTP 404
+https://ebics.vpbank.com/ -> 200 len=118346
+https://mobile.vpbank.com/` -> HTTP 404
+https://ebics.vpbank.com/` -> HTTP 404
+https://concentsol.vpbank.com/` -> HTTP 404
+https://tracking.vpbank.com/` -> HTTP 400
+https://www-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+https://mobile-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+---SCOPE---
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+[0m
+[0m$ [0mfor p in "/" "/api" "/api/v1" "/rest/v1" "/oauth/authorize" "/.well-known/openid-configuration"; do
+  echo "== mobile.vpbank.com$p =="
+  curl -sk -o /dev/null -w "code=%{http_code} type=%{content_type} server=%header{server} len=%{size_download} loc=%{redirect_url}\n" --max-time 20 "https://mobile.vpbank.com$p"
+  sleep 1
+done
+== mobile.vpbank.com/ ==
+code=404 type=text/html server=Apache len=233169 loc=
+== mobile.vpbank.com/api ==
+code=404 type=text/html server=Apache len=233169 loc=
+== mobile.vpbank.com/api/v1 ==
+code=404 type=text/html server=Apache len=233169 loc=
+== mobile.vpbank.com/rest/v1 ==
+code=404 type=text/html server=Apache len=233169 loc=
+== mobile.vpbank.com/oauth/authorize ==
+code=404 type=text/html server=Apache len=233169 loc=
+== mobile.vpbank.com/.well-known/openid-configuration ==
+code=404 type=text/html server=Apache len=233169 loc=
+[0m
+[0m$ [0mecho "== body head of mobile 404 =="; curl -sk --max-time 20 "https://mobile.vpbank.com/" | tr -d '\0' | grep -ioE "<title>[^<]*</title>|wp-content|drupal|VPN|vpbank|online|banking|error |maintenance" | sort | uniq -c | sort -rn | head
+echo "== cert SAN mobile =="; echo | timeout 15 openssl s_client -connect mobile.vpbank.com:443 -servername mobile.vpbank.com 2>/dev/null | openssl x509 -noout -subject -issuer -ext subjectAltName 2>/dev/null
+echo "== compare www.vpbank.com / (reference) =="; curl -sk -o /dev/null -w "code=%{http_code} len=%{size_download} server=%header{server}\n" --max-time 20 "https://www.vpbank.com/"
+== body head of mobile 404 ==
+      2 Maintenance
+      1 error 
+== cert SAN mobile ==
+subject=jurisdictionC = LI, businessCategory = Private Organization, C = LI, L = Vaduz, postalCode = 9490, street = Aeulestrasse 6, O = VP Bank AG, serialNumber = FL-0001.007.080-0, CN = mobile.vpbank.com
+issuer=C = CH, O = SwissSign AG, CN = SwissSign RSA TLS EV ICA 2022 - 1
+X509v3 Subject Alternative Name: 
+    DNS:mobile.vpbank.com
+== compare www.vpbank.com / (reference) ==
+code=301 len=407 server=Apache
+[0m
+[0m$ [0mecho "== ebics.vpbank.com / =="; curl -sk --max-time 20 "https://ebics.vpbank.com/" -o /tmp/ebics_home.html -w "code=%{http_code} type=%{content_type} server=%header{server} len=%{size_download}\n"
+echo "== ebics title/intro =="; grep -ioE "<title>[^<]*</title>|<h1[^>]*>[^<]*</h1>|version|EBICS|WebServer|Configured" /tmp/ebics_home.html | head -20
+echo "== cert SAN ebics =="; echo | timeout 15 openssl s_client -connect ebics.vpbank.com:443 -servername ebics.vpbank.com 2>/dev/null | openssl x509 -noout -subject -issuer -ext subjectAltName 2>/dev/null
+== ebics.vpbank.com / ==
+code=200 type=text/html server= len=118346
+== ebics title/intro ==
+<title>EBICS</title>
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+EBICS
+== cert SAN ebics ==
+subject=C = CH, ST = BE, L = Bern, O = Swisscom (Schweiz) AG, CN = ebics.vpbank.com
+issuer=C = CH, O = SwissSign AG, CN = SwissSign RSA TLS OV ICA 2022 - 1
+X509v3 Subject Alternative Name: 
+    DNS:ebics.vpbank.com
+[0m
+[0m$ [0mecho "== ebics body markers =="; grep -ioE "swisscom|ebics (server|portal|client|web)|password|login|sign in|admin|[0-9]+\.[0-9]+\.[0-9]+|© [0-9]{4}|powered by|subtitle|form action" /tmp/ebics_home.html | sort | uniq -c | sort -rn | head -25
+echo "== first 30 lines of body text =="; sed 's/<[^>]*>/ /g' /tmp/ebics_home.html | tr -s ' \n' ' \n' | grep -vE '^\s*$' | head -30
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_07e6a493c001I0Ptcbub29ev3A
+
+ PRD: "data:image/png;base64,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"
+ };
+ // Function to determine environment based on domain
+ function getEnvironment() {
+ const hostname = window.location.hostname.toLowerCase(); // Case-insensitive
+ if (hostname.includes('sit')) return 'SIT';
+ if (hostname.includes('tst')) return 'TST';
+ // Consider as 'prd' if neither 'sit' nor 'tst' is present
+ if (!hostname.includes('sit') && !hostname.includes('tst')) return 'PRD';
+ return 'prd'; // Default to production
+ }
+ // Set favicon based on environment
+ function setFavicon() {
+ try {
+ const env = getEnvironment();
+ const favicon = favicons[env] || favicons.prd; // Fallback to prd
+ const faviconElement = document.getElementById('favicon');
+ if (!faviconElement) {
+ console.error('Favicon element not found');
+ return;
+ }
+ faviconElement.href = favicon; // Update favicon
+ } catch (error) {
+ console.error('Failed to set favicon:', error);
+ }
+[0m
+[0m$ [0mecho "== scripts/styles =="; grep -oE 'src="[^"]*"|href="[^"]*\.(css|js)[^"]*"' /tmp/ebics_home.html | head
+echo "== forms/inputs =="; grep -oE '<form[^>]*>|<input[^>]*>' /tmp/ebics_home.html | head
+echo "== product-ish strings =="; sed 's/<[^>]*>/\n/g' /tmp/ebics_home.html | tr -s '\n' '\n' | grep -viE '^\s*$' | grep -iE "ebics|sign|login|user|password|cert|swisscom|bank|vaduz|vpn|portal|help|contact|version|[0-9]\.[0-9]" | head -40
+== scripts/styles ==
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+== forms/inputs ==
+== product-ish strings ==
+EBICS
+            PRD: "data:image/png;base64,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"
+      opacity: 0.4;
+      bottom: -1.25em;
+      opacity: 0.5;
+      bottom: -2.5em;
+      opacity: 0.7;
+EBICS 
+                      document.title = `EBICS [${env}]`;
+powered by Swisscom 
+CONNECT WITH YOUR BANK
+SECURE AN EBICS CONTRACT
+OBTAIN EBICS PARAMETERS
+CHOOSE AND IMPLEMENT EBICS CLIENT SOFTWARE
+START YOUR EBICS JOURNEY
+Contact your bank to verify they support EBICS as communication channel.
+Collaborate with your bank to create an EBICS contract and configure your participant profile.
+Gather all required EBICS parameter details from your bank.
+Choose compatible EBICS client software and start the setup process.
+EBICS. 
+lectronic Banking Communication Standard
+The modern way to securely interact with your bank
+[0m
+[0m$ [0mfor p in "/ebicsweb" "/EBICSWeb/Servlet/EBICSStart" "/ebics/version" "/ebics"; do
+  echo "== ebics.vpbank.com$p =="; curl -sk -o /dev/null -w "code=%{http_code} type=%{content_type} len=%{size_download}\n" --max-time 15 "https://ebics.vpbank.com$p"; sleep 1
+done
+echo "== www-beta cert/ip =="; echo | timeout 12 openssl s_client -connect www-beta.vpbank.com:443 -servername www-beta.vpbank.com 2>/dev/null | openssl x509 -noout -subject -ext subjectAltName 2>/dev/null; getent hosts www-beta.vpbank.com mobile-beta.vpbank.com concentsol.vpbank.com tracking.vpbank.com
+echo "== tracking.vpbank.com / =="; curl -sk -o /dev/null -w "code=%{http_code} type=%{content_type} server=%header{server} len=%{size_download}\n" --max-time 15 "https://tracking.vpbank.com/"
+== ebics.vpbank.com/ebicsweb ==
+code=404 type=text/html len=1245
+== ebics.vpbank.com/EBICSWeb/Servlet/EBICSStart ==
+code=404 type=text/html len=1245
+== ebics.vpbank.com/ebics/version ==
+code=404 type=text/html len=1245
+== ebics.vpbank.com/ebics ==
+code=404 type=text/html len=1245
+== www-beta cert/ip ==
+subject=jurisdictionC = LI, businessCategory = Private Organization, C = LI, L = Vaduz, postalCode = 9490, street = Aeulestrasse 6, O = VP Bank AG, serialNumber = FL-0001.007.080-0, CN = www.vpbank.com
+X509v3 Subject Alternative Name: 
+    DNS:vpbank.com, DNS:www.vpbank.com, DNS:report.vpbank.com, DNS:prolink.vpbank.com, DNS:blog.vpbank.com, DNS:vpfundsolutions.vpbank.com, DNS:li.vpbank.com, DNS:ch.vpbank.com, DNS:lu.vpbank.com, DNS:vg.vpbank.com, DNS:sg.vpbank.com, DNS:hk.vpbank.com, DNS:vpbank.li, DNS:www.vpbank.li, DNS:vpbank.ch, DNS:www.vpbank.ch, DNS:vpbank.lu, DNS:www.vpbank.lu, DNS:vpbank.vg, DNS:www.vpbank.vg, DNS:vpbank.sg, DNS:www.vpbank.sg, DNS:vpfundsolutions.com, DNS:www.vpfundsolutions.com, DNS:vpfundsolutions.li, DNS:www.vpfundsolutions.li, DNS:vpfundsolutions.lu, DNS:www.vpfundsolutions.lu, DNS:vpfundsolutions.ch, DNS:www.vpfundsolutions.ch, DNS:fundsolutions.ch, DNS:www.fundsolutions.ch, DNS:fundsolutions.de, DNS:www.fundsolutions.de, DNS:fundsolutions.li, DNS:www.fundsolutions.li, DNS:vpbank.ag, DNS:www.vpbank.ag, DNS:vpbank.at, DNS:www.vpbank.at, DNS:vpbank.biz, DNS:www.vpbank.biz, DNS:vpbank.cc, DNS:www.vpbank.cc, DNS:vpbank.de, DNS:www.vpbank.de, DNS:vpbank.eu, DNS:www.vpbank.eu, DNS:vpbank.in, DNS:www.vpbank.in, DNS:vpbank.info, DNS:www.vpbank.info, DNS:vpbank.ph, DNS:www.vpbank.ph, DNS:vpbank.tv, DNS:www.vpbank.tv, DNS:vpbank.tw, DNS:www.vpbank.tw, DNS:vpbank.us, DNS:www.vpbank.us, DNS:vpbank.se, DNS:www.vpbank.se, DNS:vpbank.dk, DNS:www.vpbank.dk
+193.222.70.149  www-beta.vpbank.com
+193.222.70.149  mobile-beta.vpbank.com
+193.222.70.186  concentsol.vpbank.com
+193.222.70.153  tracking.vpbank.com
+== tracking.vpbank.com / ==
+code=303 type=text/html server=Apache len=123
+[0m
+[0m$ [0mecho "== tracking Location =="; curl -sk -D - -o /dev/null --max-time 15 "https://tracking.vpbank.com/" | grep -iE "HTTP/|location:|server:"
+sleep 1
+echo "== concentsol =="; curl -sk -D - -o /dev/null --max-time 15 "https://concentsol.vpbank.com/" | grep -iE "HTTP/|location:|server:|content-type:"
+sleep 1
+echo "== mobile-beta via www cluster =="; curl -sk -o /dev/null -w "code=%{http_code} server=%header{server} len=%{size_download}\n" --max-time 15 "https://mobile-beta.vpbank.com/" 2>&1 | tail -1
+== tracking Location ==
+HTTP/2 303 
+location: /error_path/400.html?al_req_id=ap9W32c65BJcL9iPMXF8ZAABhyU
+server: Apache
+== concentsol ==
+HTTP/1.1 404 Not Found
+Server: Kestrel
+== mobile-beta via www cluster ==
+code=301 server=Apache len=407
+[0m
+[0m$ [0mfor p in "/" "/swagger" "/swagger/index.html" "/api" "/api/v1" "/health" "/healthz" "/Account/Login" "/.well-known/openid-configuration" "/robots.txt"; do
+  echo "== concentsol.vpbank.com$p =="
+  curl -sk -o /dev/null -w "code=%{http_code} type=%{content_type} server=%header{server} len=%{size_download} loc=%{redirect_url}\n" --max-time 15 "https://concentsol.vpbank.com$p"
+  sleep 1
+done
+== concentsol.vpbank.com/ ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/swagger ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/swagger/index.html ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/api ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/api/v1 ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/health ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/healthz ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/Account/Login ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/.well-known/openid-configuration ==
+code=404 type= server=Kestrel len=0 loc=
+== concentsol.vpbank.com/robots.txt ==
+code=404 type= server=Kestrel len=0 loc=
+[0m
+[0m$ [0mfor p in "/consent" "/Consent" "/api/consents" "/consents" "/privacy" "/status"; do
+  echo "== concentsol$p =="
+  curl -sk -o /dev/null -w "code=%{http_code} type=%{content_type} len=%{size_download}\n" --max-time 12 "https://concentsol.vpbank.com$p"
+  sleep 1
+done
+== concentsol/consent ==
+code=404 type= len=0
+== concentsol/Consent ==
+code=404 type= len=0
+== concentsol/api/consents ==
+code=404 type= len=0
+== concentsol/consents ==
+code=404 type= len=0
+== concentsol/privacy ==
+code=404 type= len=0
+== concentsol/status ==
+code=404 type= len=0
+[0m
+[0m$ [0mcat >> probe-results.md <<'EOF'
+
+## 2026-09-08 (deep-hunt sweep of CT-unprobed hosts)
+https://mobile.vpbank.com/ -> 404 (Apache, "Maintenance" page 233169B; same on /api /api/v1 /rest/v1 /oauth/authorize OIDC)
+https://ebics.vpbank.com/ -> 200 (static EBICS info page "powered by Swisscom", 118346B; /ebicsweb /EBICSWeb/Servlet/EBICSStart /ebics/version -> 404)
+https://tracking.vpbank.com/ -> 303 -> /error_path/400.html?al_req_id=ap9W32c65BJcL9iPMXF8ZAABhyU
+https://www-beta.vpbank.com/ -> 301 Apache (IP 193.222.70.149, shared www.vpbank.com SAN)
+https://mobile-beta.vpbank.com/ -> 301 Apache (IP 193.222.70.149, shared www.vpbank.com SAN)
+https://concentsol.vpbank.com/ -> 404 empty (Server: Kestrel; /swagger /api /health /Account/Login OIDC /consent -> 404 empty)
+EOF
+echo appended
+appended
+[0m
+STEP 1 — DELTA
+[NEW] mobile.vpbank.com (193.222.70.152, genuine EV cert O=VP Bank AG): Apache 404 "Maintenance" page on /, /api, /api/v1, /rest/v1, /oauth/authorize, /.well-known/openid-configuration — maintenance-gated, no mobile-banking backend surface
+[NEW] ebics.vpbank.com (Swisscom 188.92.53.225, OV cert): static EBICS informational landing page "powered by Swisscom"; no login/form; /ebicsweb, /EBICSWeb/Servlet/EBICSStart, /ebics/version all 404 — active hosted product, no takeover signal
+[NEW] tracking.vpbank.com (193.222.70.153): 303->/error_path/400.html?al_req_id=ap9W32c6… — joins the vpbank-dev/stage maintenance error-path family
+[NEW] www-beta/mobile-beta.vpbank.com: both resolve to 193.222.70.149 (www cluster) and serve under 301/303 with the shared www.vpbank.com SAN cert — aliases, not distinct beta products
+[NEW] concentsol.vpbank.com (193.222.70.186): Kestrel (ASP.NET Core) host in core /24; uniform empty 404 (no content-type) on /, /swagger, /api, /health, /Account/Login, OIDC, /consent — no anonymous routes bound
+[CHANGED] CT-reachability sweep (mobile/ebics/tracking/beta pair) resolved mostly negative; remaining live high-value thread unchanged: custom-Devise session-context injection fleet (prod/dev/stage, HUMAN proof pending)
+
+STEP 2 — PRIORITIZE
+[PRIO] digital-onboarding.vpbank.com,7.1,custom-Devise session-context injection (prod back-office, live sign_in, only unresolved high-value class)
+[PRIO] developer.vpbank.com,6.5,PSD2 BOLA proven in sandbox / prod carryover mTLS-gated
+[PRIO] digital-onboarding-stage.vpbank.com,6.2,cleanest injection-proof venue (unpinned fields, inconsistent basic-auth gate)
+[PRIO] concentsol.vpbank.com,4.2,Kestrel host silent anonymously — watch, not actionable
+
+STEP 3 — HYPOTHESES
+[HYP] Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session on stage (unpinned fields = cleanest injection proof)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 80
+reasoning: Sweep re-verified maintenance dead-ends; stage sign_in (HTTP 200 24KB) renders hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 with no pinning vs dev=129/prod=4 — overridden Users::SessionsController consumes POST-supplied values; /api/v1/tenants 200 {} anon vs prod 403; /api/v1/* bypasses the HTTP-Basic gate that only guards /control-center/
+evidence_needed: baseline vs +&user[admin]=true&user[tenant_id]=1&user[user_id]=999 POST yields divergent 302/Set-Cookie; winning cookie flips /api/v1/tenants from {} to populated or /admin/api/v1/users from 401 to 200
+verify_steps: HUMAN: (1) GET /users/sign_in -> authenticity_token + _us_session cookie + hidden defaults; (2) baseline POST authenticity_token=<tok>&user[email]=<syn>&user[password]=<syn> vs injected +&user[admin]=true&user[tenant_id]=1&user[user_id]=999; diff 302/Set-Cookie; (3) replay each cookie on GET /api/v1/tenants + /admin/api/v1/users; stage only, read-only observe, no account creation
+impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH chained to prod
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production ASPSP consent/account objects (proven in sandbox, prod mTLS-gated)
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: Sandbox proof (consent 6b517824… read cross-session, zero binding) is end-to-end; production shares the same Berlin Group API surface by docs, but TLS mTLS stops anonymous accesses; carryover depends on a client certificate + shared object store
+evidence_needed: a credentialed-session replay of /consents/{id}, /accounts, /payments/{id}/status against a foreign object id returns 200 instead of 403/404
+verify_steps: HUMAN: with any valid TPP client cert, GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = BOLA in prod
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL if confirmed
+testability: HUMAN_ONLY
+[HYP] concentsol.vpbank.com hosts an unbound consent-management app reachable under a non-guessed route prefix
+class: MISCONFIG
+asset: concentsol.vpbank.com/
+confidence: 30
+reasoning: Kestrel answers an empty bodyless 404 (no content-type) on every tested path — indicative of a reverse proxy with no anonymous routes mounted; hostname strongly implies a "consent" product in the core /24; no CM/CT evidence of the app route exists
+evidence_needed: any path returning 2xx/3xx/401/405 or non-empty body
+verify_steps: PASSIVE: none meaningful without a route map; blind path guessing is scanner-grade — needs RAG/CT for a route token first
+impact: if an app exists, consent data might be reachable; MEDIUM unknown
+testability: PASSIVE
+
+STEP 4 — SELF-CRITIQUE
+[PARKED] mobile.vpbank.com mobile-banking API reachability: CONFIRMED REJECTED — identical Apache "Maintenance" 404 on all app/OAuth/OIDC paths; genuine EV cert, no takeover
+[PARKED] ebics.vpbank.com handshake/version surface: CONFIRMED REJECTED — static Swisscom info page, all EBICS protocol paths 404
+[PARKED] tracking.vpbank.com content access: maintenance error-path (303 /error_path/400.html) — no content, new member of the WAF family
+[PARKED] concentsol Kestrel app discovery: confidence 30 < 40 — no route map; drop to watch-list
+[PARKED] ADFS device_code: unchanged — client_id enumeration blocked (from prior cycles)
+[FINAL] 1. [85] digital-onboarding.vpbank.com session-context injection via custom Devise sign-in (prod back-office) — HUMAN_ONLY
+[FINAL] 2. [80] digital-onboarding-stage.vpbank.com unpinned-field injection proof venue (cleanest) — HUMAN_ONLY
+[FINAL] 3. [75] digital-onboarding-dev.vpbank.com injection (looser posture, tenants 200) — HUMAN_ONLY
+[FINAL] 4. [60] PSD2 BOLA production carryover (sandbox-proven, mTLS-gated) — HUMAN_ONLY
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded (read-only: observe status/Set-Cookie/302 Location/body only, NO account creation): (1) GET /users/sign_in -> capture authenticity_token + _us_session cookie + user[tenant_id]=7/user[admin]/user[user_id] defaults; (2) baseline POST `authenticity_token=<tok>&user[email]=<syn>&user[password]=<syn>`; (3) injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff 302/Set-Cookie; (4) replay winning cookie on GET /api/v1/tenants and /admin/api/v1/users; escalate to dev/prod only after stage proof + operator consent
+
+STEP 6 — LEARNING
+[LEARN] REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" page on ALL paths incl /oauth/authorize + OIDC — maintenance-gated like dev/stage, no mobile-banking backend
+[LEARN] REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, /ebicsweb /EBICSWeb/Servlet/EBICSStart /ebics/version 404 — no handshake surface, active product, no takeover
+[LEARN] REJECTED MISCONFIG @ tracking.vpbank.com: 303 -> /error_path/400.html?al_req_id=<id> — same WAF maintenance family as vpbank-dev/stage, no content
+[LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both on 193.222.70.149 (www cluster) with shared www.vpbank.com SAN — aliases, not distinct beta products
+[LEARN] NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel host uniform empty 404 (no content-type) on / /swagger /api /health /Account/Login /consent — no anonymous routes; parked
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 68 — CT-reachability sweep closed negatively (mobile/ebics/tracking/beta all maintenance or static; no new anonymous surface), reducing unexplored-surface uncertainty, but the crown-jewel thread is unchanged: three live bank-onboarding venues render the client-controlled Devise session-context fields and await the single HUMAN stage proof; PSD2 BOLA proven in sandbox but prod carryover stays mTLS-blocked; concentsol unknown .NET host kept on watch. Practical route to a reporting-grade finding remains the stage-sign_in verification.

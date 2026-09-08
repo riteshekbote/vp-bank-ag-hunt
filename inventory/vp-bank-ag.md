@@ -387,3 +387,17 @@ www.vpbank.com
 - CHANGED sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path
 - CHANGED developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change
+
+## 2026-09-08 00:31:55 UTC
+- NEW mobile.vpbank.com (193.222.70.152, genuine EV cert O=VP Bank AG): Apache 404 "Maintenance" page on /, /api, /api/v1, /rest/v1, /oauth/authorize, /.well-known/openid-configuration — maintenance-gated, 
+- NEW ebics.vpbank.com (Swisscom 188.92.53.225, OV cert): static EBICS informational landing page "powered by Swisscom"; no login/form; /ebicsweb, /EBICSWeb/Servlet/EBICSStart, /ebics/version all 404 — acti
+- NEW tracking.vpbank.com (193.222.70.153): 303->/error_path/400.html?al_req_id=ap9W32c6… — joins the vpbank-dev/stage maintenance error-path family
+- NEW www-beta/mobile-beta.vpbank.com: both resolve to 193.222.70.149 (www cluster) and serve under 301/303 with the shared www.vpbank.com SAN cert — aliases, not distinct beta products
+- NEW concentsol.vpbank.com (193.222.70.186): Kestrel (ASP.NET Core) host in core /24; uniform empty 404 (no content-type) on /, /swagger, /api, /health, /Account/Login, OIDC, /consent — no anonymous routes
+- CHANGED CT-reachability sweep (mobile/ebics/tracking/beta pair) resolved mostly negative; remaining live high-value thread unchanged: custom-Devise session-context injection fleet (prod/dev/stage, HUMAN proof
+- NEW mobile.vpbank.com mentioned in latest aggregated hypotheses (2026-09-07 22:19) as unprobed host in core /24 with potential anonymous mobile-banking backend/API surface
+- NEW digital-onboarding-stage.vpbank.com /users/sign_in confirmed live with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + `authenticity_token` — cleanest proof venue (unpinned defaul
+- CHANGED digital-onboarding family now 3/3 venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with overridden Users::SessionsController consuming client-controlled session-context params
+- CHANGED sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path
+- CHANGED developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change

@@ -268,3 +268,9 @@ https://concentsol.vpbank.com/` -> HTTP 404
 https://tracking.vpbank.com/` -> HTTP 400
 https://www-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
 https://mobile-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+
+## 2026-09-08 00:32:01 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://mobile.vpbank.com/ -> HTTP 404
+https://mobile.vpbank.com/api/ -> HTTP 404

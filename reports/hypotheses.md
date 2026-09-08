@@ -772,3 +772,20 @@
 - LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
 - LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
 - LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48
+
+## RANKED HYPOTHESES 2026-09-08 00:31:55 UTC
+- [85] digital-onboarding.vpbank.com/users/sign_in: Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office (from art/lead_nemotron3.txt)
+- [80] digital-onboarding-stage.vpbank.com/users/sign_in: Custom Devise sign_in persists client-injected tenant_id/admin/user_id into session on stage (unpinned fields = cleanest injection proof) (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded (read-only: observe status/Set-Cookie/302 
+- NEXT(hypotheses-nemotron3.txt): PROBE: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden field defaults) → then POST https://digital-onboarding
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" page on ALL paths incl /oauth/authorize + OIDC — maintenance-
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, /ebicsweb /EBICSWeb/Servlet/EBICSStart /ebics/version 404 — no handshake 
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303 -> /error_path/400.html?al_req_id=<id> — same WAF maintenance family as vpbank-dev/stage, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both on 193.222.70.149 (www cluster) with shared www.vpbank.com SAN — aliases, not distinct beta products
+- LEARN: NEW INFO @ concentsol.vpbank.com (193.222.70.186): Kestrel host uniform empty 404 (no content-type) on / /swagger /api /health /Account/Login /consent — no anon
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage confirmed live Rails/Devise sibling with same overridden custom
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com (anonymous data axis): /api/v1/tenants 200 `{}` (empty), /api/v1/qr_codes/generate 401 identical to pro
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devi
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/dev
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.2
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f48

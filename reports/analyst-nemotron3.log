@@ -6479,3 +6479,127 @@ testability: HUMAN_ONLY
 **STEP 7 — RISK**
 
 [RISK] vp-bank-ag: 68 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked.
+===== ANALYST nemotron3 2026-09-08 00:31:55 UTC =====
+[0m
+> build · nemotron-3-ultra-free
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/
+total 312
+drwxr-xr-x 12 runner runner   4096 Sep  8 00:27 .
+drwxr-xr-x  3 runner runner   4096 Sep  8 00:27 ..
+drwxr-xr-x  7 runner runner   4096 Sep  8 00:27 .git
+drwxr-xr-x  3 runner runner   4096 Sep  8 00:27 .github
+-rw-r--r--  1 runner runner   1752 Sep  8 00:27 README.md
+-rw-r--r--  1 runner runner     43 Sep  8 00:27 analyst-out.txt
+-rw-r--r--  1 runner runner 110210 Sep  8 00:27 analyst-prompt.txt
+-rw-r--r--  1 runner runner 106395 Sep  8 00:27 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 inventory
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 leads
+-rw-r--r--  1 runner runner  13991 Sep  8 00:27 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 reports
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep  8 00:27 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 scripts
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep  8 00:27 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep  8 00:27 triage
+[0m
+[0m→ [0mRead scope.yml
+[0m→ [0mRead inventory/vp-bank-ag.md
+[0m→ [0mRead analyst-out.txt
+Now I have full context. Let me produce the structured 7-step analysis.
+
+---
+
+## STEP 1 — DELTA
+
+[NEW] mobile.vpbank.com mentioned in latest aggregated hypotheses (2026-09-07 22:19) as unprobed host in core /24 with potential anonymous mobile-banking backend/API surface  
+[NEW] digital-onboarding-stage.vpbank.com /users/sign_in confirmed live with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + `authenticity_token` — cleanest proof venue (unpinned defaults)  
+[CHANGED] digital-onboarding family now 3/3 venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with overridden Users::SessionsController consuming client-controlled session-context params  
+[CHANGED] sts.vpbank.com ADFS service remains degraded (HTTP 503 on /adfs), device_code endpoints exist but block on unknown client_id — no viable path  
+[CHANGED] developer.vpbank.com PSD2 sandbox BOLA verified end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)  
+[CHANGED] api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com: all previously exhausted/rejected, no change
+
+---
+
+## STEP 2 — PRIORITIZE
+
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.25,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=7,freshness=10  
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.10,attack_surface=10,business_value=10,tech_exposure=10,gate_ease=10,cloud_surface=4,freshness=10  
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.95,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=8,cloud_surface=7,freshness=10  
+[PRIO] mobile.vpbank.com/,7.80,attack_surface=8,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=5,freshness=10  
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.05,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=8,cloud_surface=2,freshness=9  
+[PRIO] sts.vpbank.com/adfs,5.90,attack_surface=6,business_value=8,tech_exposure=5,gate_ease=10,cloud_surface=1,freshness=9
+
+---
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: /users/sign_in form renders hidden `user[tenant_id]=4`, `user[admin]=false`, `user[user_id]=0` — custom Users::SessionsController confirmed (RAG 2026-09-06) consumes client-controlled session-context params; /control-center/ SPA serves anonymously with admin modules (onboarding cases, ident documents, bankingtransactions, incomingwire, rolemgmt); /api/v1/brand?force_tenant=vpbank returns 200 proving tenant context switching works at API layer
+evidence_needed: POST /users/sign_in with user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: POST https://digital-onboarding.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=1&user[user_id]=999 (read-only probe: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+impact: Back-office admin/impersonation across multi-tenant SaaS → onboarding case PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: AUTH_HELPED
+
+[HYP] Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 80
+reasoning: Stage /users/sign_in 200 renders same overridden custom controller with hidden `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` but unpinned (no default tenant_id=129/4) — injected values flow purely from POST body; /control-center/ gated by HTTP Basic 401 but /api/v1/* (tenants 200 `{}`, brand 200, qr_codes 401) reachable anonymously without basic auth; dev shows /api/v1/tenants 200 `{}` differential vs prod 403
+evidence_needed: POST /users/sign_in with injected user[admin]=true/user[tenant_id]=999/user[user_id]=1 yields different Set-Cookie/Location/body vs baseline; subsequent GET /api/v1/brand?force_tenant=999 with resulting cookie reflects wrong/admin context
+verify_steps: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults); POST baseline vs injected (user[admin]=true&user[tenant_id]=999&user[user_id]=1) — read-only, synthetic creds; compare response; then GET /api/v1/brand?force_tenant=999 with resulting cookie
+impact: Wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, ident docs, banking/wire ops, role mgmt; severity HIGH
+testability: AUTH_HELPED
+
+[HYP] Anonymous mobile-banking API surface on mobile.vpbank.com
+class: MISCONFIG
+asset: mobile.vpbank.com/
+confidence: 55
+reasoning: Host mentioned in aggregated hypotheses (2026-09-07 22:19) as CT-resolved but unprobed host in core /24; distinct from www/api/sts/developer/digital-onboarding families; potential mobile banking backend/API with anonymous reachability
+evidence_needed: HTTP 200/401/403 on root or /api/* endpoints indicating live backend vs parked/redirect
+verify_steps: HEAD https://mobile.vpbank.com/ → if 2xx/3xx/401/403 then GET https://mobile.vpbank.com/ (capture server, tech stack, auth endpoints); HEAD https://mobile.vpbank.com/api/ → if 2xx/3xx/401/403 then GET https://mobile.vpbank.com/api/
+impact: Anonymous access to mobile banking backend → account enumeration, transaction APIs, PII exposure; severity HIGH if live
+testability: PASSIVE
+
+---
+
+## STEP 4 — SELF-CRITIQUE
+
+[PARKED] PSD2 sandbox BOLA carries to production via mTLS misconfig or cert reuse: testability HUMAN_ONLY (requires mTLS client cert or production access) — cannot verify passively; blocked on openbanking.vpbank.com mTLS enforcement  
+[PARKED] ADFS device_code grant phishing on sts.vpbank.com: service degraded (HTTP 503), client_id unknown, no enumeration path — cannot advance without client_id  
+[FINAL] 1. [85] Session-context injection via custom Devise sign-in grants admin/impersonation on digital-onboarding prod back-office  
+[FINAL] 2. [80] Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof)  
+[FINAL] 3. [55] Anonymous mobile-banking API surface on mobile.vpbank.com
+
+---
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] PROBE: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden field defaults) → then POST https://digital-onboarding-stage.vpbank.com/users/sign_in Content-Type: application/x-www-form-urlencoded body: user[email]=test@test.com&user[password]=test&user[admin]=true&user[tenant_id]=999&user[user_id]=1 (read-only: observe HTTP status, Set-Cookie, redirect location, response body — no account creation)
+
+---
+
+## STEP 6 — LEARNING
+
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage confirmed live Rails/Devise sibling with same overridden custom controller; hidden fields unpinned (default tenant_id=7) — cleanest proof venue for injection  
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com (anonymous data axis): /api/v1/tenants 200 `{}` (empty), /api/v1/qr_codes/generate 401 identical to prod, /admin/api/v1/users 401 JWT, sessions/users/current_user_details 404 — no anonymous data exposure, config-only surface  
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: three venues (prod/dev/stage) all render client-controlled user[tenant_id]/user[admin]/user[user_id] in the Devise sign_in form with default values differing per host (4/129/7) — overridden Users::SessionsController active across the fleet; strongest single signal for the session-context injection class  
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id  
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding.vpbank.com: Live multi-tenant bank-onboarding/back-office SaaS ('US', Rails+Devise) on off-net hosting (89.163.182.69/.28/.8), anonymous /control-center/ SPA + /api/v1/brand 200, sign_in carries client-controlled admin/tenant/user_id, force_tenant parameter switches tenant context — new in-scope back-office attack surface  
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent 6b517824-e5af-4202-b9b0-7f483a68ee9f (POST 201, anonymous) read by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI6508805500000000011), /accounts 200, /balances 200 (€12453.2), /transactions 200 (Consent-ID header only), /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status 200 ACSC. Zero session/TPP/basic-auth binding on consentId/paymentId
+
+---
+
+## STEP 7 — RISK
+
+[RISK] vp-bank-ag: 68 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile.vpbank.com unprobed — potential third surface.
