@@ -1,22 +1,16 @@
-## 2026-09-09 11:33:54 UTC [target] (model bigpickle)
-[NEW] Stage sign-in HTML re-confirmed live this cycle with full CSRF token: `a0mzgqy14knbGOSFPbH7cxlZ0CfZfsSPjhTOW4fd4ZwIvb7cOXhkJuCuFaPPw8zdjyAVoazlSwu4z46r0xcx1g` + form token `5ouL_U8mMhcElh9uuVgv_kyMll8XZXqWlnvY0g1XO2RSkq75utSVpPmcaI-zx-nvfBG3uxr3PKxBtYCen0lqKw`, hidden `user[tenant_id]=7/user[admin]=false/user[user_id]=0`, `_us_session` cookie set
-[NEW] OTP controller i18n strings exposed in stage page JS: `"something_went_wrong_in_otp_sending"`, `"you_have"`, `"remain_attempts_left"`, `"new_code_request"` — confirms SMS-based OTP flow exists but is frontend-only
-[NEW] Application bundle URL: `/assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js` + independent bundle at `/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css`
-[NEW] Stage renders `consentManager.env = "production"` + `testServer = false` — misconfig confirmed (stage running as production)
-[CHANGED] All three hypotheses require HUMAN POST — no passive-detectable surface remains on any other in-scope host
-[PRIO] digital-onboarding-stage.vpbank.com,9.2,auth+admin+tenant_switchable+off_net,custom_Devise+hidden_fields+3_venues,unpinned_defaults_7,stage_cycle_verified
-[PRIO] digital-onboarding.vpbank.com,8.0,prod_back_office+multi_tenant,force_tenant+anon_brand_200,default_tenant_4,high_business_value
-[PRIO] developer.vpbank.com,7.5,PSD2_financial_api+basic_auth,swagger_open,sandbox_BOLA_proven,prod_carryover_mTLS_gated
-[PRIO] digital-onboarding-dev.vpbank.com,6.0,auth+looser_posture,tenants_200_vs_prod_403,default_tenant_129,in_dev
-[PRIO] sts.vpbank.com,4.2,OAUTH,ADFS_oidc_metadata,device_code_grant,blocked_on_client_id
-[PRIO] concentsol.vpbank.com,3.5,MISCONFIG,Kestrel_parked,uniform_empty_404,no_anonymous_routes
+## 2026-09-09 15:17:02 UTC [target] (model bigpickle)
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.2,auth=10 business=9 tech_exposure=9 gate_ease=8 cloud_surface=7 freshness=10
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,8.0,auth=10 business=10 tech_exposure=9 gate_ease=8 cloud_surface=4 freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,7.5,IDOR=9 business=9 tech_exposure=8 gate_ease=8 cloud_surface=2 freshness=8
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,6.0,auth=8 business=8 tech_exposure=8 gate_ease=7 cloud_surface=7 freshness=10
+[PRIO] sts.vpbank.com/adfs,4.2,OAUTH=5 business=8 tech_exposure=5 gate_ease=10 cloud_surface=1 freshness=5
 [HYP] Session-context injection via custom Devise sign_in on stage venue
 class: AUTH
 asset: digital-onboarding-stage.vpbank.com/users/sign_in
 confidence: 85
 reasoning: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] (prod=4/dev=129/stage=7); stage fields unpinned; overridden Users::SessionsController confirmed; /api/v1/tenants 200 {} anon vs prod 403; HTTP-Basic gates only /control-center/ static, not sign_in POST; stage baseline re-confirmed HTTP 200 25225B (authenticity_token x3, _us_session+session_expiry)
 evidence_needed: baseline POST vs injected POST (+admin=true&tenant_id=1&user_id=999) diverge in 302/Location/Set-Cookie; winning cookie on /api/v1/tenants returns populated response; /admin/api/v1/users 200 vs 401
-verify_steps: HUMAN: GET /users/sign_in -> capture authenticity_token + _us_session + field defaults; POST `authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic`; injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff 302/Set-Cookie; replay cookie on /api/v1/tenants + /admin/api/v1/users; stage only, read-only observe, no account creation
+verify_steps: HUMAN: GET /users/sign_in -> capture authenticity_token + _us_session + field defaults; POST `authenticity_token=<tok>&user[email]=synthetic@test.local&user[password]=synthetic`; injected POST `+&user[admin]=true&user[tenant_id]=1&user[user_id]=999`; diff 302/Set-Cookie; replay cookie on /api/v1/tenants + /admin/api/v1/users; stage only before dev/prod, operator consent required
 impact: wrong-tenant/admin session on bank-onboarding back-office; HIGH (~8.8) if chained to prod
 testability: HUMAN_ONLY
 [HYP] PSD2 sandbox BOLA carries to production consent/account objects

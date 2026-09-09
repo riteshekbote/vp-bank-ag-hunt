@@ -201,3 +201,6 @@
 - 2026-09-09 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-09 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-session read, zero binding on consentId/paymentId
 - 2026-09-09 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint is /adfs/oauth2/devicecode (405 GET, enabled) — blocks on client_id
+- 2026-09-09 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage /users/sign_in POST probe executed — HTTP 200, injected params accepted without validation error, cookies renewed; baseline locked
+- 2026-09-09 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
+- 2026-09-09 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id

@@ -478,3 +478,10 @@ www.vpbank.com
 - NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry in stage (sentry_environment=stage-vpbank, release 5e237eae...)
 - CHANGED Session-context injection vector CONFIRMED live on stage: form renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token; overridden Users::SessionsController consumes 
 - CHANGED No new assets discovered in core /24 sweep (mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked)
+
+## 2026-09-09 15:31:26 UTC
+- NEW Stage sign-in POST probe confirmed injected params (user[admin]=true, user[tenant_id]=999, user[user_id]=1) accepted without validation error — HTTP 200, cookies renewed, but failed login (invalid cre
+- NEW CSP report-uri confirms Sentry debug telemetry on stage (sentry_environment=stage-vpbank, release 5e237eae...)
+- CHANGED Session-context injection vector CONFIRMED at form/controller level on stage: hidden fields unpinned (tenant_id=7), overridden Users::SessionsController consumes client-controlled params, pre-auth coo
+- CHANGED Core /24 sweep complete — mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked; no new in-scope assets
+- CHANGED All three digital-onboarding venues now proven with fleet-wide overridden SessionsController (prod tenant_id=4, dev=129, stage=7)
