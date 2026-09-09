@@ -459,3 +459,5 @@ www.vpbank.com
 - NEW digital-onboarding-dev.vpbank.com/users/sign_in live confirmed with hidden user[tenant_id]=129, user[admin]=false, user[user_id]=0 — dev default tenant_id=129
 - CHANGED concentsol.vpbank.com re-probed (.well-known/openid-configuration, /api/version, /swagger/v1/swagger.json) — all uniform empty 404 (no content-type/body), parked Kestrel host confirmed
 - CHANGED mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.com all probed and REJECTED (maintenance-gated, static landing, WAF family, aliases, parked)
+
+## 2026-09-09 01:17:55 UTC
