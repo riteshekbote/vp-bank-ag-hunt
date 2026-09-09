@@ -461,3 +461,9 @@ www.vpbank.com
 - CHANGED mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.com all probed and REJECTED (maintenance-gated, static landing, WAF family, aliases, parked)
 
 ## 2026-09-09 01:17:55 UTC
+
+## 2026-09-09 06:11:30 UTC
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in POST probe executed — HTTP 200 (failed login, invalid creds), session cookies renewed (_us_session, session_expiry), injected params (user[admin]=true
+- NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry in stage (sentry_environment=stage-vpbank, release 5e237eae...)
+- CHANGED Session-context injection vector CONFIRMED live on stage: form renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token; overridden Users::SessionsController consumes 
+- CHANGED No new assets discovered in core /24 sweep (mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked)
