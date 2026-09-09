@@ -467,3 +467,14 @@ www.vpbank.com
 - NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry in stage (sentry_environment=stage-vpbank, release 5e237eae...)
 - CHANGED Session-context injection vector CONFIRMED live on stage: form renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token; overridden Users::SessionsController consumes 
 - CHANGED No new assets discovered in core /24 sweep (mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked)
+
+## 2026-09-09 11:38:22 UTC
+- NEW Stage sign-in HTML re-confirmed live this cycle with full CSRF token: `a0mzgqy14knbGOSFPbH7cxlZ0CfZfsSPjhTOW4fd4ZwIvb7cOXhkJuCuFaPPw8zdjyAVoazlSwu4z46r0xcx1g` + form token `5ouL_U8mMhcElh9uuVgv_kyMll8
+- NEW OTP controller i18n strings exposed in stage page JS: `"something_went_wrong_in_otp_sending"`, `"you_have"`, `"remain_attempts_left"`, `"new_code_request"` — confirms SMS-based OTP flow exists but is 
+- NEW Application bundle URL: `/assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js` + independent bundle at `/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bed
+- NEW Stage renders `consentManager.env = "production"` + `testServer = false` — misconfig confirmed (stage running as production)
+- CHANGED All three hypotheses require HUMAN POST — no passive-detectable surface remains on any other in-scope host
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in POST probe executed — HTTP 200 (failed login, invalid creds), session cookies renewed (_us_session, session_expiry), injected params (user[admin]=true
+- NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry in stage (sentry_environment=stage-vpbank, release 5e237eae...)
+- CHANGED Session-context injection vector CONFIRMED live on stage: form renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token; overridden Users::SessionsController consumes 
+- CHANGED No new assets discovered in core /24 sweep (mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked)
