@@ -1066,3 +1066,6 @@
 - LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-09 23:33:05 UTC
+- [55] digital-onboarding-stage.vpbank.com/users/sign_in: Injected session-context persists on failed-login path (no valid creds required) (from art/lead_bigpickle.txt)

