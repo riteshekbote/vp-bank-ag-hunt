@@ -485,3 +485,10 @@ www.vpbank.com
 - CHANGED Session-context injection vector CONFIRMED at form/controller level on stage: hidden fields unpinned (tenant_id=7), overridden Users::SessionsController consumes client-controlled params, pre-auth coo
 - CHANGED Core /24 sweep complete — mobile/ebics/tracking/beta/concentsol all rejected/maintenance-gated/parked; no new in-scope assets
 - CHANGED All three digital-onboarding venues now proven with fleet-wide overridden SessionsController (prod tenant_id=4, dev=129, stage=7)
+
+## 2026-09-09 18:45:45 UTC
+- NEW Stage sign-in HTML re-confirmed live this cycle with full CSRF token: `a0mzgqy14knbGOSFPbH7cxlZ0CfZfsSPjhTOW4fd4ZwIvb7cOXhkJuCuFaPPw8zdjyAVoazlSwu4z46r0xcx1g` + form token `5ouL_U8mMhcElh9uuVgv_kyMll8
+- NEW OTP controller i18n strings exposed in stage page JS: `"something_went_wrong_in_otp_sending"`, `"you_have"`, `"remain_attempts_left"`, `"new_code_request"` — confirms SMS-based OTP flow exists but is 
+- NEW Application bundle URL: `/assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js` + independent bundle at `/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bed
+- NEW Stage renders `consentManager.env = "production"` + `testServer = false` — misconfig confirmed (stage running as production)
+- CHANGED All three hypotheses require HUMAN POST — no passive-detectable surface remains on any other in-scope host
