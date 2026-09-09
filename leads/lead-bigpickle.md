@@ -2719,3 +2719,31 @@ impact: enumeration of tenant configs; MEDIUM standalone, HIGH chained
 testability: HUMAN_ONLY
 [NEXT] HUMAN: Provide operator-approved valid test credentials for digital-onboarding-stage.vpbank.com to execute the injected sign_in POST (user[email]/user[password] + user[admin]=true&user[tenant_id]=1&user[user_id]=1) and diff cookies against baseline; then replay winning cookie on GET /api/v1/tenants and GET /admin/api/v1/users. Stage-only, no customer data.
 [RISK] vp-bank-ag: 68 — Surface richly mapped but all live findings bank on one HUMAN step: session-context injection on stage (3/3 places render client-controlled admin/tenant/user_id; injected POST accepted without validation error; stage /api/v1/brand + /api/v1/tenants accessible anonymous). PSD2 sandbox BOLA proven but prod carryover blocked by mTLS. Family lacks GraphQL, /api/v2, standalone OTP routes — attack surface otherwise exhausted (api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol all negative). Risk stable at 68 until one of the three HUMAN proofs lands.
+## 2026-09-09 21:30:35 UTC [target] (model bigpickle)
+[HYP] Session-context injection via custom Devise sign_in on stage venue
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 90
+reasoning: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] (prod=4/dev=129/stage=7, stage unpinned); overridden Users::SessionsController confirmed; injected POST (admin=true, tenant_id=999, user_id=1) accepted with NO param validation error — HTTP 200, cookies renewed, failed only on bad creds; /api/v1/brand 200 anon, /admin/api/v1/users 401 JWT baseline
+evidence_needed: valid-cred POST with injected params diverges from baseline (302/Location + Set-Cookie diff); winning cookie reads populated /api/v1/tenants and 200 /admin/api/v1/users
+verify_steps: HUMAN: POST `authenticity_token=<tok>&user[email]=<VALID>&user[password]=<VALID>&user[admin]=true&user[tenant_id]=1&user[user_id]=1` on stage; replay Set-Cookie GET /api/v1/tenants + GET /admin/api/v1/users; diff vs baseline; stage-only synthetic, operator consent
+impact: wrong-tenant/admin session on bank-onboarding back-office (onboarding PII, identity docs, transactions, wires, role mgmt); HIGH (~8.8), CRITICAL chained prod
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: sandbox proof end-to-end (consent 6b517824… cross-session read, zero binding); production shares Berlin Group surface + cert CN=openbanking.vpbank.com; mTLS blocks anonymous
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against foreign id returns 200 not 403/404
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL if confirmed
+testability: HUMAN_ONLY
+[HYP] Stage/prod API differential reveals tenant-isolation flaw
+class: BUSLOGIC
+asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
+confidence: 55
+reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated only after injected admin session
+evidence_needed: injected admin cookie returns populated /api/v1/tenants array; /admin/api/v1/users 200 user list
+verify_steps: HUMAN: chained from HYP #1 — replay injected-admin cookie on /api/v1/tenants; diff vs baseline `{}`; populated → cross-tenant leak confirmed
+impact: enumeration of tenant configs; MEDIUM standalone, HIGH chained
+testability: HUMAN_ONLY
