@@ -526,3 +526,5 @@ www.vpbank.com
 - CHANGED Phase=POC, target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — need to pivot target
 - CHANGED All three top hypotheses are HUMAN_ONLY or chained-from-HUMAN — session-context injection on stage needs valid creds, PSD2 prod carryover needs mTLS cert
 - NEW Failed-login path hypothesis (confidence 55) proposes injected session-context persists even without valid credentials — testable WITHOUT creds on stage
+
+## 2026-09-10 18:59:04 UTC

@@ -1129,3 +1129,20 @@
 - LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-10 18:59:04 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Session-context injection via custom Devise sign-in on stage venue (unpinned defaults, cleanest proof) (from art/lead_nemotron3.txt)
+- [42] digital-onboarding-stage.vpbank.com/api/v1/sessions/{idp_login,secure_session,reset_password}: Custom /api/v1/sessions/* endpoints on stage expose session/config data anonymously (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: HEAD/GET three untested custom session endpoints on digital-onboarding-stage.vpbank.com: (1) https://digital-onboarding-stage.vpbank.com/api/v1/sessions/
+- NEXT(hypotheses-nemotron3.txt): HUMAN: Provide valid test credentials for `digital-onboarding-stage.vpbank.com` to complete session-context injection POC — POST `/users/sign_in` with injected 
+- LEARN: REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=
+- LEARN: REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage `/users/sign_in` POST probe executed — HTTP 200, injected param
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) 
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-sessio
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-ba
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
