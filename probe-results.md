@@ -354,3 +354,7 @@ https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding-stage.vpbank.com/api/v1/sessions/idp_login -> HTTP 404
 https://digital-onboarding-stage.vpbank.com/api/v1/sessions/secure_session -> HTTP 404
 https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password -> HTTP 404
+
+## 2026-09-10 21:26:51 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
