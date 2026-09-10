@@ -2917,3 +2917,44 @@ testability: HUMAN_ONLY
 [NEXT] HUMAN: Two operator-dependent proofs remain. (A) Provide valid stage credentials for digital-onboarding-stage.vpbank.com → POST `/users/sign_in` with `user[email]=<creds>&user[password]=<creds>&user[admin]=true&user[tenant_id]=1&user[user_id]=1`, capture Set-Cookie, replay on GET `/api/v1/tenants` (vs `{}`) and `/admin/api/v1/users` (vs 401). (B) Or provide a TPP client cert for openbanking.vpbank.com → GET `/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f` (expected 200 = production BOLA).
 [LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 `{}` (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
 [RISK] vp-bank-ag: 66 — Failed-login injection variant eliminated; remaining live threads all require operator material: (1) proven PSD2 sandbox BOLA has production carryover blocked by mTLS, (2) fleet-wide custom-Devise session-context form flaw needs a valid stage credential to demonstrate impact. Surface otherwise fully mapped and exhausted (api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol all negative). Risk holds at ~66 pending either HUMAN proof: prod BOLA replay or injected-session tenants differential.
+## 2026-09-10 15:44:45 UTC [target] (model bigpickle)
+[CHANGED] Phase=POC, target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — need to pivot target
+[CHANGED] All three top hypotheses are HUMAN_ONLY or chained-from-HUMAN — session-context injection on stage needs valid creds, PSD2 prod carryover needs mTLS cert
+[NEW] Failed-login path hypothesis (confidence 55) proposes injected session-context persists even without valid credentials — testable WITHOUT creds on stage
+[PRIO] digital-onboarding-stage.vpbank.com,8.75,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] openbanking.vpbank.com,5.65,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=8
+[HYP] Injected session-context persists on failed-login path (no valid creds required)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: overridden Users::SessionsController consumed user[admin]=true&user[tenant_id]=999&user[user_id]=1 in prior POST (HTTP 200, no validation error, cookies renewed); pre-auth _us_session set on GET; anonymous /api/v1/tenants returns `{}`, /admin/api/v1/users returns 401 — clean divergence baselines
+evidence_needed: replay of post-POST cookie on /api/v1/tenants returns non-`{}` or /admin/api/v1/users != 401; proves context written to session before auth verification
+verify_steps: PROBE (stage, invalid creds): (1) GET /users/sign_in → capture tok+_us_session; (2) POST authenticity_token=tok&user[email]=nonexistent+invalid+probe+1@example.com&user[password]=invalid&user[admin]=true&user[tenant_id]=1&user[user_id]=1 → save Set-Cookie; (3) GET /api/v1/tenants and GET /admin/api/v1/users with that cookie; diff vs anon baseline `{}`/401
+impact: admin/tenant context on bank back-office session without valid creds (onboarding PII, identity docs, wires, role mgmt); HIGH (~8.8)
+testability: PASSIVE
+[HYP] Valid-credential login with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 rendered client-side proves overridden Users::SessionsController consumes client-controlled session-context params (3/3 venues); failed-login path tested NEGATIVE (POST-POST cookie identical to anonymous on /api/v1/tenants 200 `{}`, /admin/api/v1/users 401) — context only written after successful auth
+evidence_needed: valid-creds POST with injected admin=true&tenant_id=1&user_id=1 yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: operator provides valid stage creds; POST /users/sign_in with email/password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay on GET /api/v1/tenants and /admin/api/v1/users; diff vs baseline `{}`/401; stage-only synthetic data
+impact: arbitrary tenant/admin back-office session → onboarding cases, ident documents, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: sandbox proof end-to-end (consent 6b517824-e5af-4202-b9b0-7f483a68ee9f cross-session read, zero session/TPP binding on consentId/paymentId); production shares Berlin Group surface, cert CN=openbanking.vpbank.com; mTLS blocks anonymous
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against foreign id returns 200
+verify_steps: HUMAN: with valid TPP client cert GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[PARKED] Stage/prod API differential (BUSLOGIC): confidence 55 but chained from first HYP — blocked until valid creds provided
+[FINAL] 1. [60] PSD2 sandbox BOLA carries to production (IDOR) — strongest standalone value
+[FINAL] 2. [55] Session-context injection on stage with valid creds (AUTH) — form flaw fleet-proven, needs creds
+[FINAL] 3. [55] Injected session-context on failed-login path (AUTH) — testable now via POST+replay, needs verification
+[NEXT] HUMAN: Two operator-dependent proofs remain. (A) Provide valid stage credentials for digital-onboarding-stage.vpbank.com → POST `/users/sign_in` with `user[email]=<creds>&user[password]=<creds>&user[admin]=true&user[tenant_id]=1&user[user_id]=1`, capture Set-Cookie, replay on GET `/api/v1/tenants` (vs `{}`) and `/admin/api/v1/users` (vs 401). (B) Or provide a TPP client cert for openbanking.vpbank.com → GET `/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f` (expected 200 = production BOLA).
+[LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 `{}` (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
+[RISK] vp-bank-ag: 66 — Failed-login injection variant eliminated; remaining live threads all require operator material: (1) proven PSD2 sandbox BOLA has production carryover blocked by mTLS, (2) fleet-wide custom-Devise session-context form flaw needs a valid stage credential to demonstrate impact. Surface otherwise fully mapped and exhausted (api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol all negative). Risk holds at ~66 pending either HUMAN proof: prod BOLA replay or injected-session tenants differential.

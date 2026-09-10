@@ -521,3 +521,8 @@ www.vpbank.com
 - NEW Probe completed: failed-login session-context injection test executed end-to-end on stage (all reads, invalid creds)
 - CHANGED POST-POST session cookie is FULLY anonymous — no differential vs baseline on any endpoint
 - NEW `/api/v1/qr_codes/generate` returns 200→401 `{"status":"2fa not enabled for provided tenant"}` (48B) on stage — tenant context selected server-side, config-only
+
+## 2026-09-10 15:56:44 UTC
+- CHANGED Phase=POC, target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — need to pivot target
+- CHANGED All three top hypotheses are HUMAN_ONLY or chained-from-HUMAN — session-context injection on stage needs valid creds, PSD2 prod carryover needs mTLS cert
+- NEW Failed-login path hypothesis (confidence 55) proposes injected session-context persists even without valid credentials — testable WITHOUT creds on stage
