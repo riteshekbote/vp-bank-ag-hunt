@@ -513,3 +513,11 @@ www.vpbank.com
 - CHANGED All three digital-onboarding venues (prod/dev/stage) confirmed live with fleet-wide overridden Users::SessionsController rendering hidden user[tenant_id]/user[admin]/user[user_id] with differing defau
 - CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com/mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.
 - CHANGED PSD2 sandbox BOLA on developer.vpbank.com remains VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+
+## 2026-09-10 12:01:12 UTC
+- CHANGED Phase=POC, target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — need to pivot target
+- CHANGED All three top hypotheses are HUMAN_ONLY or chained-from-HUMAN — session-context injection on stage needs valid creds, PSD2 prod carryover needs mTLS cert
+- NEW Failed-login path hypothesis (confidence 55) proposes injected session-context persists even without valid credentials — testable WITHOUT creds on stage
+- NEW Probe completed: failed-login session-context injection test executed end-to-end on stage (all reads, invalid creds)
+- CHANGED POST-POST session cookie is FULLY anonymous — no differential vs baseline on any endpoint
+- NEW `/api/v1/qr_codes/generate` returns 200→401 `{"status":"2fa not enabled for provided tenant"}` (48B) on stage — tenant context selected server-side, config-only
