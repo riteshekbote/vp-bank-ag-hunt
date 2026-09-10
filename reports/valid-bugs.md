@@ -25,3 +25,8 @@
   - **Verdict: VALID**
   - | Q7 | Reasonable triager? | **NO** — metadata exposure alone is informational, not exploitable without valid client_id + user interaction |
   - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-10 16:57:16 UTC
+  - **VERDICT: VALID**
+  - | Q4 | Provable non-invasively? | **No** — requires valid client_id not discoverable from JS/RAG/App Store |
+  - | PSD2 Sandbox BOLA/IDOR | **VALID** | Proven end-to-end in sandbox with synthetic data; HIGH impact |
