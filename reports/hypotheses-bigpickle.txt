@@ -1,4 +1,9 @@
-## 2026-09-09 23:30:36 UTC [target] (model bigpickle)
+## 2026-09-10 01:29:23 UTC [target] (model bigpickle)
+[PRIO] digital-onboarding-stage.vpbank.com,8.75,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+[PRIO] openbanking.vpbank.com,5.65,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=8
+[PRIO] digital-onboarding.vpbank.com,8.15,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+[PRIO] sts.vpbank.com,6.30,attack_surface=5,business_value=7,tech_exposure=6,gate_ease=10,cloud_surface=1,freshness=8
 [HYP] Injected session-context persists on failed-login path (no valid creds required)
 class: AUTH
 asset: digital-onboarding-stage.vpbank.com/users/sign_in
@@ -21,8 +26,17 @@ testability: HUMAN_ONLY
 class: BUSLOGIC
 asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
 confidence: 55
-reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated response expected after injected admin session
-evidence_needed: injected-admin cookie returns populated /api/v1/tenants; /admin/api/v1/users 200 list
+reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated only after injected admin session
+evidence_needed: injected admin cookie returns populated /api/v1/tenants; /admin/api/v1/users 200 list
 verify_steps: chained from HYP #1: replay winning cookie on /api/v1/tenants; diff vs baseline `{}`
 impact: cross-tenant config enumeration; MEDIUM standalone, HIGH chained
 testability: HUMAN_ONLY
+[FINAL] 1. [60] PSD2 sandbox BOLA carries to production (IDOR) — highest standalone value
+[FINAL] 2. [55] Session-context injection on stage (AUTH) — requires HUMAN credentials
+[FINAL] 3. [55] Stage/prod API differential (BUSLOGIC) — chained from #2
+[NEXT] HUMAN: Execute the session-context injection proof on digital-onboarding-stage.vpbank.com — POST `/users/sign_in` with `user[email]=<VALID_TEST_EMAIL>&user[password]=<VALID_TEST_PASSWORD>&user[admin]=true&user[tenant_id]=1&user[user_id]=1` (operator-provided credentials); capture Set-Cookie; replay winning cookie on GET `/api/v1/tenants` (expect populated vs baseline `{}`) and GET `/admin/api/v1/users` (expect 200 vs baseline 401); stage-only, synthetic data, operator consent required.
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage /users/sign_in POST probe executed — HTTP 200, injected params accepted without validation error, cookies renewed; baseline locked
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-session read, zero binding on consentId/paymentId
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+[RISK] vp-bank-ag: 68 — Surface richly mapped but all live findings bank on one HUMAN step: session-context injection on stage (3/3 places render client-controlled admin/tenant/user_id; injected POST accepted without validation error; stage /api/v1/brand + /api/v1/tenants accessible anonymous). PSD2 sandbox BOLA proven but prod carryover blocked by mTLS. Family lacks GraphQL, /api/v2, standalone OTP routes — attack surface otherwise exhausted (api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol all negative). Risk stable at 68 until one of the three HUMAN proofs lands.

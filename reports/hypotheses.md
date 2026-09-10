@@ -1069,3 +1069,11 @@
 
 ## RANKED HYPOTHESES 2026-09-09 23:33:05 UTC
 - [55] digital-onboarding-stage.vpbank.com/users/sign_in: Injected session-context persists on failed-login path (no valid creds required) (from art/lead_bigpickle.txt)
+
+## RANKED HYPOTHESES 2026-09-10 01:30:04 UTC
+- [55] digital-onboarding-stage.vpbank.com/users/sign_in: Injected session-context persists on failed-login path (no valid creds required) (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: Execute the session-context injection proof on digital-onboarding-stage.vpbank.com — POST `/users/sign_in` with `user[email]=<VALID_TEST_EMAIL>&user[pass
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage /users/sign_in POST probe executed — HTTP 200, injected params 
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) 
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): verify_steps EXECUTED in official test sandbox (synthetic data) — consent/account/payment cross-sessio
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
