@@ -1,4 +1,4 @@
-## 2026-09-10 01:29:23 UTC [target] (model bigpickle)
+## 2026-09-10 06:37:45 UTC [target] (model bigpickle)
 [PRIO] digital-onboarding-stage.vpbank.com,8.75,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
 [PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
 [PRIO] openbanking.vpbank.com,5.65,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=8
@@ -26,8 +26,8 @@ testability: HUMAN_ONLY
 class: BUSLOGIC
 asset: digital-onboarding-stage.vpbank.com/api/v1/tenants
 confidence: 55
-reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated only after injected admin session
-evidence_needed: injected admin cookie returns populated /api/v1/tenants; /admin/api/v1/users 200 list
+reasoning: stage 200 `{}` vs prod 403 identical path; same API version/controller class; populated response expected after injected admin session
+evidence_needed: injected-admin cookie returns populated /api/v1/tenants; /admin/api/v1/users 200 list
 verify_steps: chained from HYP #1: replay winning cookie on /api/v1/tenants; diff vs baseline `{}`
 impact: cross-tenant config enumeration; MEDIUM standalone, HIGH chained
 testability: HUMAN_ONLY

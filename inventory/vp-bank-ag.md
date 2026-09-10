@@ -505,3 +505,11 @@ www.vpbank.com
 ## 2026-09-09 23:33:05 UTC
 
 ## 2026-09-10 01:30:04 UTC
+
+## 2026-09-10 06:41:59 UTC
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in POST probe confirmed HTTP 200 with injected params (user[admin]=true, user[tenant_id]=999, user[user_id]=1) accepted without validation error, cookies
+- NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry in stage (sentry_environment=stage-vpbank, release 5e237eae...) — stage misconfigured as production
+- NEW digital-onboarding-dev.vpbank.com CSP report-uri shows sentry_environment=test2 (consentManager.env="production" on dev) — dev misconfigured as production
+- CHANGED All three digital-onboarding venues (prod/dev/stage) confirmed live with fleet-wide overridden Users::SessionsController rendering hidden user[tenant_id]/user[admin]/user[user_id] with differing defau
+- CHANGED api.vpbank.com/www.vpbank.com/vpbank-dev.com/vpbank-stage.com/api-prep.vpbank.com/designsystem.vpbank.com/mobile.vpbank.com/ebics.vpbank.com/tracking.vpbank.com/www-beta.vpbank.com/mobile-beta.vpbank.
+- CHANGED PSD2 sandbox BOLA on developer.vpbank.com remains VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
