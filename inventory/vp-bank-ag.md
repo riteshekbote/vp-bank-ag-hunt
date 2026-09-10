@@ -536,3 +536,11 @@ www.vpbank.com
 - CHANGED All three digital-onboarding venues (prod/dev/stage) confirmed with fleet-wide overridden Users::SessionsController rendering client-controlled `user[tenant_id]/user[admin]/user[user_id]` (defaults: 4
 - CHANGED PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
 - CHANGED sts.vpbank.com ADFS device_code grant exposed but service 503 + client_id unknown — no viable path
+
+## 2026-09-10 23:18:21 UTC
+- NEW digital-onboarding-stage.vpbank.com `/api/v1/sessions/{idp_login,secure_session,reset_password}` all HTTP 404 (probed 2026-09-10 18:59) — custom session endpoints on stage do not exist via GET
+- CHANGED Failed-login session-context injection hypothesis REJECTED (2026-09-10): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, but post-POST cookie replay shows NO different
+- CHANGED Phase=POC target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target required
+- CHANGED All three digital-onboarding venues (prod/dev/stage) confirmed with fleet-wide overridden Users::SessionsController rendering client-controlled `user[tenant_id]/user[admin]/user[user_id]` (defaults: 4
+- CHANGED PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS (HUMAN_ONLY)
+- CHANGED sts.vpbank.com ADFS device_code grant exposed but service 503 + client_id unknown — no viable path

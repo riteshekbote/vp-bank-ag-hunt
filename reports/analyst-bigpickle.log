@@ -17150,3 +17150,128 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 64 — Full surface mapped and exhausted (api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol/sessions-* all negative); two operator-dependent high-ceiling threads remain live and unproven: (1) PSD2 sandbox BOLA production carryover blocked by mTLS, (2) fleet-wide custom-Devise session-context form flaw needing a valid stage credential. Risk holds ~64 pending either HUMAN proof (prod BOLA replay 200, or injected-session tenants differential vs {}).
+===== ANALYST bigpickle 2026-09-10 23:18:21 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m◈ [0mParallel Web Search ""Business Control Center" VP Bank onboarding Rails SaaS github"
+[0m◈ [0mParallel Web Search ""something_went_wrong_in_otp_sending" OR "new_code_request" ruby rails OTP"
+[0m
+[0m$ [0mfor u in "https://digital-onboarding-stage.vpbank.com/.git/HEAD" "https://digital-onboarding-stage.vpbank.com/up" "https://digital-onboarding-stage.vpbank.com/rails/info" "https://digital-onboarding-dev.vpbank.com/api/v1/qr_codes/generate" "https://digital-onboarding-dev.vpbank.com/api/v1/tenants"; do echo "== $u"; curl -sk -m 15 -o /tmp/probe_body -w "code=%{http_code} len=%{size_download} type=%{content_type}\n" "$u"; head -c 300 /tmp/probe_body; echo; sleep 1; done
+== https://digital-onboarding-stage.vpbank.com/.git/HEAD
+code=404 len=1793 type=text/html; charset=UTF-8
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+  
+== https://digital-onboarding-stage.vpbank.com/up
+code=404 len=1793 type=text/html; charset=UTF-8
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+  
+== https://digital-onboarding-stage.vpbank.com/rails/info
+code=404 len=1793 type=text/html; charset=UTF-8
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+  
+== https://digital-onboarding-dev.vpbank.com/api/v1/qr_codes/generate
+code=401 len=48 type=application/json; charset=utf-8
+{"status":"2fa not enabled for provided tenant"}
+== https://digital-onboarding-dev.vpbank.com/api/v1/tenants
+code=200 len=2 type=application/json; charset=utf-8
+{}
+[0m
+===== CYCLE OUTPUT (2026-09-10 ~23:00 UTC, phase=POC target=api) =====
+
+STEP 1 — DELTA
+- [NEW] Stage probes this cycle: `/.git/HEAD`, `/up`, `/rails/info` all return identical Rails 404 (1793B) — no git/source/config-debug exposure on stage.
+- [NEW] RAG vendor-hunt (web/GitHub: "Business Control Center", `something_went_wrong_in_otp_sending`, `new_code_request`) surfaced no vendor codebase — custom SessionsController write-path cannot be confirmed/refuted from source; evidence remains the anonymous form-flaw only.
+- [CHANGED] Dev `digital-onboarding-dev.vpbank.com/api/v1/tenants` re-confirmed 200 `{}` vs prod 403 (config-only differential); dev `/api/v1/qr_codes/generate` = 401 48B identical to stage ("2fa not enabled for provided tenant") — no new differential.
+- [CHANGED] No new in-scope assets; remaining live threads still both HUMAN_ONLY (PSD2 prod BOLA carryover, stage session-context injection).
+
+STEP 2 — PRIORITIZE
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.00,attack_surface=9,business_value=10,tech_exposure=9,gate_ease=10,cloud_surface=4,freshness=10
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1,8.40,attack_surface=9,business_value=9,tech_exposure=8,gate_ease=10,cloud_surface=2,freshness=10
+- [PRIO] openbanking.vpbank.com,5.60,attack_surface=3,business_value=10,tech_exposure=8,gate_ease=1,cloud_surface=2,freshness=8
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: sandbox proof end-to-end (consent 6b517824-e5af-4202-b9b0-7f483a68ee9f created+read across anonymous sessions, /accounts /balances /transactions 200, /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status ACSC, zero session/TPP binding on consentId/paymentId); production shares Berlin Group surface on same tier, cert CN=openbanking.vpbank.com; only mTLS separates sandbox behavior from prod
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against a foreign id returns 200 on production
+verify_steps: HUMAN: with valid TPP client cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = production BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 rendered client-side proves overridden Users::SessionsController consumes client-controlled session-context params (3/3 venues, defaults 4/129/7); failed-login path tested NEGATIVE (post-POST cookie byte-identical to anonymous: /api/v1/tenants 200 {}, /admin/api/v1/users 401) — context only written after successful auth; vendor-code hunt returned nothing to refute
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: operator provides valid stage creds; POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: arbitrary tenant/admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 42
+reasoning: SPA bundle maps idp_login/secure_session/reset_password as active routes; OTP i18n strings (something_went_wrong_in_otp_sending, new_code_request, remain_attempts_left) prove server-side OTP-send flow; GET returns uniform Rails 404 (indistinguishable for POST-only vs absent); stage shows weaker sibling authz (/api/v1/tenants 200 vs prod 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then whether OTP-send fires without a valid session
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then test OTP-send gating against synthetic stage email
+impact: anonymous OTP-request/reset-token initiation on stage → SMS spam, login-disruption, phishing lever for onboarding users; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Rails CSRF token-masking advisory (2025-04): framework-level, requires program-specific exploit vector on a rich client flow — none exists anonymously on stage (all mutating routes 404/gated). Out-of-scope class, not carried.
+- [PARKED] Dev /api/v1/tenants 200 `{}` differential: re-confirmed but returns empty payload — timing/enumeration value only, no data exposure. Not carried.
+- [FINAL] 1. [60] PSD2 sandbox BOLA carries to production (IDOR) — strongest standalone value, CRITICAL impact
+- [FINAL] 2. [55] Session-context injection on stage with valid creds (AUTH) — form flaw fleet-proven (3/3), needs operator material
+- [FINAL] 3. [42] Bare POST /api/v1/sessions/reset_password live-route check (MISCONFIG) — needs mutating HUMAN probe, lowest priority
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Provide valid stage credentials for `digital-onboarding-stage.vpbank.com` → POST /users/sign_in with user[email]+user[password] and user[admin]=true&user[tenant_id]=1&user[user_id]=1, capture Set-Cookie, replay GET /api/v1/tenants (baseline `{}`) and /admin/api/v1/users (baseline 401), diff. Alternative operator paths: TPP client cert → GET /psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f (200 = prod BOLA); or bare POST /api/v1/sessions/reset_password on stage (non-404 = live route).
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com: `/.git/HEAD`, `/up`, `/rails/info` all Rails 404 (1793B) — no git/source/config-debug exposure on stage; passive axis closed.
+- [LEARN] REJECTED OTHER @ digital-onboarding-dev.vpbank.com: `/api/v1/qr_codes/generate` = 401 48B ("2fa not enabled for provided tenant") identical to stage — tenant context selected server-side but config-only, no differential.
+- [LEARN] REJECTED RAG (vendor identification): web/GitHub hunt for "Business Control Center" + OTP i18n keys surfaced no vendor codebase — cannot confirm/refute custom SessionsController post-auth write from source; the fleet-wide form flaw remains the sole evidence.
+
+STEP 7 — RISK
+- [RISK] vp-bank-ag: 62 — Full passive surface exhausted this cycle (stage git/debug/config 404s, dev qr_codes non-differential, vendor-RAG dry); two operator-dependent high-ceiling threads remain live and unproven: PSD2 sandbox BOLA production carryover (CRITICAL if mTLS-cert replay returns 200) and fleet-wide session-context injection (HIGH if valid-creds replay diffs vs `{}`/401). Risk edges down from ~64 only because no new exploitable surface surfaced; holds ~62 pending either HUMAN proof.
