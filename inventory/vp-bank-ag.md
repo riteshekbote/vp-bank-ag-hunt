@@ -584,3 +584,13 @@ www.vpbank.com
 ## 2026-09-11 18:43:04 UTC
 
 ## 2026-09-11 21:23:54 UTC
+
+## 2026-09-11 23:20:40 UTC
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in: Failed-login session-context injection hypothesis REJECTED — POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-PO
+- CHANGED digital-onboarding-stage.vpbank.com/api/v1/sessions/{idp_login,secure_session,reset_password}: GET probes all HTTP 404 (Rails 404.html) — custom session endpoints don't exist via GET
+- CHANGED api.vpbank.com: Fully exhausted — all vectors (SSRF, policy bypass, XML/SOAP, routing headers) return identical HTTP 500 JSON (INVALID_REQUEST_RESOURCE); CONFIRMED REJECTED across all models
+- CHANGED Phase=POC target=api but api.vpbank.com exhausted — pivot target required to digital-onboarding family or developer.vpbank.com
+- CHANGED PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS on openbanking.vpbank.com (HUMAN_ONLY)
+- CHANGED sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
+- NEW digital-onboarding family: 3/3 venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-contex
+- NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry (sentry_environment=stage-vpbank, release 5e237eae...) — stage misconfigured as production

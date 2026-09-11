@@ -388,3 +388,7 @@ https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/2ade600d-da12-419a-a332-15c8dcf76670 -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
 https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password -> HTTP 404
+
+## 2026-09-11 23:20:43 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0

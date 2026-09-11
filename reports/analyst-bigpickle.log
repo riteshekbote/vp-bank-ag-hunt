@@ -20011,3 +20011,10 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 66 — Prod-PSD2-BOLA path advanced one step: fresh in-the-wild anchor (2ade600d…, live+valid) now gates only on a TPP mTLS cert — CRITICAL if landed. Stage injection holds at 55 awaiting valid creds. CT breadth sweep added nothing. Total rejection ~35% if neither HUMAN thread resolves.
+===== ANALYST bigpickle 2026-09-11 23:20:40 UTC =====
+[0m
+> build · big-pickle
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mcurl -sk --max-time 30 -o /tmp/stage_signin.html -w "STAGE %{http_code} %{size_download}\n" https://digital-onboarding-stage.vpbank.com/users/sign_in; sleep 1; curl -sk --max-time 30 -o /tmp/consent_status.json -w "CONSENT %{http_code} %{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/2ade600d-da12-419a-a332-15c8dcf76670/status"; echo "---"; grep -oE 'name="user\[(tenant_id|admin|user_id)\]"[^>]*value="[^"]*"' /tmp/stage_signin.html | head -5; echo "---"; cat /tmp/consent_status.json failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
