@@ -241,3 +241,7 @@
 - 2026-09-11 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId (standing).
 - 2026-09-11 REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): session context NOT written pre-auth — negative, hypothesis-specific (standing).
 - 2026-09-11 REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked (standing).
+- 2026-09-11 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: injection surface baseline confirmed live this cycle, hidden fields unpinned.
+- 2026-09-11 ACCEPTED IDOR @ developer.vpbank.com: PSD2 sandbox BOLA standing (synthetic data TTL expired on anchor, not mechanism refutation).
+- 2026-09-11 REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login): session context NOT written pre-auth — negative, standing.
+- 2026-09-11 REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked — standing.
