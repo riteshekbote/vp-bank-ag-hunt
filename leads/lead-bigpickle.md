@@ -3254,3 +3254,36 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login): session context NOT written pre-auth — negative, standing.
 [LEARN] REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked — standing.
 [RISK] vp-bank-ag: 64 — Surface unchanged. Two HUMAN-only high-ceiling threads: (1) PSD2 sandbox→prod BOLA @58 confidence, CRITICAL impact if mTLS cert obtainable (sandbox anchor requires re-create first), (2) stage session-context injection @55 confidence, HIGH impact (~8.8) if valid creds obtainable. Risk holds pending HUMAN proof — redeploying to a significant finding moves it sharply, total rejection drops to ~35.
+## 2026-09-11 18:38:06 UTC [target] (model bigpickle)
+[PRIO] digital-onboarding-stage.vpbank.com,8.8,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=2,cloud_surface=6,freshness=10
+[PRIO] openbanking.vpbank.com,7.5,attack_surface=7,business_value=10,tech_exposure=8,gate_ease=0,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com,5.0,attack_surface=6,business_value=5,tech_exposure=7,gate_ease=8,cloud_surface=4,freshness=8
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: Hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 unpinned in form (re-verified live 23827B) prove overridden Users::SessionsController consumes client-controlled params (3/3 venues defaults 4/129/7); failed-login path tested NEGATIVE 2026-09-10 (post-POST cookie byte-identical to anonymous baseline) — context only written post-auth
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: operator provides valid stage creds; POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: arbitrary tenant/admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 58
+reasoning: Sandbox BOLA verified end-to-end 2026-09-04/05 (consent created+read across anonymous sessions, /accounts /balances /transactions 200, payment ACSC, zero session/TPP binding); anchor consent now 404 this cycle — consistent with synthetic-data TTL, NOT mechanism refutation; prod shares Berlin Group surface, cert CN=openbanking.vpbank.com; only mTLS separates
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against foreign id returns 200 on production (after re-creating anchor consent)
+verify_steps: HUMAN: (1) re-create consent via sandbox POST (documented synthetic-data practice) to restore anchor; (2) with valid TPP cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{recreated-id} and /payments/{id}/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps idp_login/secure_session/reset_password as active routes; OTP i18n strings (something_went_wrong_in_otp_sending, remain_attempts_left) prove server-side OTP-send flow; GET returns uniform Rails 404 (indistinguishable for POST-only vs absent); stage shows weaker sibling authz (/api/v1/tenants 200 vs prod 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then whether OTP-send fires without a valid session
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then OTP-send gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[FINAL] Ranked:
+[NEXT] PROBE: Re-verify stage baseline + attempt sandbox consent re-creation. Two automated read-only probes in parallel:
