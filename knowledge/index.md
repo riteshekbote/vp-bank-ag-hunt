@@ -235,3 +235,9 @@
 - 2026-09-11 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
 - 2026-09-11 REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked
 - 2026-09-11 REJECTED OAUTH @ sts.vpbank.com: device_code endpoint 503 + blocks on client_id
+- 2026-09-11 ACCEPTED MISCONFIG @ digital-onboarding-dev/stage.vpbank.com: force_tenant numeric IDs (1/7/129) all resolve to default vpbanklighttenant brand config; only literal 'vpbank' selects alternate config — anonymous tenant enumeration absent on brand axis.
+- 2026-09-11 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in re-verified 200 (23827B) with hidden tenant_id=7/admin=false/user_id=0 unpinned + authenticity_token — injection surface baseline confirmed live this cycle.
+- 2026-09-11 REJECTED IDOR @ developer.vpbank.com (sandbox anchor expiry): /consents/6b517824-.../status returns 404 — synthetic-data TTL effect, not mechanism refutation; anchor needs re-create via sandbox POST.
+- 2026-09-11 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId (standing).
+- 2026-09-11 REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): session context NOT written pre-auth — negative, hypothesis-specific (standing).
+- 2026-09-11 REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked (standing).
