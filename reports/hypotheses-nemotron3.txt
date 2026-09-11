@@ -1,9 +1,9 @@
-## 2026-09-11 18:42:52 UTC [target] (model nemotron3)
-[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.5,attack_surface=10|business_value=9|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
-[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.0,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=9
-[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.5,attack_surface=9|business_value=8|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=9
-[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents/{id},7.5,attack_surface=8|business_value=9|tech_exposure=8|gate_ease=5|cloud_surface=7|freshness=8
-[PRIO] sts.vpbank.com/adfs/.well-known/openid-configuration,6.0,attack_surface=6|business_value=7|tech_exposure=7|gate_ease=8|cloud_surface=6|freshness=6
+## 2026-09-11 21:23:44 UTC [target] (model nemotron3)
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.4,attack_surface=10|business_value=9|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.15,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=9
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.8,attack_surface=9|business_value=8|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=9
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents/{id},7.7,attack_surface=8|business_value=9|tech_exposure=8|gate_ease=5|cloud_surface=7|freshness=8
+[PRIO] sts.vpbank.com/adfs/.well-known/openid-configuration,6.7,attack_surface=6|business_value=7|tech_exposure=7|gate_ease=8|cloud_surface=6|freshness=6
 [HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
 class: AUTH
 asset: digital-onboarding-stage.vpbank.com/users/sign_in

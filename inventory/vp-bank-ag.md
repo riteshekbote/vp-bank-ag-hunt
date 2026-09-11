@@ -582,3 +582,5 @@ www.vpbank.com
 - CHANGED sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
 
 ## 2026-09-11 18:43:04 UTC
+
+## 2026-09-11 21:23:54 UTC
