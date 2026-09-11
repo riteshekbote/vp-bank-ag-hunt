@@ -3064,3 +3064,33 @@ evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live 
 verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then test OTP-send gating against synthetic stage email
 impact: anonymous OTP-request/reset-token initiation on stage → SMS spam, login-disruption, phishing lever for onboarding users; MEDIUM
 testability: HUMAN_ONLY
+## 2026-09-11 01:10:39 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 58
+reasoning: sandbox BOLA verified end-to-end 2026-09-04/05 (consent created+read across anonymous sessions, /accounts /balances /transactions 200, payment status ACSC, zero session/TPP binding on consentId/paymentId); this cycle the anchor consent now 404 and /accounts emptied — consistent with synthetic-data TTL, NOT mechanism refutation; prod shares Berlin Group surface, cert CN=openbanking.vpbank.com; only mTLS separates sandbox from prod
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against a foreign id returns 200 on production
+verify_steps: HUMAN: with valid TPP client cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 prove overridden Users::SessionsController consumes client-controlled params (3/3 venues: 4/129/7); failed-login path NEGATIVE (post-POST cookie byte-identical to anonymous baseline) — context only written post-auth; form re-confirmed live 24110B this cycle
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: operator provides valid stage creds; POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: arbitrary tenant/admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps idp_login/secure_session/reset_password as active routes; OTP i18n strings (something_went_wrong_in_otp_sending, remain_attempts_left) prove server-side OTP-send flow; GET uniform 404 (indistinguishable for POST-only vs absent)
+evidence_needed: bare POST (no body) returns non-404 proving live route, then OTP-send gating assessment
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then OTP gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[NEXT] HUMAN: (A) Provide one valid stage credential for digital-onboarding-stage.vpbank.com → POST /users/sign_in with user[email]+user[password] and injected user[admin]=true&user[tenant_id]=1&user[user_id]=1, capture Set-Cookie, replay on GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401), diff. (B) Parallel: re-create a test consent in the developer.vpbank.com sandbox (POST, synthetic data, documented sandbox practice) to restore a live BOLA anchor, then with a TPP client cert replay /consents/{id} against openbanking.vpbank.com (200 = prod BOLA).
+[RISK] vp-bank-ag: 64 — Surface unchanged: api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol/sessions-* exhausted; the sandbox BOLA proof anchor expired (data TTL) requiring re-create before prod-carryover test; two operator-dependent high-ceiling threads remain (stage session-context injection @55, prod PSD2 BOLA @58). Risk holds pending HUMAN proof — redeploying to a significant finding would move it sharply, total rejection drops it to ~35.

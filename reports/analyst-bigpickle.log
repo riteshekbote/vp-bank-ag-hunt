@@ -17275,3 +17275,80 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 - [RISK] vp-bank-ag: 62 — Full passive surface exhausted this cycle (stage git/debug/config 404s, dev qr_codes non-differential, vendor-RAG dry); two operator-dependent high-ceiling threads remain live and unproven: PSD2 sandbox BOLA production carryover (CRITICAL if mTLS-cert replay returns 200) and fleet-wide session-context injection (HIGH if valid-creds replay diffs vs `{}`/401). Risk edges down from ~64 only because no new exploitable surface surfaced; holds ~62 pending either HUMAN proof.
+===== ANALYST bigpickle 2026-09-11 01:14:09 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -sS -o /dev/null -w "consent_status:%{http_code}\n" --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status" 2>&1; echo "---"; curl -sS -o /dev/null -w "sign_in:%{http_code} size:%{size_download}\n" --max-time 15 "https://digital-onboarding-stage.vpbank.com/users/sign_in" 2>&1
+consent_status:404
+---
+sign_in:200 size:24110
+[0m
+[0m$ [0mecho "== consent status body =="; curl -sS --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status" -w "\nHTTP:%{http_code}\n" 2>&1 | head -c 800; echo; echo "== accounts =="; curl -sS --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" -w "\nHTTP:%{http_code}\n" 2>&1 | head -c 400; echo; echo "== fresh random consent id status =="; curl -sS --max-time 15 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/00000000-0000-0000-0000-000000000000/status" -w "\nHTTP:%{http_code}\n" 2>&1 | head -c 800
+== consent status body ==
+
+HTTP:404
+
+== accounts ==
+{"accounts":[]}
+HTTP:200
+
+== fresh random consent id status ==
+
+HTTP:404
+[0m
+STEP 1 — DELTA
+- [CHANGED] developer.vpbank.com PSD2 sandbox: previously-verified consent id `6b517824-…` now 404 on /status AND /consents/{id}; anonymous `/accounts` now returns `{"accounts":[]}` (was IBAN LI6508805500000000011) — synthetic test data expired (Berlin Group consent TTL), mechanism previously verified but anchor object gone
+- [CHANGED] digital-onboarding-stage.vpbank.com/users/sign_in still live (HTTP 200, 24110B) — baseline intact, form unchanged
+- [NEW] No fresh inventory surface this cycle (api/www/dev-stage/mobile/ebics/tracking/beta/concentsol/sts unchanged)
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1, 7.8, axis=PSD2-BOLA (anonymous financial API; gate=10; data TTL makes verification volatile)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in, 7.2, axis=AUTH-session-context (3/3 venue form proof; needs creds)
+- [PRIO] openbanking.vpbank.com/psd2 (prod), 6.5, axis=IDOR-carryover (mTLS-gated, HUMAN_ONLY)
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 58
+reasoning: sandbox BOLA verified end-to-end 2026-09-04/05 (consent created+read across anonymous sessions, /accounts /balances /transactions 200, payment status ACSC, zero session/TPP binding on consentId/paymentId); this cycle the anchor consent now 404 and /accounts emptied — consistent with synthetic-data TTL, NOT mechanism refutation; prod shares Berlin Group surface, cert CN=openbanking.vpbank.com; only mTLS separates sandbox from prod
+evidence_needed: credentialed replay of /consents/{id}, /accounts, /payments/{id}/status against a foreign id returns 200 on production
+verify_steps: HUMAN: with valid TPP client cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f and /payments/33b07f90-8ab6-4e4d-b0e7-fb909b685df8/status; 200 = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: hidden user[tenant_id]=7/user[admin]=false/user[user_id]=0 prove overridden Users::SessionsController consumes client-controlled params (3/3 venues: 4/129/7); failed-login path NEGATIVE (post-POST cookie byte-identical to anonymous baseline) — context only written post-auth; form re-confirmed live 24110B this cycle
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: operator provides valid stage creds; POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: arbitrary tenant/admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps idp_login/secure_session/reset_password as active routes; OTP i18n strings (something_went_wrong_in_otp_sending, remain_attempts_left) prove server-side OTP-send flow; GET uniform 404 (indistinguishable for POST-only vs absent)
+evidence_needed: bare POST (no body) returns non-404 proving live route, then OTP-send gating assessment
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then OTP gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] PSD2 prod-carryover: sandbox anchor expired (404), mechanism unrefuted but re-proof now requires mutating POST create in sandbox — dropped below 60 pending HUMAN re-create + mTLS replay
+- [PARKED] sessions/* POST route: GET axis closed (uniform 404); needs mutating probe — sub-40 without it, held at 40
+- [FINAL] 1. [58] PSD2 sandbox BOLA prod carryover (IDOR) — CRITICAL ceiling, HUMAN_ONLY (creds: sandbox re-create + mTLS cert)
+- [FINAL] 2. [55] Session-context injection with valid creds on stage (AUTH) — form flaw fleet-proven 3/3, needs one valid credential
+- [FINAL] 3. [40] Custom sessions POST anonymous reachability on stage (MISCONFIG) — needs mutating HUMAN probe
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: (A) Provide one valid stage credential for digital-onboarding-stage.vpbank.com → POST /users/sign_in with user[email]+user[password] and injected user[admin]=true&user[tenant_id]=1&user[user_id]=1, capture Set-Cookie, replay on GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401), diff. (B) Parallel: re-create a test consent in the developer.vpbank.com sandbox (POST, synthetic data, documented sandbox practice) to restore a live BOLA anchor, then with a TPP client cert replay /consents/{id} against openbanking.vpbank.com (200 = prod BOLA).
+
+STEP 6 — LEARNING
+- [LEARN] CHANGED @ developer.vpbank.com (PSD2 sandbox): anchor consent 6b517824-e5af-4202-b9b0-7f483a68ee9f now 404 on /status & /consents/{id}; anonymous /accounts returns empty [] — synthetic consent data has TTL and expired; mechanism previously VERIFIED not refuted, but live anchor requires re-creation
+- [LEARN] ACCEPTED @ digital-onboarding-stage.vpbank.com/users/sign_in: form re-confirmed live (200, 24110B) with hidden user[tenant_id]=7/user[admin]/user[user_id]; baseline unchanged
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 64 — Surface unchanged: api/www/dev-stage-WAF/ADFS/mobile/ebics/tracking/beta/concentsol/sessions-* exhausted; the sandbox BOLA proof anchor expired (data TTL) requiring re-create before prod-carryover test; two operator-dependent high-ceiling threads remain (stage session-context injection @55, prod PSD2 BOLA @58). Risk holds pending HUMAN proof — redeploying to a significant finding would move it sharply, total rejection drops it to ~35.
