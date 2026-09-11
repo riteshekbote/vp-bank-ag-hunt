@@ -230,3 +230,8 @@
 - 2026-09-11 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-11 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-11 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-11 REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED 2026-09-10 — POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, NO differential vs anonymous baseline on /api/v1/tenants (200 {}), /admin/api/v1/users (401). Session context NOT written pre-auth. Negative, hypothesis-specific.
+- 2026-09-11 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: stage /users/sign_in POST probe executed — HTTP 200, injected params accepted without validation error, cookies renewed; baseline locked
+- 2026-09-11 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+- 2026-09-11 REJECTED MISCONFIG @ mobile/ebics/tracking/beta/concentsol: maintenance-gated, static landing, WAF family, aliases, parked
+- 2026-09-11 REJECTED OAUTH @ sts.vpbank.com: device_code endpoint 503 + blocks on client_id
