@@ -20148,3 +20148,1474 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 64 — No progress on either HUMAN-only thread. Fabric of the PSD2 proof slightly weakened (sandbox proving surface now uniform-500, but prod carryover test is cert-gated and anchor-independent). Stage injection holds at 55 awaiting valid creds. Total rejection if neither HUMAN thread resolves: ~40%.
+===== ANALYST bigpickle 2026-09-12 10:02:27 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && echo "---" && ls -la art/ 2>/dev/null && echo "---" && ls -la inventory/ 2>/dev/null
+total 408
+drwxr-xr-x 12 runner runner   4096 Sep 12 09:56 .
+drwxr-xr-x  3 runner runner   4096 Sep 12 09:56 ..
+drwxr-xr-x  7 runner runner   4096 Sep 12 09:56 .git
+drwxr-xr-x  3 runner runner   4096 Sep 12 09:56 .github
+-rw-r--r--  1 runner runner   1752 Sep 12 09:56 README.md
+-rw-r--r--  1 runner runner     32 Sep 12 09:56 analyst-out.txt
+-rw-r--r--  1 runner runner 155482 Sep 12 09:56 analyst-prompt.txt
+-rw-r--r--  1 runner runner 151667 Sep 12 09:56 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 leads
+-rw-r--r--  1 runner runner  19907 Sep 12 09:56 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 reports
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 12 09:56 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 scripts
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 triage
+---
+[0m
+[0m$ [0mls -la leads/ knowledge/ inventory/ triage/ recon-notes/ 2>/dev/null && echo "---SCOPE---" && cat scope.yml
+inventory/:
+total 88
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 79294 Sep 12 09:56 vp-bank-ag.md
+
+knowledge/:
+total 68
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 58733 Sep 12 09:56 index.md
+
+leads/:
+total 1092
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner   4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 493217 Sep 12 09:56 lead-bigpickle.md
+-rw-r--r--  1 runner runner   3213 Sep 12 09:56 lead-laguna.md
+-rw-r--r--  1 runner runner   3150 Sep 12 09:56 lead-ling3.md
+-rw-r--r--  1 runner runner   3276 Sep 12 09:56 lead-longcat.md
+-rw-r--r--  1 runner runner     18 Sep 12 09:56 lead-mimo.md
+-rw-r--r--  1 runner runner 586683 Sep 12 09:56 lead-nemotron3.md
+-rw-r--r--  1 runner runner   7448 Sep 12 09:56 reposcan-vp-bank-ag.md
+
+recon-notes/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner 4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner  819 Sep 12 09:56 DEDICATED-DEEP.md
+
+triage/:
+total 332
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner     0 Sep 12 09:56 .gitkeep
+-rw-r--r--  1 runner runner   240 Sep 12 09:56 run-2026-09-02-21-52.md
+-rw-r--r--  1 runner runner   148 Sep 12 09:56 run-2026-09-02-23-51.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-03-03-10.md
+-rw-r--r--  1 runner runner   277 Sep 12 09:56 run-2026-09-03-08-08.md
+-rw-r--r--  1 runner runner   206 Sep 12 09:56 run-2026-09-03-12-52.md
+-rw-r--r--  1 runner runner   202 Sep 12 09:56 run-2026-09-03-16-56.md
+-rw-r--r--  1 runner runner   287 Sep 12 09:56 run-2026-09-03-19-41.md
+-rw-r--r--  1 runner runner   195 Sep 12 09:56 run-2026-09-03-22-17.md
+-rw-r--r--  1 runner runner  1211 Sep 12 09:56 run-2026-09-04-00-12.md
+-rw-r--r--  1 runner runner  9761 Sep 12 09:56 run-2026-09-04-04-44.md
+-rw-r--r--  1 runner runner   275 Sep 12 09:56 run-2026-09-04-09-20.md
+-rw-r--r--  1 runner runner   174 Sep 12 09:56 run-2026-09-04-13-36.md
+-rw-r--r--  1 runner runner   263 Sep 12 09:56 run-2026-09-04-17-04.md
+-rw-r--r--  1 runner runner   190 Sep 12 09:56 run-2026-09-04-19-40.md
+-rw-r--r--  1 runner runner 18529 Sep 12 09:56 run-2026-09-04-21-52.md
+-rw-r--r--  1 runner runner   144 Sep 12 09:56 run-2026-09-04-23-43.md
+-rw-r--r--  1 runner runner   158 Sep 12 09:56 run-2026-09-05-03-01.md
+-rw-r--r--  1 runner runner  5023 Sep 12 09:56 run-2026-09-05-07-45.md
+-rw-r--r--  1 runner runner   118 Sep 12 09:56 run-2026-09-05-11-39.md
+-rw-r--r--  1 runner runner   424 Sep 12 09:56 run-2026-09-05-14-00.md
+-rw-r--r--  1 runner runner   151 Sep 12 09:56 run-2026-09-05-16-44.md
+-rw-r--r--  1 runner runner   313 Sep 12 09:56 run-2026-09-05-18-48.md
+-rw-r--r--  1 runner runner   235 Sep 12 09:56 run-2026-09-05-20-56.md
+-rw-r--r--  1 runner runner   155 Sep 12 09:56 run-2026-09-05-22-41.md
+-rw-r--r--  1 runner runner   127 Sep 12 09:56 run-2026-09-06-00-34.md
+-rw-r--r--  1 runner runner   195 Sep 12 09:56 run-2026-09-06-05-04.md
+-rw-r--r--  1 runner runner   243 Sep 12 09:56 run-2026-09-06-09-30.md
+-rw-r--r--  1 runner runner   213 Sep 12 09:56 run-2026-09-06-13-06.md
+-rw-r--r--  1 runner runner   229 Sep 12 09:56 run-2026-09-06-16-20.md
+-rw-r--r--  1 runner runner   179 Sep 12 09:56 run-2026-09-06-18-26.md
+-rw-r--r--  1 runner runner  1535 Sep 12 09:56 run-2026-09-06-20-48.md
+-rw-r--r--  1 runner runner   281 Sep 12 09:56 run-2026-09-06-22-41.md
+-rw-r--r--  1 runner runner   160 Sep 12 09:56 run-2026-09-07-00-41.md
+-rw-r--r--  1 runner runner   258 Sep 12 09:56 run-2026-09-07-05-41.md
+-rw-r--r--  1 runner runner  9736 Sep 12 09:56 run-2026-09-07-11-39.md
+-rw-r--r--  1 runner runner   156 Sep 12 09:56 run-2026-09-07-16-39.md
+-rw-r--r--  1 runner runner 10070 Sep 12 09:56 run-2026-09-07-20-10.md
+-rw-r--r--  1 runner runner   214 Sep 12 09:56 run-2026-09-07-22-52.md
+-rw-r--r--  1 runner runner   170 Sep 12 09:56 run-2026-09-08-00-54.md
+-rw-r--r--  1 runner runner  8006 Sep 12 09:56 run-2026-09-08-05-37.md
+-rw-r--r--  1 runner runner   244 Sep 12 09:56 run-2026-09-08-10-04.md
+-rw-r--r--  1 runner runner   213 Sep 12 09:56 run-2026-09-08-14-37.md
+-rw-r--r--  1 runner runner   169 Sep 12 09:56 run-2026-09-08-18-05.md
+-rw-r--r--  1 runner runner   192 Sep 12 09:56 run-2026-09-08-21-14.md
+-rw-r--r--  1 runner runner   171 Sep 12 09:56 run-2026-09-08-23-26.md
+-rw-r--r--  1 runner runner   210 Sep 12 09:56 run-2026-09-09-01-30.md
+-rw-r--r--  1 runner runner   285 Sep 12 09:56 run-2026-09-09-06-39.md
+-rw-r--r--  1 runner runner   211 Sep 12 09:56 run-2026-09-09-11-51.md
+-rw-r--r--  1 runner runner   628 Sep 12 09:56 run-2026-09-09-15-57.md
+-rw-r--r--  1 runner runner   189 Sep 12 09:56 run-2026-09-09-19-08.md
+-rw-r--r--  1 runner runner   574 Sep 12 09:56 run-2026-09-09-21-44.md
+-rw-r--r--  1 runner runner   242 Sep 12 09:56 run-2026-09-09-23-49.md
+-rw-r--r--  1 runner runner   179 Sep 12 09:56 run-2026-09-10-03-10.md
+-rw-r--r--  1 runner runner   157 Sep 12 09:56 run-2026-09-10-08-14.md
+-rw-r--r--  1 runner runner   191 Sep 12 09:56 run-2026-09-10-12-57.md
+-rw-r--r--  1 runner runner  6740 Sep 12 09:56 run-2026-09-10-16-57.md
+-rw-r--r--  1 runner runner   224 Sep 12 09:56 run-2026-09-10-19-29.md
+-rw-r--r--  1 runner runner   234 Sep 12 09:56 run-2026-09-10-21-51.md
+-rw-r--r--  1 runner runner   160 Sep 12 09:56 run-2026-09-10-23-43.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-11-03-06.md
+-rw-r--r--  1 runner runner   183 Sep 12 09:56 run-2026-09-11-08-08.md
+-rw-r--r--  1 runner runner   404 Sep 12 09:56 run-2026-09-11-12-52.md
+-rw-r--r--  1 runner runner   763 Sep 12 09:56 run-2026-09-11-16-55.md
+-rw-r--r--  1 runner runner   189 Sep 12 09:56 run-2026-09-11-19-28.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-11-21-53.md
+-rw-r--r--  1 runner runner   111 Sep 12 09:56 run-2026-09-11-23-52.md
+-rw-r--r--  1 runner runner  1663 Sep 12 09:56 run-2026-09-12-03-13.md
+-rw-r--r--  1 runner runner   271 Sep 12 09:56 run-2026-09-12-07-59.md
+---SCOPE---
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+[0m
+[0m$ [0mcat triage/run-2026-09-12-03-13.md triage/run-2026-09-12-07-59.md analyst-out.txt && echo "---STATE---" && cat state_bigpickle.json && echo "---" && cat state_nemotron3.json
+===== TRIAGE 2026-09-12 03:13:32 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+[0m✱ [0mGlob "**/*.md"[90m 80 matches[0m
+[0m✱ [0mGlob "**/*.yml"[90m 1 match[0m
+[0m✱ [0mGlob "**/*.json"[90m 6 matches[0m
+The leads section appears to be empty. Let me check the workspace for any relevant files.
+[0m→ [0mRead probe-results.md
+[0m→ [0mRead inventory/vp-bank-ag.md
+Let me read the probe results and scope file to identify the leads to triage.
+[0m→ [0mRead leads/lead-mimo.md
+[0m→ [0mRead leads/lead-laguna.md
+[0m→ [0mRead leads/lead-bigpickle.md
+[0m→ [0mRead leads/lead-longcat.md
+[0m→ [0mRead leads/lead-ling3.md
+[0m→ [0mRead leads/lead-nemotron3.md
+Let me read the lead files and the latest triage run to find the actual leads needing validation.
+[0m→ [0mRead scope.yml
+[0m→ [0mRead triage/run-2026-09-11-23-52.md
+Let me check the latest triage run and scope file.
+The leads section in your message is empty — no leads were provided after "LEADS:". The latest triage run (`run-2026-09-11-23-52.md`) also confirms "No leads provided to validate."
+
+Based on the probe results and inventory, the hunt bot has identified several candidates across the lead files, but **you haven't pasted specific leads for me to gate**. 
+
+Please paste the leads you want triaged (one or more), and I'll validate each against the 7-Question Gate. For example:
+
+- **Lead A**: PSD2 Sandbox BOLA/IDOR on developer.vpbank.com
+- **Lead B**: Custom Devise mass assignment on digital-onboarding.vpbank.com
+- **Lead C**: ADFS metadata exposure on sts.vpbank.com
+
+Or paste the raw lead text from the hunt bot output and I'll process it.
+
+===== TRIAGE 2026-09-12 07:59:44 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+I see you've set up the validation framework, but no leads were actually provided in your message. Please paste the probe results/leads you'd like me to validate against the 7-Question Gate.
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && echo "---" && ls -la art/ 2>/dev/null && echo "---" && ls -la inventory/ 2>/dev/null
+total 408
+drwxr-xr-x 12 runner runner   4096 Sep 12 09:56 .
+drwxr-xr-x  3 runner runner   4096 Sep 12 09:56 ..
+drwxr-xr-x  7 runner runner   4096 Sep 12 09:56 .git
+drwxr-xr-x  3 runner runner   4096 Sep 12 09:56 .github
+-rw-r--r--  1 runner runner   1752 Sep 12 09:56 README.md
+-rw-r--r--  1 runner runner     32 Sep 12 09:56 analyst-out.txt
+-rw-r--r--  1 runner runner 155482 Sep 12 09:56 analyst-prompt.txt
+-rw-r--r--  1 runner runner 151667 Sep 12 09:56 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 leads
+-rw-r--r--  1 runner runner  19907 Sep 12 09:56 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 reports
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 12 09:56 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 scripts
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 12 09:56 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 triage
+---
+[0m
+[0m$ [0mls -la leads/ knowledge/ inventory/ triage/ recon-notes/ 2>/dev/null && echo "---SCOPE---" && cat scope.yml
+inventory/:
+total 88
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 79294 Sep 12 09:56 vp-bank-ag.md
+
+knowledge/:
+total 68
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 58733 Sep 12 09:56 index.md
+
+leads/:
+total 1092
+drwxr-xr-x  2 runner runner   4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner   4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 493217 Sep 12 09:56 lead-bigpickle.md
+-rw-r--r--  1 runner runner   3213 Sep 12 09:56 lead-laguna.md
+-rw-r--r--  1 runner runner   3150 Sep 12 09:56 lead-ling3.md
+-rw-r--r--  1 runner runner   3276 Sep 12 09:56 lead-longcat.md
+-rw-r--r--  1 runner runner     18 Sep 12 09:56 lead-mimo.md
+-rw-r--r--  1 runner runner 586683 Sep 12 09:56 lead-nemotron3.md
+-rw-r--r--  1 runner runner   7448 Sep 12 09:56 reposcan-vp-bank-ag.md
+
+recon-notes/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner 4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner  819 Sep 12 09:56 DEDICATED-DEEP.md
+
+triage/:
+total 332
+drwxr-xr-x  2 runner runner  4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner  4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner     0 Sep 12 09:56 .gitkeep
+-rw-r--r--  1 runner runner   240 Sep 12 09:56 run-2026-09-02-21-52.md
+-rw-r--r--  1 runner runner   148 Sep 12 09:56 run-2026-09-02-23-51.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-03-03-10.md
+-rw-r--r--  1 runner runner   277 Sep 12 09:56 run-2026-09-03-08-08.md
+-rw-r--r--  1 runner runner   206 Sep 12 09:56 run-2026-09-03-12-52.md
+-rw-r--r--  1 runner runner   202 Sep 12 09:56 run-2026-09-03-16-56.md
+-rw-r--r--  1 runner runner   287 Sep 12 09:56 run-2026-09-03-19-41.md
+-rw-r--r--  1 runner runner   195 Sep 12 09:56 run-2026-09-03-22-17.md
+-rw-r--r--  1 runner runner  1211 Sep 12 09:56 run-2026-09-04-00-12.md
+-rw-r--r--  1 runner runner  9761 Sep 12 09:56 run-2026-09-04-04-44.md
+-rw-r--r--  1 runner runner   275 Sep 12 09:56 run-2026-09-04-09-20.md
+-rw-r--r--  1 runner runner   174 Sep 12 09:56 run-2026-09-04-13-36.md
+-rw-r--r--  1 runner runner   263 Sep 12 09:56 run-2026-09-04-17-04.md
+-rw-r--r--  1 runner runner   190 Sep 12 09:56 run-2026-09-04-19-40.md
+-rw-r--r--  1 runner runner 18529 Sep 12 09:56 run-2026-09-04-21-52.md
+-rw-r--r--  1 runner runner   144 Sep 12 09:56 run-2026-09-04-23-43.md
+-rw-r--r--  1 runner runner   158 Sep 12 09:56 run-2026-09-05-03-01.md
+-rw-r--r--  1 runner runner  5023 Sep 12 09:56 run-2026-09-05-07-45.md
+-rw-r--r--  1 runner runner   118 Sep 12 09:56 run-2026-09-05-11-39.md
+-rw-r--r--  1 runner runner   424 Sep 12 09:56 run-2026-09-05-14-00.md
+-rw-r--r--  1 runner runner   151 Sep 12 09:56 run-2026-09-05-16-44.md
+-rw-r--r--  1 runner runner   313 Sep 12 09:56 run-2026-09-05-18-48.md
+-rw-r--r--  1 runner runner   235 Sep 12 09:56 run-2026-09-05-20-56.md
+-rw-r--r--  1 runner runner   155 Sep 12 09:56 run-2026-09-05-22-41.md
+-rw-r--r--  1 runner runner   127 Sep 12 09:56 run-2026-09-06-00-34.md
+-rw-r--r--  1 runner runner   195 Sep 12 09:56 run-2026-09-06-05-04.md
+-rw-r--r--  1 runner runner   243 Sep 12 09:56 run-2026-09-06-09-30.md
+-rw-r--r--  1 runner runner   213 Sep 12 09:56 run-2026-09-06-13-06.md
+-rw-r--r--  1 runner runner   229 Sep 12 09:56 run-2026-09-06-16-20.md
+-rw-r--r--  1 runner runner   179 Sep 12 09:56 run-2026-09-06-18-26.md
+-rw-r--r--  1 runner runner  1535 Sep 12 09:56 run-2026-09-06-20-48.md
+-rw-r--r--  1 runner runner   281 Sep 12 09:56 run-2026-09-06-22-41.md
+-rw-r--r--  1 runner runner   160 Sep 12 09:56 run-2026-09-07-00-41.md
+-rw-r--r--  1 runner runner   258 Sep 12 09:56 run-2026-09-07-05-41.md
+-rw-r--r--  1 runner runner  9736 Sep 12 09:56 run-2026-09-07-11-39.md
+-rw-r--r--  1 runner runner   156 Sep 12 09:56 run-2026-09-07-16-39.md
+-rw-r--r--  1 runner runner 10070 Sep 12 09:56 run-2026-09-07-20-10.md
+-rw-r--r--  1 runner runner   214 Sep 12 09:56 run-2026-09-07-22-52.md
+-rw-r--r--  1 runner runner   170 Sep 12 09:56 run-2026-09-08-00-54.md
+-rw-r--r--  1 runner runner  8006 Sep 12 09:56 run-2026-09-08-05-37.md
+-rw-r--r--  1 runner runner   244 Sep 12 09:56 run-2026-09-08-10-04.md
+-rw-r--r--  1 runner runner   213 Sep 12 09:56 run-2026-09-08-14-37.md
+-rw-r--r--  1 runner runner   169 Sep 12 09:56 run-2026-09-08-18-05.md
+-rw-r--r--  1 runner runner   192 Sep 12 09:56 run-2026-09-08-21-14.md
+-rw-r--r--  1 runner runner   171 Sep 12 09:56 run-2026-09-08-23-26.md
+-rw-r--r--  1 runner runner   210 Sep 12 09:56 run-2026-09-09-01-30.md
+-rw-r--r--  1 runner runner   285 Sep 12 09:56 run-2026-09-09-06-39.md
+-rw-r--r--  1 runner runner   211 Sep 12 09:56 run-2026-09-09-11-51.md
+-rw-r--r--  1 runner runner   628 Sep 12 09:56 run-2026-09-09-15-57.md
+-rw-r--r--  1 runner runner   189 Sep 12 09:56 run-2026-09-09-19-08.md
+-rw-r--r--  1 runner runner   574 Sep 12 09:56 run-2026-09-09-21-44.md
+-rw-r--r--  1 runner runner   242 Sep 12 09:56 run-2026-09-09-23-49.md
+-rw-r--r--  1 runner runner   179 Sep 12 09:56 run-2026-09-10-03-10.md
+-rw-r--r--  1 runner runner   157 Sep 12 09:56 run-2026-09-10-08-14.md
+-rw-r--r--  1 runner runner   191 Sep 12 09:56 run-2026-09-10-12-57.md
+-rw-r--r--  1 runner runner  6740 Sep 12 09:56 run-2026-09-10-16-57.md
+-rw-r--r--  1 runner runner   224 Sep 12 09:56 run-2026-09-10-19-29.md
+-rw-r--r--  1 runner runner   234 Sep 12 09:56 run-2026-09-10-21-51.md
+-rw-r--r--  1 runner runner   160 Sep 12 09:56 run-2026-09-10-23-43.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-11-03-06.md
+-rw-r--r--  1 runner runner   183 Sep 12 09:56 run-2026-09-11-08-08.md
+-rw-r--r--  1 runner runner   404 Sep 12 09:56 run-2026-09-11-12-52.md
+-rw-r--r--  1 runner runner   763 Sep 12 09:56 run-2026-09-11-16-55.md
+-rw-r--r--  1 runner runner   189 Sep 12 09:56 run-2026-09-11-19-28.md
+-rw-r--r--  1 runner runner   143 Sep 12 09:56 run-2026-09-11-21-53.md
+-rw-r--r--  1 runner runner   111 Sep 12 09:56 run-2026-09-11-23-52.md
+-rw-r--r--  1 runner runner  1663 Sep 12 09:56 run-2026-09-12-03-13.md
+-rw-r--r--  1 runner runner   271 Sep 12 09:56 run-2026-09-12-07-59.md
+---SCOPE---
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+[0m
+---STATE---
+{"phase": "POC", "target": "api"}---
+{"phase": "POC", "target": "api"}
+[0m
+[0m$ [0mcat recon-notes/DEDICATED-DEEP.md && echo "---REPOSCAN---" && cat leads/reposcan-vp-bank-ag.md && echo "---REPORTS---" && ls -la reports/ reposcan-raw/ 2>/dev/null
+# Dedicated deep surface (wildcard-filtered) 2026-09-03
+
+**Target:** `vp-bank-ag`
+**Root zones:** `vpbank.com`
+
+## Wildcard analysis
+
+- Total resolving hostnames in zone: 0
+- After shared/wildcard IP filtering: **0 genuinely dedicated hosts**
+- Reason: all resolving hostnames use shared/CDN/wildcard IP signatures
+
+## Honest conclusion
+
+This target's subdomain space is wildcard-dominated. No genuinely dedicated
+subdomain surface was recovered from passive brute + subfinder enumeration.
+The surface either (a) uses wildcard DNS records, (b) all CNAME records
+point to shared CDN/Cloudflare/CloudFront/AWS IPs, or (c) has no
+subdomain program at all. This is the honest exhaustive result.
+
+---
+_Honest framing: passive DNS enumeration + shared-IP wildcard filtering. No finding claimed. No active testing performed._
+---REPOSCAN---
+## REPOSCAN 2026-09-03 17:17:00 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-03 19:59:02 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-03 22:30:02 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 00:30:14 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 05:09:09 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 09:46:58 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 14:10:06 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 17:41:58 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 19:56:49 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-04 22:18:23 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 00:15:21 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 04:41:28 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 08:42:04 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 12:09:25 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 15:23:29 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 17:39:45 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 19:34:52 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 21:44:43 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-05 23:44:31 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 04:11:58 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 08:44:42 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 12:48:01 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 16:07:52 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 18:25:14 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 20:49:47 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-06 22:50:44 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 00:49:48 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 05:55:38 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 12:13:05 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 17:47:08 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 21:24:46 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-07 23:46:30 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 04:12:17 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 08:56:16 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 13:29:56 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 17:30:33 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 20:18:08 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-08 22:47:08 UTC
+class: OTHER
+asset: github.com/vpbdevops (0 public repos)
+confidence: 100
+reasoning: The only confirmed VP Bank AG GitHub org (vpbdevops) has zero public repositories. No other org names resolve. User also confirmed "no org candidates."
+impact: N/A — no source-code findings possible
+verify_steps: Confirm at https://github.com/vpbdevops — 0 public repos visible
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 01:10:13 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 06:08:11 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 11:34:54 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 15:19:28 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 18:45:39 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 21:37:40 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-09 23:34:23 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 01:29:23 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 06:43:14 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 11:53:39 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 16:14:43 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 19:10:52 UTC
+[HYP] No Official VP Bank AG GitHub Organization Found
+class: OTHER
+asset: GitHub (organization search)
+confidence: 100
+reasoning: Systematic search of GitHub API for organization names VPBank, vp-bank, VPBankAG returned null. No official VP Bank AG organization exists on GitHub.
+impact: N/A - No repositories to audit
+verify_steps: Manual verification via github.com/orgs/VPBank, github.com/orgs/vp-bank, github.com/orgs/VPBankAG
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 21:43:03 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-10 23:56:28 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 04:24:53 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 09:09:39 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 13:39:34 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 17:17:38 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 19:51:58 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-11 22:25:34 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-12 00:38:24 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-12 05:07:08 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-12 09:28:56 UTC
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+---REPORTS---
+reports/:
+total 3260
+drwxr-xr-x  2 runner runner    4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner    4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner 2008362 Sep 12 09:56 analyst-bigpickle.log
+-rw-r--r--  1 runner runner   13671 Sep 12 09:56 analyst-laguna.log
+-rw-r--r--  1 runner runner   13608 Sep 12 09:56 analyst-ling3.log
+-rw-r--r--  1 runner runner   13734 Sep 12 09:56 analyst-longcat.log
+-rw-r--r--  1 runner runner 1027002 Sep 12 09:56 analyst-nemotron3.log
+-rw-r--r--  1 runner runner    4827 Sep 12 09:56 hypotheses-bigpickle.txt
+-rw-r--r--  1 runner runner      51 Sep 12 09:56 hypotheses-laguna.txt
+-rw-r--r--  1 runner runner      50 Sep 12 09:56 hypotheses-ling3.txt
+-rw-r--r--  1 runner runner      52 Sep 12 09:56 hypotheses-longcat.txt
+-rw-r--r--  1 runner runner   10683 Sep 12 09:56 hypotheses-nemotron3.txt
+-rw-r--r--  1 runner runner  202980 Sep 12 09:56 hypotheses.md
+-rw-r--r--  1 runner runner    2129 Sep 12 09:56 valid-bugs.md
+
+reposcan-raw/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep 12 09:56 .
+drwxr-xr-x 12 runner runner 4096 Sep 12 09:56 ..
+-rw-r--r--  1 runner runner   73 Sep 12 09:56 summary.txt
+[0m
+[0m$ [0mcat reports/valid-bugs.md && echo "---HYP-BIGPICKLE---" && cat reports/hypotheses-bigpickle.txt
+# Validated findings (running count 0)
+
+- 1 lead(s) marked VALID at 2026-09-04 04:44:56 UTC
+  - | 2 | OAuth redirect_uri bypass | **HOLD** | HTTP 400 = ambiguous; needs valid client_id + bypass proof |
+
+- 6 lead(s) marked VALID at 2026-09-04 21:52:32 UTC
+  - | Q4 | Provable non-invasively? | **No** — requires valid client_id first |
+  - | Q7 | Would reasonable triager accept? | **Cannot determine** — requires valid client_id not discoverable passively |
+  - **Verdict: HOLD** — AUTH_HELPED testability blocks passive-only verification. /oauth/authorize exists but returns 303/400 for all tested client_id/redirect_uri combos. No valid client_id discoverable 
+  - | Q7 | Would reasonable triager accept? | **Possibly** — if confirmed, valid finding |
+  - **Verdict: HOLD** — PASSIVE testability but requires POST requests to create payments/consents. Documentation explicitly states last digit of X-Request-ID controls sandbox state (1=RCVD, 5=ACSC for pa
+  - | **VALID** | 0 | None confirmed |
+
+- 1 lead(s) marked VALID at 2026-09-05 07:45:18 UTC
+  - **Verdict: VALID**
+
+- 1 lead(s) marked VALID at 2026-09-07 11:39:24 UTC
+  - **Verdict: HOLD** — High-severity if exploitable (CVSS ~8.8), but requires POST with valid credentials to prove. Passive proof only shows the form fields exist. Needs: POST `user[admin]=true&user[tena
+
+- 2 lead(s) marked VALID at 2026-09-07 20:10:45 UTC
+  - **Verdict: VALID**
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 5.3–7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-08 05:37:40 UTC
+  - **Verdict: VALID**
+  - | Q7 | Reasonable triager? | **NO** — metadata exposure alone is informational, not exploitable without valid client_id + user interaction |
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-10 16:57:16 UTC
+  - **VERDICT: VALID**
+  - | Q4 | Provable non-invasively? | **No** — requires valid client_id not discoverable from JS/RAG/App Store |
+  - | PSD2 Sandbox BOLA/IDOR | **VALID** | Proven end-to-end in sandbox with synthetic data; HIGH impact |
+---HYP-BIGPICKLE---
+## 2026-09-12 05:53:51 UTC [target] (model bigpickle)
+[PRIO] digital-onboarding-stage.vpbank.com,8.8,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=2,cloud_surface=6,freshness=10
+[PRIO] openbanking.vpbank.com,7.5,attack_surface=7,business_value=10,tech_exposure=8,gate_ease=0,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com,4.8,attack_surface=6,business_value=5,tech_exposure=7,gate_ease=8,cloud_surface=4,freshness=3
+[PRIO] sts.vpbank.com,4.2,attack_surface=5,business_value=6,tech_exposure=6,gate_ease=0,cloud_surface=3,freshness=4
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: baseline re-verified this cycle (200/23912B); hidden fields unpinned (tenant_id=7) prove overridden Users::SessionsController (3/3 venues defaults 4/129/7); failed-login path NEGATIVE 2026-09-10 — context only written post-auth
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (cross-session consent/account/payment read, zero binding) but sandbox consent-read path now uniform 500 (NEW this cycle — service change or added authz, indistinguishable passively); prod shares Berlin Group surface, only mTLS separates; anchor unrecoverable without mutating POST, prod test independent of anchor
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200/404-differential vs present/absent on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA (no anchor needed)
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps route + OTP i18n strings present; GET uniform 404 (2026-09-10, indistinguishable for POST-only vs absent); stage authz weaker than prod elsewhere (/api/v1/tenants 200 vs 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then OTP-send gating
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[PARKED] developer.vpbank.com sandbox consent-read uniform-500 anomaly: sandbox proving surface degraded; surfacing as MISCONFIG is REJECTED-class (descriptive error page only) and mechanism already proven prior — no new exploitable vector without mutating POST.
+[FINAL] Ranked: (1) stage injection conf 55 HUMAN; (2) prod BOLA conf 52 HUMAN; (3) reset_password conf 40 HUMAN.
+[NEXT] HUMAN: With any legitimate TPP mTLS cert, replay GET `https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` and `/payments/{id}/status` — 200 on non-owned object = production BOLA (differential vs 404 for absent id; anchor not required). Secondary: provide one valid stage credential for the `/users/sign_in` injection POST.
+[LEARN] NEW INFO @ developer.vpbank.com (sandbox): consent-read endpoints uniform HTTP 500 for all ids (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — sandbox service change or added authz; anchor unrecoverable without mutating POST.
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): /users/sign_in baseline stable (200/23912B) this cycle, hidden fields still unpinned.
+[RISK] vp-bank-ag: 64 — No progress on either HUMAN-only thread. Fabric of the PSD2 proof slightly weakened (sandbox proving surface now uniform-500, but prod carryover test is cert-gated and anchor-independent). Stage injection holds at 55 awaiting valid creds. Total rejection if neither HUMAN thread resolves: ~40%.
+[0m
+[0m$ [0mcat probe-results.md
+## 2026-09-02 21:53:27 UTC
+
+
+## 2026-09-02 23:50:48 UTC
+
+
+## 2026-09-03 02:36:22 UTC
+
+
+## 2026-09-03 07:29:02 UTC
+
+
+## 2026-09-03 12:18:41 UTC
+
+
+## 2026-09-03 16:34:13 UTC
+https://api.vpbank.com/v1 -> HTTP 500
+https://api.vpbank.com/v2 -> HTTP 500
+https://api.vpbank.com/swagger.json -> HTTP 500
+https://api.vpbank.com/openapi.json -> HTTP 500
+https://api.vpbank.com/actuator/health -> HTTP 500
+https://api.vpbank.com/.well-known/security.txt -> HTTP 500
+https://vpbank.com/.well-known/openid-configuration -> HTTP 404
+https://vpbank.com/oauth/authorize?client_id=test&redirect_uri=https://evil.com&response_type=code&state=x -> HTTP 404
+
+## 2026-09-03 19:30:25 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
+https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-03 21:57:41 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com.evil.com -> ERR <urlopen error [Errno -2] Name or service not know
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-03 23:51:18 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-04 02:38:11 UTC
+https://www.vpbank.com/.well-known/openid-configuration -> HTTP 400
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/v1 -> HTTP 500
+
+## 2026-09-04 07:28:50 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=x -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/en -> HTTP 400
+
+## 2026-09-04 12:21:00 UTC
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/nonexistent -> HTTP 500
+
+## 2026-09-04 16:37:47 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://api.vpbank.com/nonexistent -> HTTP 500
+https://www.vpbank.com/portal/api/ -> HTTP 403
+https://www.vpbank.com/portal/api/CSRFT759.js -> HTTP 403
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+
+## 2026-09-04 19:13:41 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://api.vpbank.com/ -> HTTP 500
+https://www.vpbank.com/portal/api/ -> HTTP 403
+https://www.vpbank.com/portal/api/CSRFT759.js -> HTTP 403
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+https://api.vpbank.com/_internal -> HTTP 500
+
+## 2026-09-04 21:38:40 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://openbanking.vpbank.com -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri= -> HTTP 400
+
+## 2026-09-04 23:23:08 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+
+## 2026-09-05 01:11:31 UTC
+https://www.vpbank.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=<test>&state=x -> HTTP 400
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
+https://digital-onboarding-dev.vpbank.com/api/v1/sessions/idp_login -> HTTP 404
+
+## 2026-09-05 05:51:02 UTC
+https://sts.vpbank.com/adfs -> HTTP 503
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://www.vpbank.com/portal/api/graphql -> HTTP 403
+https://www.vpbank.com/portal/api/graphql?query=__schema -> HTTP 403
+https://api.vpbank.com/debug -> HTTP 500
+https://api.vpbank.com/admin -> HTTP 500
+https://api.vpbank.com/gateway -> HTTP 500
+https://api.vpbank.com/config -> HTTP 500
+https://api.vpbank.com/management -> HTTP 500
+https://api.vpbank.com/_internal -> HTTP 500
+https://www.vpbank.com/oauth/authorize?client_id=<valid>&redirect_uri=https://www.vpbank.com.evil.com&response_type=code&state=test -> HTTP 400
+
+## 2026-09-05 09:58:24 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/users -> HTTP 404
+https://digital-onboarding.vpbank.com/control-center/ -> 200 len=3167
+
+## 2026-09-05 13:21:12 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/users -> HTTP 404
+https://digital-onboarding.vpbank.com/control-center/ -> 200 len=3167
+https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+
+## 2026-09-05 16:14:06 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+
+## 2026-09-05 18:36:44 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-05 20:50:30 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/onboarding_cases?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/bankingtransactions?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/incomingwire?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/ident_documents?force_tenant=vpbank -> HTTP 404
+
+## 2026-09-05 22:41:14 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/onboarding_cases?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/bankingtransactions?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/incomingwire?force_tenant=vpbank -> HTTP 404
+https://digital-onboarding.vpbank.com/api/v1/ident_documents?force_tenant=vpbank -> HTTP 404
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+https://sts.vpbank.com/adfs/oauth2/token/devicecode -> HTTP 405
+https://digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-06 00:26:17 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank -> HTTP 401
+https://digital-onboarding.vpbank.com/api/v1/tenants?force_tenant=vpbank -> HTTP 403
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank -> HTTP 404
+
+## 2026-09-06 04:47:23 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank -> HTTP 401
+https://digital-onboarding.vpbank.com/api/v1/tenants?force_tenant=vpbank -> HTTP 403
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other -> HTTP 400
+
+## 2026-09-06 09:14:50 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank -> HTTP 401
+https://digital-onboarding.vpbank.com/api/v1/tenants?force_tenant=vpbank -> HTTP 403
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other -> HTTP 400
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details -> HTTP 404
+
+## 2026-09-06 13:00:15 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank -> HTTP 401
+https://digital-onboarding.vpbank.com/api/v1/tenants?force_tenant=vpbank -> HTTP 403
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-06 16:03:38 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/api/v1/current_user_details?force_tenant=vpbank -> HTTP 404
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=<other -> HTTP 400
+https://digital-onboarding.vpbank.com/rails/active_storage/direct_uploads -> HTTP 404
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/api/v1/current_user_details -> HTTP 404
+https://digital-onboarding-dev.vpbank.com/admin/api/v1/users -> HTTP 401
+
+## 2026-09-06 18:10:35 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-06 20:35:07 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-06 22:21:41 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-07 00:03:22 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://sts.vpbank.com/adfs -> HTTP 503
+https://sts.vpbank.com/adfs/oauth2/devicecode -> HTTP 405
+
+## 2026-09-07 04:51:53 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-07 09:57:20 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 15:35:29 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 19:26:57 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+
+## 2026-09-07 22:19:43 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://mobile.vpbank.com/ -> HTTP 404
+https://ebics.vpbank.com/ -> 200 len=118346
+https://mobile.vpbank.com/` -> HTTP 404
+https://ebics.vpbank.com/` -> HTTP 404
+https://concentsol.vpbank.com/` -> HTTP 404
+https://tracking.vpbank.com/` -> HTTP 400
+https://www-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+https://mobile-beta.vpbank.com/` -> ERR <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce
+
+## 2026-09-08 00:32:01 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://mobile.vpbank.com/ -> HTTP 404
+https://mobile.vpbank.com/api/ -> HTTP 404
+
+## 2026-09-08 05:17:11 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 09:50:38 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 14:12:37 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 18:00:39 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 20:53:09 UTC
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-08 23:11:57 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 01:18:00 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 06:11:35 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 11:38:26 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-dev.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 15:31:29 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 18:45:48 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 21:30:50 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-09 23:33:05 UTC
+
+
+## 2026-09-10 01:30:07 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-10 06:42:02 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-10 12:01:15 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-10 15:56:48 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-10 18:59:12 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding-stage.vpbank.com/api/v1/sessions/idp_login -> HTTP 404
+https://digital-onboarding-stage.vpbank.com/api/v1/sessions/secure_session -> HTTP 404
+https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password -> HTTP 404
+
+## 2026-09-10 21:26:51 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-10 23:18:25 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 01:14:13 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 06:06:24 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 11:34:44 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 15:17:50 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 18:43:07 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-11 21:24:00 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/2ade600d-da12-419a-a332-15c8dcf76670 -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+https://digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password -> HTTP 404
+
+## 2026-09-11 23:20:43 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-12 01:17:26 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-12 05:54:15 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al
+[0m
+Reviewing the state — all major surfaces are re-probed to exhaustion. One differential stands out in probe history that was never followed up: `dev /admin/api/v1/bankingtransactions?force_tenant=<other>` → **400** (controller mounted, param validated) while prod → **404** (route absent). That's a live anonymous route on dev that was never resolved. Let me verify read-only.
+[0m$ [0mUA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
+for url in \
+  "https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions" \
+  "https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank" \
+  "https://digital-onboarding-stage.vpbank.com/admin/api/v1/bankingtransactions" \
+  "https://digital-onboarding-stage.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank" \
+  "https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate" ; do
+  echo "=== $url"
+  curl -sS -A "$UA" --max-time 20 -o /tmp/body.txt -w "HTTP %{http_code} | len=%{size_download} | ctype=%{content_type}\n" "$url"
+  head -c 300 /tmp/body.txt | tr -d '\n'; echo
+  sleep 1.3
+done
+=== https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  <style>    body {      background-color: #EFEFEF;      color: #2E2F30;      margin: 0;    }  
+=== https://digital-onboarding-dev.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  <style>    body {      background-color: #EFEFEF;      color: #2E2F30;      margin: 0;    }  
+=== https://digital-onboarding-stage.vpbank.com/admin/api/v1/bankingtransactions
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  <style>    body {      background-color: #EFEFEF;      color: #2E2F30;      margin: 0;    }  
+=== https://digital-onboarding-stage.vpbank.com/admin/api/v1/bankingtransactions?force_tenant=vpbank
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  <style>    body {      background-color: #EFEFEF;      color: #2E2F30;      margin: 0;    }  
+=== https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate
+HTTP 401 | len=48 | ctype=application/json; charset=utf-8
+{"status":"2fa not enabled for provided tenant"}
+[0m
+Dev/stage bankingtransactions = 404 (the earlier 400 was a malformed-param artifact). Stage `/api/v1/qr_codes/generate` anonymously returns a controller-processed JSON body while prod is JWT-gated — let me confirm the prod differential.
+[0m$ [0mUA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
+for url in \
+  "https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate" \
+  "https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank" \
+  "https://digital-onboarding-stage.vpbank.com/users/sign_in" ; do
+  echo "=== $url"
+  curl -sS -A "$UA" --max-time 20 -o /tmp/body.txt -w "HTTP %{http_code} | len=%{size_download} | ctype=%{content_type}\n" "$url"
+  head -c 220 /tmp/body.txt | tr -d '\n'; echo
+  sleep 1.5
+done
+=== https://digital-onboarding.vpbank.com/api/v1/qr_codes/generate
+HTTP 401 | len=48 | ctype=application/json; charset=utf-8
+{"status":"2fa not enabled for provided tenant"}
+=== https://digital-onboarding-stage.vpbank.com/api/v1/qr_codes/generate?force_tenant=vpbank
+HTTP 401 | len=48 | ctype=application/json; charset=utf-8
+{"status":"2fa not enabled for provided tenant"}
+=== https://digital-onboarding-stage.vpbank.com/users/sign_in
+HTTP 200 | len=23752 | ctype=text/html; charset=utf-8
+<!DOCTYPE html><html lang="en"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /><meta content="width=device-width, initial-scale=1" name="viewport" /><title>Onboarding | VP Bank</title><link rel
+[0m
+Both venues return an identical 401 "2fa not enabled" body — the earlier differential was an artifact, dropped. `sign_in` baseline stable.
+
+Now a genuinely untested chain: the digital-onboarding SPA offers `/api/v1/sessions/idp_login` (IdP/SSO login). The 4MB SPA bundle was never grepped for OAuth `client_id`/`redirect_uri` — and the ADFS device_code flow on `sts.vpbank.com` has been blocked solely on a missing `client_id` since 09-05. If the SPA embeds an IdP client_id, the ADFS thread unblocks. This is a read-only download + grep.
+[0m$ [0mUA="Mozilla/5.0"
+mkdir -p /tmp/opencode/spa
+for u in \
+  "https://digital-onboarding-stage.vpbank.com/assets/application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js" \
+  "https://digital-onboarding-stage.vpbank.com/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedddb2eee42d4482b1004f4e4bbb6a2b.js" ; do
+  fn=$(basename "$u")
+  curl -sS -A "$UA" --max-time 30 -o "/tmp/opencode/spa/$fn" -w "$fn HTTP %{http_code} | %{size_download}B\n" "$u"
+  sleep 1.5
+done
+ls -la /tmp/opencode/spa
+application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js HTTP 200 | 1139439B
+independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedddb2eee42d4482b1004f4e4bbb6a2b.js HTTP 404 | 146B
+total 1128
+drwxr-xr-x 2 runner runner    4096 Sep 12 09:58 .
+drwxr-xr-x 3 runner runner    4096 Sep 12 09:58 ..
+-rw-r--r-- 1 runner runner 1139439 Sep 12 09:58 application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js
+-rw-r--r-- 1 runner runner     146 Sep 12 09:58 independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedddb2eee42d4482b1004f4e4bbb6a2b.js
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+echo "--- client_id / clientId / client_id ---"
+rg -o -i '.{0,60}(client[_]?id|clientId).{0,60}' application-*.js | head -40
+echo "--- redirect_uri ---"
+rg -o -i '.{0,60}redirect_uri.{0,60}' application-*.js | head -20
+echo "--- adfs/sts/oidc/devicecode/oauth ---"
+rg -o -i '.{0,50}(adfs|sts\.vpbank|openid|devicecode|device_code|oauth|authorize_code|idp_login).{0,50}' application-*.js | head -60
+--- client_id / clientId / client_id ---
+/bin/bash: line 3: rg: command not found
+/bin/bash: line 5: rg: command not found
+--- redirect_uri ---
+--- adfs/sts/oidc/devicecode/oauth ---
+/bin/bash: line 7: rg: command not found
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+f=$(ls application-*.js)
+echo "--- clientId/client_id ---"
+grep -o -i -E '.{0,60}(client[_]?id|clientId).{0,60}' "$f" | head -40
+echo "--- redirect_uri ---"
+grep -o -i -E '.{0,60}redirect_uri.{0,60}' "$f" | head -20
+echo "--- adfs/sts/oidc/devicecode ---"
+grep -o -i -E '.{0,50}(adfs|sts\.vpbank|openid|devicecode|device_code|oauth|idp_login|authorization_endpoint).{0,50}' "$f" | head -60
+--- clientId/client_id ---
+--- redirect_uri ---
+--- adfs/sts/oidc/devicecode ---
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+f=$(ls application-*.js)
+echo "--- idp / sso / callback / authorize ---"
+grep -o -i -E '.{0,40}(idp|sso|cback|cback_url|authorize|saml|rosamund|keycloak|identity).{0,40}' "$f" | sort -u | head -60
+echo "--- sessions endpoints ---"
+grep -o -E 'sessions/[a-z_]+' "$f" | sort -u
+echo "--- api/v1 endpoints ---"
+grep -o -E 'api/v1/[a-z_/]+' "$f" | sort -u | head -60
+--- idp / sso / callback / authorize ---
+",proto:!0,forced:!n(36)("indexOf",{ACCESSORS:!0,1:0})},{includes:function(e){retur
+"string"!=typeof e)return!1;s=e,i&&i.crossOrigin&&(a.crossOrigin=i.crossOrigin)}ret
+),h=n(36),p=d("slice"),f=h("slice",{ACCESSORS:!0,0:0,1:2}),m=c("species"),_=[].slic
+-0)<0,u=r("indexOf"),c=a("indexOf",{ACCESSORS:!0,1:0});i({target:"Array",proto:!0,f
+._initResponseObject(t),this._initProgressObject(t),t._progress.loaded=t.loaded=t.u
+Dn.months=v("months accessor is deprecated. Use month instead",$),D
+],o._initResponseObject(u),o._initProgressObject(u),o._addConvenienceMethods(t,u),l
+_sending=this._active=0,this._initProgressObject(this),this._initEventHandlers()},a
+acyPolicy}."},title:"Information som vi samlar"},consentNotice:{changeDescription:"D
+atera ditt medgivande.",description:"Vi samlar och bearbetar din personliga data i f
+ction(e,t){n+=t.size||1}),n},_initProgressObject:function(t){var n={loaded:0,total:
+du se och anpassa vilken information vi samlar om dig.",privacyPolicy:{name:"Integri
+et"in n||"set"in n)throw TypeError("Accessors not supported");return"value"in n&&(e
+iversal Time":""},Dn.dates=v("dates accessor is deprecated. Use date instead.",vn),
+n du se og velge hvilken informasjon vi samler inn om deg.",privacyPolicy:{name:"per
+n.years=v("years accessor is deprecated. Use year instead",Fn),D
+o[e];t||(t={});var n=[][e],u=!!r(t,"ACCESSORS")&&t.ACCESSORS,c=r(t,0)?t[0]:l,d=r(t,
+ppdater ditt samtykke.",description:"Vi samler inn og prosesserer din personlige inf
+privacyPolicy}."},title:"Informasjon vi samler inn"},consentNotice:{changeDescriptio
+rvi\xe7os processam informa\xe7\xf5es pessoais para mostrar a voc\xea an\xfancios p
+rvi\xe7os processam informa\xe7\xf5es pessoais para mostrar a voc\xea conte\xfado r
+rvi\xe7os processam informa\xe7\xf5es pessoais para otimizar o servi\xe7o que este 
+--- sessions endpoints ---
+--- api/v1 endpoints ---
+[0m
+This application bundle is just the consent-manager whitelabel (no IdP/OAuth). The real control-center bundle was analyzed for API map but I need to check whether anyone grepped it for OAuth client context — the `idp_login` flow implies an IdP. Prod `/control-center/` is anonymously reachable; let me get its HTML to locate the actual SPA bundle.
+[0m$ [0mUA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126"
+curl -sS -A "$UA" --max-time 20 -o /tmp/opencode/spa/cc.html -w "HTTP %{http_code} | %{size_download}B\n" "https://digital-onboarding.vpbank.com/control-center/"
+echo "--- scripts ---"
+grep -o -E '(src|href)="[^"]+"' /tmp/opencode/spa/cc.html | sort -u
+echo "--- title/meta ---"
+grep -o -i -E '<title>[^<]*</title>' /tmp/opencode/spa/cc.html
+HTTP 200 | 3167B
+--- scripts ---
+href="/control-center/assets/index-Ct6hZHFZ.css"
+href="/control-center/favicon.ico"
+href="/control-center/manifest.json"
+href="/control-center/overrides.css"
+src="/control-center/assets/index-BmxtS-cn.js"
+--- title/meta ---
+<title>Business Control Center</title>
+[0m
+[0m$ [0mUA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126"
+curl -sS -A "$UA" --max-time 40 -o /tmp/opencode/spa/cc-index.js -w "HTTP %{http_code} | %{size_download}B\n" "https://digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js"
+sleep 1.3
+curl -sS -A "$UA" --max-time 20 -o /tmp/opencode/spa/cc-manifest.json -w "HTML %{http_code} | %{size_download}B\n" "https://digital-onboarding.vpbank.com/control-center/manifest.json"
+ls -la /tmp/opencode/spa/
+HTTP 200 | 4310363B
+HTML 200 | 283B
+total 5348
+drwxr-xr-x 2 runner runner    4096 Sep 12 09:59 .
+drwxr-xr-x 3 runner runner    4096 Sep 12 09:58 ..
+-rw-r--r-- 1 runner runner 1139439 Sep 12 09:58 application-7f7cb839c4bf2d9001c3dd01803fa568bbd6a543e64980d0b344d6b5561d37e7.js
+-rw-r--r-- 1 runner runner 4310363 Sep 12 09:59 cc-index.js
+-rw-r--r-- 1 runner runner     283 Sep 12 09:59 cc-manifest.json
+-rw-r--r-- 1 runner runner    3167 Sep 12 09:59 cc.html
+-rw-r--r-- 1 runner runner     146 Sep 12 09:58 independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedddb2eee42d4482b1004f4e4bbb6a2b.js
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+f=cc-index.js
+echo "--- clientId/client_id ---"
+grep -o -i -E '.{0,80}(client[_]?id|"client_id").{0,80}' "$f" | grep -v -i "clientidle\|cleintid" | head -30
+echo "--- redirect_uri / oauth / authorize ---"
+grep -o -i -E '.{0,60}(redirect_uri|oauth|authorize|devicecode|device_code).{0,60}' "$f" | head -30
+echo "--- adfs / sts.vpbank / openid / oidc ---"
+grep -o -i -E '.{0,60}(adfs|sts\.vpbank|openid|oidc|well-known|saml).{0,60}' "$f" | head -30
+--- clientId/client_id ---
+--- redirect_uri / oauth / authorize ---
+}const _1e=["reauthenticate","signInAnonymously","signInWithOAuth","signInWithIdToken","signInWithOtp","signInWithPassword","
+age":"terms and conditions required/,'403 - {"message":"Not authorized"}',/^404 - {"message":"Couldn't find User with 'id'/,/^404
+    } KUNDE`,"atom-detailsrow-authorized_agent_process_status-nth":"{nth}. Bevollmächtigter","api-v
+alue-authorized_agent_process_status-NOT_STARTED":"NICHT BEGONNEN","api-va
+lue-authorized_agent_process_status-COMPLETED":"ABGESCHLOSSEN","api-value
+-authorized_agent_process_status-ONGOING":"IN BEARBEITUNG","api-value-
+authorized_agent_process_status-null":" ","atom-detailsrow-legitimati
+us":"TRANSACTION STATUS","devexpress-columntitle-poa_name":"AUTHORIZED PERSON","devexpress-columntitle-full_name":"FULL NAME","de
+ber":"REFERENCE NUMBER","devexpress-columntitle-poa1_name":"AUTHORIZED PERSON","devexpress-columntitle-iban":"IBAN/ACCOUNT NUMBER
+    } CLIENT`,"atom-detailsrow-authorized_agent_process_status-nth":"{nth}. Authorised Agent","api-v
+alue-authorized_agent_process_status-NOT_STARTED":"NOT STARTED","api-value
+-authorized_agent_process_status-COMPLETED":"COMPLETED","api-value-aut
+horized_agent_process_status-ONGOING":"ONGOING","api-value-authorized_agent_process_status-null":" ","atom-detailsrow-legitimati
+srow-sector":"SEGMENT / SECTOR","atom-detailsrow-poa_name":"AUTHORIZED PERSON","atom-detailsrow-poa1_name":"AUTHORIZED PERSON","a
+tom-detailsrow-poa2_name":"AUTHORIZED PERSON","atom-detailsrow-vpbank_rm":"VP Bank RM","atom-det
+ed to clipboard","atom-detailsrow-poa1_process_link_label":"AUTHORIZED PERSON 1","atom-detailsrow-poa2_process_link_label":"AUTHO
+status":"ACCOUNT STATUS","devexpress-columntitle-poa_name":"AUTHORIZED PERSON","devexpress-columntitle-poa1_name":"AUTHORIZED PER
+    } CLIENTE`,"atom-detailsrow-authorized_agent_process_status-nth":"{nth}. Authorised Agent","api-v
+alue-authorized_agent_process_status-NOT_STARTED":"NOT STARTED","api-value
+-authorized_agent_process_status-COMPLETED":"COMPLETED","api-value-aut
+horized_agent_process_status-ONGOING":"ONGOING","api-value-authorized_agent_process_status-null":" ","atom-detailsrow-legitimati
+srow-sector":"SEGMENT / SECTOR","atom-detailsrow-poa_name":"AUTHORIZED PERSON","atom-detailsrow-poa1_name":"AUTHORIZED PERSON","a
+tom-detailsrow-poa2_name":"AUTHORIZED PERSON","atom-detailsrow-vpbank_rm":"VP Bank RM","atom-det
+copied":"Copied","atom-detailsrow-poa1_process_link_label":"AUTHORIZED PERSON 1","atom-detailsrow-poa2_process_link_label":"AUTHO
+_status":"WALLET STATUS","devexpress-columntitle-poa_name":"AUTHORIZED PERSON","devexpress-columntitle-poa1_name":"AUTHORIZED PER
+    } CLIENTE`,"atom-detailsrow-authorized_agent_process_status-nth":"{nth}. Authorised Agent","api-v
+alue-authorized_agent_process_status-NOT_STARTED":"NOT STARTED","api-value
+-authorized_agent_process_status-COMPLETED":"COMPLETED","api-value-aut
+horized_agent_process_status-ONGOING":"ONGOING","api-value-authorized_agent_process_status-null":" ","atom-detailsrow-legitimati
+row-sector":"SEGMENT / SECTEUR","atom-detailsrow-poa_name":"AUTHORIZED PERSON","atom-detailsrow-poa1_name":"AUTHORIZED PERSON","a
+--- adfs / sts.vpbank / openid / oidc ---
+perrt. Sie erhalten eine E-Mail mit weiteren Anweisungen.","saml-login-error-title":"Zugriff verweigert","saml-login-error-m
+"Ungültiges Sitzungstoken. Bitte versuchen Sie es erneut.","saml-login-error-redirect":"Die Seite wird in {seconds} Sekunden
+er klicken Sie {openlink}hier{closelink}, um fortzufahren","saml-login-error-redirecting":"Weiterleitung...","saml-error-inv
+alid-response-title":"Ungültige SAML-Antwort","saml-error-invalid-response-message":"Die SAML-Antwort ist ungül
+beschädigt. Bitte wenden Sie sich an Ihren Administrator.","saml-error-invalid-roles-title":"Keine Berechtigung","saml-error
+locked. Please check your email for further instructions.","saml-login-error-title":"Access Denied","saml-login-error-messag
+e":"Invalid session token. Please try again.","saml-login-error-redirect":"The page will automatically refresh 
+} seconds, or click {openlink}here{closelink} to continue","saml-login-error-redirecting":"Redirecting...","saml-error-inval
+id-response-title":"Invalid SAML Response","saml-error-invalid-response-message":"The SAML response is inval
+id or corrupted. Please contact your administrator.","saml-error-invalid-roles-title":"No Authorization","saml-error-i
+Mt.get("basename")||"",pvt=10,vH={INVALID_RESPONSE:"invalid-saml-response",INVALID_ROLES:"invalid-saml-roles",VALID_RESPONSE
+:"valid-saml-response"},Pu={MISSING_CODE:"missing-code",INVALID_RESPONSE
+NSE||l===Pu.INVALID_ROLES){const u=l===Pu.INVALID_RESPONSE?"saml-error-invalid-response-title":"saml-error-invalid-roles-tit
+le",d=l===Pu.INVALID_RESPONSE?"saml-error-invalid-response-message":"saml-error-invalid-roles-m
+gutterBottom:!0,color:"error",children:o.formatMessage({id:"saml-login-error-title"})}),M.jsx(go,{variant:"body1",paragraph:
+!0,sx:{mt:2},children:o.formatMessage({id:"saml-login-error-message"})}),M.jsx(dl,{sx:{mt:3},children:M.jsx
+span",{dangerouslySetInnerHTML:{__html:o.formatMessage({id:"saml-login-error-redirect"},{to:d,seconds:p,openlink:`<a href="$
+}),expired:()=>M.jsxs("div",{children:[o.formatMessage({id:"saml-login-error-redirecting"}),M.jsx(v2,{to:u})]})})})]})})}ret
+r.payload.startsWith("{")){const s=JSON.parse(r.payload);s?.saml_logout_url&&(i=s.saml_logout_url)}}catch{i=null}i?i6(i):zW(
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+f=cc-index.js
+echo "--- saml / auth endpoints ---"
+grep -o -E '"/[a-zA-Z0-9_/.-]{1,60}"' "$f" | grep -i -E 'saml|auth|sign|session|login|sso|acs|slo' | sort -u | head -40
+echo "--- api path literals (all /api + /admin) ---"
+grep -o -E '"/[a-z0-9_/.-]*(api|admin)[a-z0-9_/.-]*"' "$f" | sort -u | head -80
+--- saml / auth endpoints ---
+"/api/v1/sessions"
+"/api/v1/sessions/idp_login"
+"/api/v1/sessions/reset_password"
+"/api/v1/sessions/secure_session"
+"/idp_auth"
+"/login"
+"/src/modules/editandsign/duck.js"
+"/st_galler_logo_redesign"
+--- api path literals (all /api + /admin) ---
+"/admin/api/v1/users"
+"/api/v1/brand"
+"/api/v1/current_user_details"
+"/api/v1/qr_codes/generate"
+"/api/v1/sessions"
+"/api/v1/sessions/idp_login"
+"/api/v1/sessions/reset_password"
+"/api/v1/sessions/secure_session"
+"/api/v1/tenants"
+"/src/modules/adminlist/duck.ts"
+"/src/modules/roleadmins/duck.js"
+[0m
+The control-center app is **SAML-based** (not OAuth) — `saml_logout_url`, SAML error/response handlers present. No client_id to harvest, so my ADFS-chain idea dies here, but let me map SAML flow endpoints + any API routes not yet probed.
+[0m$ [0mcd /tmp/opencode/spa
+f=cc-index.js
+echo "--- firebase-ish config ---"
+grep -o -i -E '.{0,50}(firebase|firestore|authDomain|apiKey|projectId|appId|messagingSenderId|tenantId\s*:\[?"?[a-z0-9]+).{0,70}' "$f" | sort -u | head -40
+echo "--- idp_auth refs ---"
+grep -o -i -E '.{0,120}idp_auth.{0,120}' "$f" | head -10
+echo "--- sessions/idp_login refs ---"
+grep -o -i -E '.{0,120}sessions/idp_login.{0,120}' "$f" | head -10
+echo "--- signInWith refs ---"
+grep -o -i -E '.{0,60}signInWith[A-Za-z]+.{0,60}' "$f" | sort -u | head -20
+--- firebase-ish config ---
+${r}`),!1):(ye.error(`Invalid Sentry Dsn: Invalid projectId ${n}`),!1)}function kxe(e){return e.match(Dxe)?.[1]}function yse(e){c
+&(this.numberOfRows=1,this.isLastRowKnown=!1,this.fireStoreUpdatedEvent())}isNodeInCache(e){return!!this.nodeMap.getBy("id",e)}fi
+.forEach(a=>this.destroyRowAtIndex(a.index)),this.fireStoreUpdatedEvent();const s=this.nodesToRefresh.size===0;i&&s&&this.fireRef
+.forEachChildStoreShallow(e=>e.retryLoads()),this.fireStoreUpdatedEvent()}getRowUsingDisplayIndex(e){return this.parentRowNode.si
+agedBean(new bV(this,1,!1,this.storeParams)),this.fireStoreUpdatedEvent();return}this.cache.markNodesForRefresh()}getTopLevelRowD
+ams}setStoreInfo(e){e&&Object.assign(this.info,e)}fireStoreUpdatedEvent(){this.eventSvc.dispatchEvent({type:"storeUpdated"})}fire
+d+/);d&&(c=d[0])}return vse({host:s,pass:i,path:l,projectId:c,port:o,protocol:n,publicKey:r})}function vse(e){return{protocol:e.p
+h}`:""}/api/`}function YTe(e){return`${jse(e)}${e.projectId}/envelope/`}function XTe(e,t){const n={sentry_version:qTe};return e.p
+otocol:r}=e;return["protocol","publicKey","host","projectId"].find(o=>e[o]?!1:(ye.error(`Invalid Sentry Dsn: ${o} missing`),!0))?
+reStoreUpdatedEvent(){this.live&&this.store.fireStoreUpdatedEvent()}getRowId(e){if(this.getRowIdFunc==null)return null;cons
+stRowKnown=t,t===!1&&(this.numberOfRows+=1)),this.fireStoreUpdatedEvent()}getNodes(){return this.nodeMap}getNodeCachedByDisplayIn
+s||"",host:e.host,port:e.port||"",path:e.path||"",projectId:e.projectId}}function Lxe(e){if(!pt)return!0;const{port:t,projectId:n
+tion Sf(e,t=!1){const{host:n,path:r,pass:i,port:s,projectId:o,protocol:a,publicKey:l}=e;return`${a}://${l}${t&&i?`:${i}`:""}@${n}
+ze===0;n&&r&&this.fireRefreshFinishedEvent(),this.fireStoreUpdatedEvent()}markNodesForRefresh(){this.nodeMap.forEach(e=>{e.node.s
+--- idp_auth refs ---
+ponent:dvt,sidebarIntl:e=>e?"common-menu-logout":"common-menu-login",icon:e=>e?M.jsx(bvt,{}):M.jsx(Cvt,{})},{className:"idp_auth",path:"/idp_auth",component:yvt},{path:"/",component:jgt,auth:!0}],Evt=()=>({path:"*",component:Vme}),xvt=(e=[])=>{cons
+_redirect)r(w4(c.user.login_redirect));else{const d=(a.payload||[]).find(p=>p.path!=="/login"&&p.path!=="/"&&p.path!=="/idp_auth")?.path;d&&r(w4(d))}}});K2({predicate:e=>e.type===NN,effect:async(e,t)=>{const n=t.dispatch;n(Yue());const r=await Hy(t
+:i,messages:s,locale:o,theme:a,children:l,auth_redirect:c,isAuthenticated:u}}=this,d=window.location.pathname.includes("idp_auth");if(n&&i6(n),c&&!d&&!u&&i6(c),!i||!o||!s)return r;const p=Mt.has("basename")&&Mt.get("basename")||"",g={v7_startTransi
+--- sessions/idp_login refs ---
+sessions/reset_password",h5e=()=>"/api/v1/qr_codes/generate",p5e=()=>"/api/v1/sessions/secure_session",f5e=()=>"/api/v1/sessions/idp_login",g5e=()=>"/api/v1/current_user_details",xy=(...e)=>{},m5e=(...e)=>{};function v5e(e){let t,n;if(e instanceof Error)t=e.
+--- signInWith refs ---
+signInWithSSO","signOut","signUp","verifyOtp"],A1e=["createUser","deleteU
+}return r}}const _1e=["reauthenticate","signInAnonymously","signInWithOAuth","signInWithIdToken","signInWithOtp","signInWithPassword","
+[0m
+[0m$ [0mcd /tmp/opencode/spa
+f=cc-index.js
+echo "--- firebase config keys ---"
+grep -o -i -E '(apiKey|authDomain|messagingSenderId|storageBucket|measurementId|appId)"?:?"?[^,}]{0,50}' "$f" | sort -u | head -30
+echo "--- initializeApp / REACT_APP ---"
+grep -o -E '.{0,40}(initializeApp|REACT_APP_[A-Z_]+).{0,40}' "$f" | sort -u | head -30
+echo "--- storageBucket/ messagingSenderId exact values ---"
+grep -o -E '"[a-z0-9.-]+\.(firebaseapp\.com|appspot\.com)"' "$f" | sort -u | head
+--- firebase config keys ---
+--- initializeApp / REACT_APP ---
+--- storageBucket/ messagingSenderId exact values ---
+[0m
+No Firebase/API-key config in the bundle — the onboarding IdP stack is SAML (Devise `saml_authenticatable`-style). Two cheap read-only checks to confirm the SAML SP surface exists on stage:
+[0m$ [0mUA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126"
+for url in \
+  "https://digital-onboarding-stage.vpbank.com/users/saml/metadata" \
+  "https://digital-onboarding-stage.vpbank.com/users/auth/saml" \
+  "https://digital-onboarding.vpbank.com/users/saml/metadata" ; do
+  echo "=== $url"
+  curl -sS -A "$UA" --max-time 20 -o /tmp/body.txt -w "HTTP %{http_code} | len=%{size_download} | ctype=%{content_type} | redir=%{redirect_url}\n" "$url"
+  head -c 200 /tmp/body.txt | tr -d '\n'; echo
+  sleep 1.5
+done
+=== https://digital-onboarding-stage.vpbank.com/users/saml/metadata
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8 | redir=
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  
+=== https://digital-onboarding-stage.vpbank.com/users/auth/saml
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8 | redir=
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">  
+=== https://digital-onboarding.vpbank.com/users/saml/metadata
+HTTP 404 | len=1793 | ctype=text/html; charset=UTF-8 | redir=
+<!DOCTYPE html><html><head>  <title>404 error</title>  <meta name="viewport" content="width=device-width,initial-scale=1">  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+[0m
+All probes concluded. Analysis complete — writing the 8-step output.
+
+STEP 1 — DELTA:
+- [NEW] Control-center SPA bundle (4.3MB, `prod /control-center/assets/index-BmxtS-cn.js`, anonymous 200) fetched + grey-sliced: NO OAuth client_id / redirect_uri / firebase config; onboarding IdP is API-driven (`/api/v1/sessions/idp_login` + `/idp_auth` route; session payload carries `saml_logout_url` → SPA redirect). No harvestable client context → ADFS-OAuth chain into onboarding disproven.
+- [CHANGED] `/admin/api/v1/bankingtransactions` on dev+stage: 404 now (the 09-06 stage/dev "400" was a malformed `force_tenant=<` param-format artifact, not a mounted route) — negative.
+- [CHANGED] `/api/v1/qr_codes/generate`: identical 401 `{"status":"2fa not enabled for provided tenant"}` on prod AND stage — earlier stage "differential" is illusory, uniform config-only response — negative.
+- [NEW] `/users/saml/metadata` + `/users/auth/saml` → 404 on stage AND prod — no Devise SAML SP routes; IdP login is custom-API only.
+- [CHANGED] stage `/users/sign_in` steady 200/23752B this cycle — injection baseline stable.
+
+STEP 2 — PRIORITIZE:
+[PRIO] digital-onboarding-stage.vpbank.com,8.8,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=2,cloud_surface=6,freshness=10
+[PRIO] openbanking.vpbank.com,7.5,attack_surface=7,business_value=10,tech_exposure=8,gate_ease=0,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com,4.3,attack_surface=6,business_value=5,tech_exposure=7,gate_ease=8,cloud_surface=4,freshness=2
+[PRIO] sts.vpbank.com,3.8,attack_surface=5,business_value=6,tech_exposure=6,gate_ease=0,cloud_surface=3,freshness=2
+
+STEP 3 — HYPOTHESES:
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: baseline re-verified this cycle (200/23752B); hidden fields unpinned (tenant_id=7) prove overridden Users::SessionsController (3/3 venues defaults 4/129/7); failed-login path NEGATIVE 2026-09-10 — context only written post-auth; bundle confirms no facade IdP for credential login, so this is the genuine auth path
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (fresh anchor cross-session 200: /consents/{id}, /accounts, /balances €12453.2, /transactions, /payments/{id}/status ACSC, zero binding); sandbox consent-read now uniform 500 (service change, indistinguishable passively — does not refute mechanism); prod shares Berlin Group surface, only mTLS separates
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200-vs-404 differential on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA (no anchor needed)
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: bundle maps route + OTP i18n strings ("something_went_wrong_in_otp_sending", "remain_attempts_left"); GET uniform 404 (2026-09-10, indistinguishable for POST-only vs absent); stage authz weaker than prod elsewhere (tenants 200 vs 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then OTP-send gating
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE:
+- DROPPED qr_codes/generate differential (uniform config-only 401, no cross-venue difference — REJECTED-class).
+- DROPPED bankingtransactions route liveness (404 on both dev+stage; prior 400 was malformed-param artifact).
+- DROPPED "harvest OAuth client_id from onboarding bundle" thread (bundle carries none; IdP is custom API; ADFS device_code chain for onboarding not applicable).
+- [PARKED] developer.vpbank.com sandbox consent-read uniform-500 anomaly: proving surface degraded; descriptive-error-only, mechanism already proven prior; no new vector without mutating POST.
+- [FINAL] Ranked: (1) stage injection conf 55 HUMAN; (2) prod PSD2 BOLA conf 52 HUMAN; (3) reset_password conf 40 HUMAN.
+
+STEP 5 — NEXT ACTION:
+[NEXT] HUMAN: Provide one valid stage credential for `digital-onboarding-stage.vpbank.com` — POST `/users/sign_in` `email+password&user[admin]=true&user[tenant_id]=1&user[user_id]=1` + CSRF token `a0mzgqy14knbGOSFPbH7cxlZ0CfZfsSPjhTOW4fd4ZwIvb7cOXhkJuCuFaPPw8zdjyAVoazlSwu4z46r0xcx1g`, capture Set-Cookie, replay GET `/api/v1/tenants` (baseline `{}`) and `/admin/api/v1/users` (baseline 401) and diff. Fallback if no creds: any TPP mTLS cert to replay GET `openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` (CRITICAL if 200).
+
+STEP 6 — LEARNING:
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding-dev/stage.vpbank.com/admin/api/v1/bankingtransactions: 404 on both dev+stage with/without force_tenant; prior 400 was a malformed `force_tenant=<` param-format artifact — route not mounted, no anonymous surface.
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding prod+stage /api/v1/qr_codes/generate: identical 401 `{"status":"2fa not enabled for provided tenant"}` both venues — uniform config-only, no differential, no data.
+- [LEARN] ACCEPTED (NEW INFO) @ digital-onboarding.vpbank.com control-center SPA: IdP login is custom API-driven (/api/v1/sessions/idp_login + /idp_auth; session payload carries saml_logout_url which the SPA follows); bundle contains no OAuth client_id/redirect_uri/firebase-config — ADFS-OAuth escalation chain for this app NOT applicable; /users/saml/metadata + /users/auth/saml 404 on prod+stage (no Devise SAML SP).
+- [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection): /users/sign_in baseline stable (200/23752B) this cycle, hidden fields still unpinned (tenant_id=7).
+
+STEP 7 — RISK:
+[RISK] vp-bank-ag: 63 — No exploitable delta this cycle (SPA bundle analysis, qr_codes, bankingtransactions, SAML routes all negative/config-only), but no fatal negative on the two standing HUMAN threads; stage injection baseline holds at 55 awaiting valid creds; prod PSD2 BOLA at 52 holds cert-gated and anchor-independent. Sandbox proving surface remains uniform-500 (mechanism prior-proven). Total rejection if neither HUMAN thread resolves: ~40%.

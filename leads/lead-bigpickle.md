@@ -3398,3 +3398,87 @@ testability: HUMAN_ONLY
 [LEARN] NEW INFO @ developer.vpbank.com (sandbox): consent-read endpoints uniform HTTP 500 for all ids (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — sandbox service change or added authz; anchor unrecoverable without mutating POST.
 [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): /users/sign_in baseline stable (200/23912B) this cycle, hidden fields still unpinned.
 [RISK] vp-bank-ag: 64 — No progress on either HUMAN-only thread. Fabric of the PSD2 proof slightly weakened (sandbox proving surface now uniform-500, but prod carryover test is cert-gated and anchor-independent). Stage injection holds at 55 awaiting valid creds. Total rejection if neither HUMAN thread resolves: ~40%.
+## 2026-09-12 10:02:16 UTC [target] (model bigpickle)
+class: OTHER
+asset: github.com/vpbdevops (0 public repos)
+confidence: 100
+reasoning: The only confirmed VP Bank AG GitHub org (vpbdevops) has zero public repositories. No other org names resolve. User also confirmed "no org candidates."
+impact: N/A — no source-code findings possible
+verify_steps: Confirm at https://github.com/vpbdevops — 0 public repos visible
+[HYP] No Official VP Bank AG GitHub Organization Found
+class: OTHER
+asset: GitHub (organization search)
+confidence: 100
+reasoning: Systematic search of GitHub API for organization names VPBank, vp-bank, VPBankAG returned null. No official VP Bank AG organization exists on GitHub.
+impact: N/A - No repositories to audit
+verify_steps: Manual verification via github.com/orgs/VPBank, github.com/orgs/vp-bank, github.com/orgs/VPBankAG
+[PRIO] digital-onboarding-stage.vpbank.com,8.8,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=2,cloud_surface=6,freshness=10
+[PRIO] openbanking.vpbank.com,7.5,attack_surface=7,business_value=10,tech_exposure=8,gate_ease=0,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com,4.8,attack_surface=6,business_value=5,tech_exposure=7,gate_ease=8,cloud_surface=4,freshness=3
+[PRIO] sts.vpbank.com,4.2,attack_surface=5,business_value=6,tech_exposure=6,gate_ease=0,cloud_surface=3,freshness=4
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: baseline re-verified this cycle (200/23912B); hidden fields unpinned (tenant_id=7) prove overridden Users::SessionsController (3/3 venues defaults 4/129/7); failed-login path NEGATIVE 2026-09-10 — context only written post-auth
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (cross-session consent/account/payment read, zero binding) but sandbox consent-read path now uniform 500 (NEW this cycle — service change or added authz, indistinguishable passively); prod shares Berlin Group surface, only mTLS separates; anchor unrecoverable without mutating POST, prod test independent of anchor
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200/404-differential vs present/absent on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA (no anchor needed)
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps route + OTP i18n strings present; GET uniform 404 (2026-09-10, indistinguishable for POST-only vs absent); stage authz weaker than prod elsewhere (/api/v1/tenants 200 vs 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then OTP-send gating
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[PARKED] developer.vpbank.com sandbox consent-read uniform-500 anomaly: sandbox proving surface degraded; surfacing as MISCONFIG is REJECTED-class (descriptive error page only) and mechanism already proven prior — no new exploitable vector without mutating POST.
+[FINAL] Ranked: (1) stage injection conf 55 HUMAN; (2) prod BOLA conf 52 HUMAN; (3) reset_password conf 40 HUMAN.
+[NEXT] HUMAN: With any legitimate TPP mTLS cert, replay GET `https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` and `/payments/{id}/status` — 200 on non-owned object = production BOLA (differential vs 404 for absent id; anchor not required). Secondary: provide one valid stage credential for the `/users/sign_in` injection POST.
+[LEARN] NEW INFO @ developer.vpbank.com (sandbox): consent-read endpoints uniform HTTP 500 for all ids (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — sandbox service change or added authz; anchor unrecoverable without mutating POST.
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): /users/sign_in baseline stable (200/23912B) this cycle, hidden fields still unpinned.
+[RISK] vp-bank-ag: 64 — No progress on either HUMAN-only thread. Fabric of the PSD2 proof slightly weakened (sandbox proving surface now uniform-500, but prod carryover test is cert-gated and anchor-independent). Stage injection holds at 55 awaiting valid creds. Total rejection if neither HUMAN thread resolves: ~40%.
+[PRIO] digital-onboarding-stage.vpbank.com,8.8,attack_surface=9,business_value=9,tech_exposure=9,gate_ease=2,cloud_surface=6,freshness=10
+[PRIO] openbanking.vpbank.com,7.5,attack_surface=7,business_value=10,tech_exposure=8,gate_ease=0,cloud_surface=4,freshness=10
+[PRIO] developer.vpbank.com,4.3,attack_surface=6,business_value=5,tech_exposure=7,gate_ease=8,cloud_surface=4,freshness=2
+[PRIO] sts.vpbank.com,3.8,attack_surface=5,business_value=6,tech_exposure=6,gate_ease=0,cloud_surface=3,freshness=2
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: baseline re-verified this cycle (200/23752B); hidden fields unpinned (tenant_id=7) prove overridden Users::SessionsController (3/3 venues defaults 4/129/7); failed-login path NEGATIVE 2026-09-10 — context only written post-auth; bundle confirms no facade IdP for credential login, so this is the genuine auth path
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (fresh anchor cross-session 200: /consents/{id}, /accounts, /balances €12453.2, /transactions, /payments/{id}/status ACSC, zero binding); sandbox consent-read now uniform 500 (service change, indistinguishable passively — does not refute mechanism); prod shares Berlin Group surface, only mTLS separates
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200-vs-404 differential on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA (no anchor needed)
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: bundle maps route + OTP i18n strings ("something_went_wrong_in_otp_sending", "remain_attempts_left"); GET uniform 404 (2026-09-10, indistinguishable for POST-only vs absent); stage authz weaker than prod elsewhere (tenants 200 vs 403)
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then OTP-send gating
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[NEXT] HUMAN: Provide one valid stage credential for `digital-onboarding-stage.vpbank.com` — POST `/users/sign_in` `email+password&user[admin]=true&user[tenant_id]=1&user[user_id]=1` + CSRF token `a0mzgqy14knbGOSFPbH7cxlZ0CfZfsSPjhTOW4fd4ZwIvb7cOXhkJuCuFaPPw8zdjyAVoazlSwu4z46r0xcx1g`, capture Set-Cookie, replay GET `/api/v1/tenants` (baseline `{}`) and `/admin/api/v1/users` (baseline 401) and diff. Fallback if no creds: any TPP mTLS cert to replay GET `openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` (CRITICAL if 200).
+[RISK] vp-bank-ag: 63 — No exploitable delta this cycle (SPA bundle analysis, qr_codes, bankingtransactions, SAML routes all negative/config-only), but no fatal negative on the two standing HUMAN threads; stage injection baseline holds at 55 awaiting valid creds; prod PSD2 BOLA at 52 holds cert-gated and anchor-independent. Sandbox proving surface remains uniform-500 (mechanism prior-proven). Total rejection if neither HUMAN thread resolves: ~40%.
