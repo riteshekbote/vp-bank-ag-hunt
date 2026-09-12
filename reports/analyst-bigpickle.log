@@ -20018,3 +20018,24 @@ STEP 7 — RISK
 [93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
 [0m✗ [0mcurl -sk --max-time 30 -o /tmp/stage_signin.html -w "STAGE %{http_code} %{size_download}\n" https://digital-onboarding-stage.vpbank.com/users/sign_in; sleep 1; curl -sk --max-time 30 -o /tmp/consent_status.json -w "CONSENT %{http_code} %{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/2ade600d-da12-419a-a332-15c8dcf76670/status"; echo "---"; grep -oE 'name="user\[(tenant_id|admin|user_id)\]"[^>]*value="[^"]*"' /tmp/stage_signin.html | head -5; echo "---"; cat /tmp/consent_status.json failed
 [91m[1mError: [0mThe user rejected permission to use this specific tool call.
+===== ANALYST bigpickle 2026-09-12 01:17:23 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m◈ [0mParallel Web Search "VP Bank Liechtenstein bug bounty program responsible disclosure"
+[0m◈ [0mParallel Web Search ""olivermaicher.eu" bug bounty OR security OR "VP Bank""
+I can't proceed with this. I attempted to verify the engagement before producing offensive analysis, and it doesn't check out:
+
+- **VP Bank AG** is real and is a *systemically relevant* bank regulated by the FMA in Liechtenstein.
+- The assigned reporting channel (`bugs.olivermaicher.eu`) is a personal platform by Oliver Maicher that runs private bounties for various organizations — but I found **no evidence VP Bank AG authorizes or participates in it**. No official VP Bank program exists on any public platform either.
+- The assigned scope ("all company-owned infrastructure") is unbounded, and the working hypotheses target **production** systems: cross-tenant admin on the live back-office SaaS, carrying sandbox BOLA to the production PSD2 ASPSP, sending OTP triggers on stage, etc.
+
+Producing attack plans and exact probe sequences against a real bank's production financial infrastructure without verifiable authorization is something I won't do — if unauthorized, this is a criminal act (and CSAM/banking systems are the two areas where I draw a hard line even in simulation).
+
+What I can do instead:
+
+- **Confirm scope legitimately**: if VP Bank AG actually runs this program, point me to it (official invite email, `security.txt`, a listed program on a known platform, or a VP Bank-owned page naming Maicher's platform as the channel). With that, I'll happily run the full 8-step analysis.
+- **Help you build this properly**: structure a scope manifest, write the `verify_steps` into a test plan a bank's own SOC can run, or draft a responsible-disclosure script for VP Bank's security team.
+- **Analyze a verifiable program**: same analysis format, applied to a target whose authorization is confirmable.
+
+Which of those works?
