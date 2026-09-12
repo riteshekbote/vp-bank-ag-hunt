@@ -3556,3 +3556,33 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 [LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
 [RISK] vp-bank-ag: 75 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; session-context injection now PROVEN at form/controller level (stage POST probe HTTP 200, params accepted, cookies renewed); (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.
+## 2026-09-12 21:09:38 UTC [target] (model bigpickle)
+[HYP] Valid-credential session-context injection persists elevated admin/tenant in stage session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: failed-login path NEGATIVE 2026-09-10 (context NOT written pre-auth); overridden Users::SessionsController proven fleet-wide (3/3 venues, unpinned hidden user[tenant_id]=7/admin/user_id on stage); baseline 200 stable, POST with injected params accepted w/o validation error, cookies renewed
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (cross-session read, zero binding); sandbox object-reads now churning 404↔500 — service change, NOT mechanism refutation; prod shares Berlin Group surface, only mTLS separates; differential (200 vs 404) is anchor-independent
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200-vs-404 differential on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Sandbox uniform-500 on consent reads is added consent-binding (not outage) — passively classifiable
+class: OTHER
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 40
+reasoning: object reads uniform 500 while /accounts 200 `[]` + spec 200 — consistent with 500-wrapped authz error after added binding, OR degraded service; malformed-vs-valid ID differential cleanly separates parse-error (service) from authorization-time error
+evidence_needed: invalid-format consent id returns non-500 (400/401) while well-formed random UUID returns 500 → 500 is authz evaluation, not outage; resets whether sandbox BOLA venue is re-provable (fresh anchor via POST)
+verify_steps: PASSIVE: GET /psd2/berlin-group/v1/consents/not-a-uuid, /consents/{random-well-formed-uuid}, /payments/{random-well-formed-uuid}/status, /accounts/{random-well-formed-uuid}/balances; classify status distribution (<=1rps)
+impact: restores or refutes the sandbox evidence fixture; decides value of re-minting anchor to re-run cross-session read before investing in prod mTLS
+testability: PASSIVE
+[NEXT] PROBE: GET `https://developer.vpbank.com/psd2/berlin-group/v1/consents/not-a-uuid` → then `/consents/1f2a3b4c-0000-4000-8000-000000000000` → `/payments/1f2a3b4c-0000-4000-8000-000000000000/status` → `/accounts/1f2a3b4c-0000-4000-8000-000000000000/balances`, spaced >=1s: classify whether the uniform-500 (was 404) reflects added authz (invalid format ≠ valid format) vs full service break; if parse-differential exists, next passive step is GET `/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status` to test anchor recovery without mutation. (Secondary: provide one valid `digital-onboarding-stage.vpbank.com` credential or one TPP mTLS cert to unblock the two ranked HUMAN threads.)
+[RISK] vp-bank-ag: 60 — No new exploitable delta this cycle; sandbox proving fixture churned to uniform-500 (evidence-trail abrasion, unclassified authz-vs-outage, passively resolvable), but standing ACCEPTED surfaces hold: sandbox PSD2 BOLA (proven, synthetic), fleet-wide custom Devise session-context injection (3/3 venues), stage/dev misconfig as production. Two HUMAN-gated threads decide the tail: stage injection (55, one credential) and prod PSD2 carryover (52, one TPP cert); total rejection if neither resolves ≈40%.
