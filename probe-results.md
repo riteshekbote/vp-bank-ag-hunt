@@ -396,3 +396,8 @@ https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 ## 2026-09-12 01:17:26 UTC
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+
+## 2026-09-12 05:54:15 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id -> ERR [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 al

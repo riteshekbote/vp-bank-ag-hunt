@@ -256,3 +256,5 @@
 - 2026-09-12 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-12 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-12 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-12 NEW INFO @ developer.vpbank.com (sandbox): consent-read endpoints uniform HTTP 500 for all ids (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — sandbox service change or added authz; anchor unrecoverable without mutating POST.
+- 2026-09-12 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): /users/sign_in baseline stable (200/23912B) this cycle, hidden fields still unpinned.

@@ -604,3 +604,13 @@ www.vpbank.com
 - CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context 
 - CHANGED PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS on openbanking.vpbank.com (HUMAN_ONLY)
 - CHANGED sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
+
+## 2026-09-12 05:54:10 UTC
+- NEW digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry (sentry_environment=stage-vpbank, release 5e237eae...) — stage misconfigured as production
+- NEW digital-onboarding-dev.vpbank.com CSP report-uri shows sentry_environment=test2 (consentManager.env="production" on dev) — dev misconfigured as production
+- CHANGED Phase=POC target=api but api.vpbank.com fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target required to digital-onboarding family or developer.vpbank.com
+- CHANGED Failed-login session-context injection hypothesis REJECTED (2026-09-10): POST with invalid creds + injected params on stage → HTTP 200 re-render, cookies renewed, but post-POST cookie replay shows NO 
+- CHANGED digital-onboarding-stage.vpbank.com `/api/v1/sessions/{idp_login,secure_session,reset_password}` all HTTP 404 — custom session endpoints do not exist via GET
+- CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context 
+- CHANGED PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS on openbanking.vpbank.com (HUMAN_ONLY)
+- CHANGED sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
