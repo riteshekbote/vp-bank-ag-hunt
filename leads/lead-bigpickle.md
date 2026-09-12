@@ -3512,3 +3512,33 @@ impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; M
 testability: HUMAN_ONLY
 [NEXT] HUMAN: With any legitimate TPP mTLS cert, replay GET `https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` and `/payments/{id}/status` — 200 on non-owned object = production BOLA (differential vs 404 on absent id; anchor NOT required; sandbox proving surface is degrading so this is the surviving CRITICAL evidence path). Secondary: a single valid stage credential for the `/users/sign_in` injection POST unblocks the 55 thread.
 [RISK] vp-bank-ag: 62 — Fresh CT sweep expanded the host model but negated ~30 previously-unknown hostnames (CT-only, mTLS-gated, static, or login-gated), materially reducing tail-risk of a missed external surface. Sandbox proving fixture continues to churn (200/404→500→404) slightly weakening the BOLA evidence trail, but the standing ACCEPTED IDOR + prod-carryover test remains anchor-independent. Stage injection holds at 55 gated on a single credential; prod BOLA at 52 gated on one TPP cert. Total rejection if neither HUMAN thread resolves: ~40%.
+## 2026-09-12 16:29:51 UTC [target] (model bigpickle)
+[HYP] Valid-credential sign_in with injected user[admin]/user[tenant_id]/user[user_id] persists elevated context into session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 55
+reasoning: baseline re-verified 200/24137B this cycle; hidden tenant_id=7/admin/user_id unpinned confirm overridden Users::SessionsController (3/3 venues defaults 4/129/7); failed-login path NEGATIVE 2026-09-10 — context only written post-auth; overridden controller is the genuine auth path
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST /users/sign_in email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; capture Set-Cookie; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session → onboarding cases, ident docs, wire status, user mgmt, tenant isolation break; HIGH (~8.8)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 52
+reasoning: mechanism proven end-to-end in official sandbox (cross-session consent/account/payment read, zero binding); sandbox {id}-read now churning 404↔500 (service churn, does NOT refute); prod shares Berlin Group surface, only mTLS separates; differential (200 vs 404) is anchor-independent
+evidence_needed: credentialed replay of /consents/{foreign-real-id}, /accounts, /payments/{id}/status returns 200-vs-404 differential on production
+verify_steps: HUMAN: with any valid TPP mTLS cert GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA (no anchor needed)
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password on stage is live (anonymous OTP-send initiation)
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA bundle maps route + OTP i18n strings ("something_went_wrong_in_otp_sending","remain_attempts_left"); GET uniform 404 (indistinguishable for POST-only vs absent); stage authz weaker than prod elsewhere (tenants 200 vs 403); stage misconfigured as production (consentManager.env="production")
+evidence_needed: bare POST (no body) returns non-404 (400/422/401) proving live route; then OTP-send gating
+verify_steps: HUMAN (mutating, stage-only): POST /api/v1/sessions/reset_password empty body → non-404 confirms route; then gating against synthetic stage email
+impact: anonymous OTP-request/reset initiation → SMS spam, login-disruption; MEDIUM
+testability: HUMAN_ONLY
+[NEXT] HUMAN: Provide either (a) one valid stage credential for `digital-onboarding-stage.vpbank.com` — POST `/users/sign_in` email+password + `user[admin]=true&user[tenant_id]=1&user[user_id]=1` + CSRF, replay cookies vs `/api/v1/tenants` (baseline `{}`) and `/admin/api/v1/users` (baseline 401); or (b) any legitimate TPP mTLS cert — replay GET `https://openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id}` and `/payments/{id}/status` (200 on foreign id = production BOLA, CRITICAL).
+[RISK] vp-bank-ag: 61 — No new exploitable delta this cycle (spec/list-auth stable, {id}-read churn carries no passive signal; stage baseline stable). Both standing threads remain HUMAN-gated: stage injection (55) on one valid credential, prod PSD2 BOLA (52) on one TPP mTLS cert. Sandbox proving fixture keeps churning (404↔500) but mechanism prior-proven, so ACCEPTED IDOR stands. Total rejection if neither HUMAN thread resolves: ~40%.
