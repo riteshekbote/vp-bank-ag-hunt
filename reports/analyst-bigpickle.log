@@ -23144,3 +23144,153 @@ testability: HUMAN_ONLY
 
 **STEP 7 — RISK**
 - [RISK] vp-bank-ag: 56 — No new exploitable delta; sandbox fixture healthy but TTL-expired (re-mint unblocks near-zero-cost), stage injection + prod carryover both external-credential-gated; executable standing value = sandbox BOLA (synthetic, proven) + fleet injection surface (3/3 venues). Total-rejection if BOTH human threads stay unresolved ≈40%.
+===== ANALYST bigpickle 2026-09-13 06:25:57 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /tmp/opencode/psd2_api.yaml -w "%{http_code} %{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml"; echo "---"; grep -n -i "server\|servers:\|title:\|version:" /tmp/opencode/psd2_api.yaml | head -20
+200 46112
+---
+3:    title: PSD2 API
+4:    version: "1.0.0"
+6:servers:
+8:        description: PSD2 production server
+37:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+59:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+81:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+103:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+134:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+158:    #          $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+181:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+205:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+249:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+275:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+302:                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+436:        INTERNAL_SERVER_ERROR_500_AIS:
+437:            description: Internal Server Error
+[0m
+[0m$ [0mBASE="https://developer.vpbank.com/psd2/berlin-group/v1"; for p in "consents/not-a-uuid" "consents/1f2a3b4c-0000-4000-8000-000000000000/status" "consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status" "accounts" "payments/1f2a3b4c-0000-4000-8000-000000000000/status" "consents"; do code=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/$p"); echo "$BASE/$p -> $code"; sleep 1.2; done
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/not-a-uuid -> 404
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/1f2a3b4c-0000-4000-8000-000000000000/status -> 404
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status -> 404
+https://developer.vpbank.com/psd2/berlin-group/v1/accounts -> 200
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/1f2a3b4c-0000-4000-8000-000000000000/status -> 404
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> 405
+[0m
+[0m$ [0msed -n '1,40p' /tmp/opencode/psd2_api.yaml; echo "=== security/securitySchemes ==="; grep -n -A6 "securitySchemes\|security:" /tmp/opencode/psd2_api.yaml | head -40
+openapi: 3.0.1
+info:
+    title: PSD2 API
+    version: "1.0.0"
+
+servers:
+    -   url: /psd2/berlin-group/v1
+        description: PSD2 production server
+
+paths:
+
+    #######################################################
+    # Consents
+    #######################################################
+
+    /consents:
+        post:
+            summary: Create consent
+            description: This method creates a consent resource, defining access rights to a dedicated account.
+            operationId: createConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            requestBody:
+                $ref: "#/components/requestBodies/consents"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}:
+        get:
+=== security/securitySchemes ===
+[0m
+[0m$ [0mgrep -n -i "oauth\|authorization\|basic\|certificate\|x-api-key\|api-key" /tmp/opencode/psd2_api.yaml | head; echo "=== payments/accounts/balances/transactions paths ==="; grep -n "^\s*/" /tmp/opencode/psd2_api.yaml
+=== payments/accounts/balances/transactions paths ===
+16:    /consents:
+39:    /consents/{consentId}:
+83:    /consents/{consentId}/status:
+109:    /{payment-service}/{payment-product}:
+160:    /{payment-service}/{payment-id}/status:
+187:    /accounts:
+207:    /accounts/{account-id}:
+228:    /accounts/{account-id}/balances:
+251:    /accounts/{account-id}/transactions:
+281:    /funds-confirmations:
+[0m
+STEP 1 — DELTA
+- NO_DELTA: sandbox consent-read differential re-probed this cycle — `consents/not-a-uuid` 404, valid-format UUID `/status` 404, TTL-anchor `/status` 404, `/accounts` 200 `[]`, `/consents` GET 405; no parse-error window (invalid≠valid format both 404) → 09-12 500-churn definitively classified as read-service **outage**, not added authz.
+- NO_DELTA: `psd2_api.yaml` re-fetched 200/46KB v1.0.0 — unchanged path map, still zero `securitySchemes`/auth refs (docs-only mTLS/basic), spec drift absent.
+
+STEP 2 — PRIORITIZE
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in, 6.9, custom-Devise session-context injection (needs creds; fleet-wide 3/3, back-office admin value)
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1, 6.5, PSD2 sandbox BOLA (mechanism proven, fixture needs re-mint; spec self-labels production)
+- [PRIO] openbanking.vpbank.com, 5.8, prod BOLA carryover (mTLS-gated, HUMAN-only, CRITICAL if real)
+
+STEP 3 — HYPOTHESES
+[HYP] Sandbox consent re-mint restores cross-session BOLA evidence (read service healthy; only anchor TTL blocks)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 55
+reasoning: BOLA proven end-to-end pre-churn (anon POST 201 → 200 cross-session reads, zero binding); read service healthy this cycle (accounts 200 [], clean 404s, no parse-window); only blocker is expired anchor 6b517824…
+evidence_needed: fresh POST mint returns consent id readable by a different anonymous session via /consents/{id}/status, /accounts, /balances
+verify_steps: HUMAN (sandbox, synthetic): POST /psd2/berlin-group/v1/consents {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"<180d","frequencyPerDay":100} + X-Request-ID → capture 201 id → read from fresh session
+impact: restores live fixture for standing sandbox BOLA finding (synthetic, no prod impact)
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign-in persists injected admin/tenant session-context on stage
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: overridden Users::SessionsController fleet-wide (3/3, defaults 4/129/7); failed-login path NEGATIVE 09-10 (context not written pre-auth); form live, hidden fields unpinned
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; replay /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wires; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 45
+reasoning: mechanism prior-proven; prod shares Berlin Group v1 surface; only mTLS (QWAC) separates; spec confirms no OAuth layer
+evidence_needed: credentialed 200-vs-404 differential on non-owned consent/payment id against production
+verify_steps: HUMAN: with any valid QWAC, GET /consents/{foreign-real-id} and /payments/{id}/status; 200 = prod BOLA
+impact: cross-TPP read of consent/account/balance/payment objects on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password livens anonymous OTP-send on stage
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA maps route + OTP i18n; GET uniform 404 (indistinguishable POST-only vs absent); stage looser elsewhere
+evidence_needed: non-404 on empty POST body
+verify_steps: HUMAN (mutating, stage-only): POST empty body → non-404 confirms route
+impact: anonymous OTP-request reset initiation; MEDIUM-LOW
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- All four survivors >40 but every one is HUMAN_ONLY; passive axis confirmed flat (differential re-run, spec drift check, no new endpoints). No confidence adjustments justified by this cycle's facts.
+- [PARKED] reset_password bare-POST: 40, mutating-only, low impact vs cost, stage-only; ranked fourth.
+- [FINAL] survivors ranked: sandbox re-mint (55) > stage valid-creds injection (50) > prod BOLA carryover (45).
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Authorize a sandbox-only consent POST on `developer.vpbank.com/psd2/berlin-group/v1/consents` (`{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":100}` + X-Request-ID) to re-mint the BOLA fixture for the standing 55-scope finding — highest-value, lowest-risk unlock; alternatively a valid `digital-onboarding-stage.vpbank.com` test credential for the 50-scope session-context injection POC.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): mechanism stands prior-proven; 09-12 500-churn re-classified as read-service outage (uniform clean 404s + /accounts 200 [], no invalid-vs-valid-format differential) — anchor TTL-expiry is the sole blocker to fixture reproduction.
+- [LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com: OpenAPI spec re-confirmed unchanged (v1.0.0, 46KB, zero securitySchemes) — docs-only mTLS/basic auth, no drift.
+
+STEP 7 — RISK
+- [RISK] vp-bank-ag: 55 — Passive surface fully flat across all in-scope assets; standing ACCEPTED findings (PSD2 sandbox BOLA, fleet-wide session-context injection surface, stage/dev-as-production misconfig) are real but two of three require HUMAN unlock; residual total-rejection probability concentrated on supply of a stage credential or QWAC/sandbox POST authorization.

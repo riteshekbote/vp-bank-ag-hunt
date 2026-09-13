@@ -3644,3 +3644,40 @@ evidence_needed: credentialed replay of /consents/{foreign-real-id} or /payments
 verify_steps: HUMAN: with any valid QWAC, GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA
 impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
 testability: HUMAN_ONLY
+## 2026-09-13 06:16:24 UTC [target] (model bigpickle)
+[HYP] Sandbox consent re-mint restores cross-session BOLA evidence (read service healthy; only anchor TTL blocks)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 55
+reasoning: BOLA proven end-to-end pre-churn (anon POST 201 → 200 cross-session reads, zero binding); read service healthy this cycle (accounts 200 [], clean 404s, no parse-window); only blocker is expired anchor 6b517824…
+evidence_needed: fresh POST mint returns consent id readable by a different anonymous session via /consents/{id}/status, /accounts, /balances
+verify_steps: HUMAN (sandbox, synthetic): POST /psd2/berlin-group/v1/consents {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"<180d","frequencyPerDay":100} + X-Request-ID → capture 201 id → read from fresh session
+impact: restores live fixture for standing sandbox BOLA finding (synthetic, no prod impact)
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign-in persists injected admin/tenant session-context on stage
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: overridden Users::SessionsController fleet-wide (3/3, defaults 4/129/7); failed-login path NEGATIVE 09-10 (context not written pre-auth); form live, hidden fields unpinned
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: HUMAN: POST email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; replay /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wires; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 45
+reasoning: mechanism prior-proven; prod shares Berlin Group v1 surface; only mTLS (QWAC) separates; spec confirms no OAuth layer
+evidence_needed: credentialed 200-vs-404 differential on non-owned consent/payment id against production
+verify_steps: HUMAN: with any valid QWAC, GET /consents/{foreign-real-id} and /payments/{id}/status; 200 = prod BOLA
+impact: cross-TPP read of consent/account/balance/payment objects on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Bare POST to /api/v1/sessions/reset_password livens anonymous OTP-send on stage
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password
+confidence: 40
+reasoning: SPA maps route + OTP i18n; GET uniform 404 (indistinguishable POST-only vs absent); stage looser elsewhere
+evidence_needed: non-404 on empty POST body
+verify_steps: HUMAN (mutating, stage-only): POST empty body → non-404 confirms route
+impact: anonymous OTP-request reset initiation; MEDIUM-LOW
+testability: HUMAN_ONLY
