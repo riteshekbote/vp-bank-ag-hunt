@@ -30,3 +30,9 @@
   - **VERDICT: VALID**
   - | Q4 | Provable non-invasively? | **No** — requires valid client_id not discoverable from JS/RAG/App Store |
   - | PSD2 Sandbox BOLA/IDOR | **VALID** | Proven end-to-end in sandbox with synthetic data; HIGH impact |
+
+- 4 lead(s) marked VALID at 2026-09-13 14:30:15 UTC
+  - **Verdict: VALID**
+  - | Q4 Provable non-invasively? | **PARTIAL** — HTML form evidence confirms field existence; controller customization confirmed via code analysis; but POST with forged params **requires a valid dev cred
+  - | Q2 Attacker reachable? | YES — `/.well-known/openid-configuration` returns HTTP 200; device_code grant exposed; but `/adfs` returns HTTP 503 (service degraded); `/adfs/oauth2/devicecode` returns 405
+  - | PSD2 sandbox BOLA @ developer.vpbank.com | **VALID** | 7.5 High | **Report to bugs.olivermaicher.eu** with synthetic-data PoC |
