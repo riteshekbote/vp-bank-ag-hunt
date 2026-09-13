@@ -1,4 +1,4 @@
-## 2026-09-13 15:47:19 UTC [target] (model nemotron3)
+## 2026-09-13 18:44:26 UTC [target] (model nemotron3)
 [NEW] developer.vpbank.com PSD2 sandbox service degradation: consent-read endpoints uniform HTTP 500 (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — added authz or service degradation
 [NEW] digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry (sentry_environment=stage-vpbank, release 5e237eae) — stage misconfigured as production
 [NEW] digital-onboarding-dev.vpbank.com CSP report-uri shows sentry_environment=test2 with consentManager.env="production" — dev misconfigured as production
@@ -8,12 +8,7 @@
 [CHANGED] digital-onboarding-stage.vpbank.com `/api/v1/sessions/{idp_login,secure_session,reset_password}` all HTTP 404 — custom session endpoints do not exist via GET
 [CHANGED] All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context params
 [CHANGED] PSD2 sandbox BOLA on developer.vpbank.com VERIFIED end-to-end (synthetic data) — production carryover blocked by mTLS on openbanking.vpbank.com (HUMAN_ONLY)
-[CHANGED] sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
-[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.40,attack_surface=10|business_value=9|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
-[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.15,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=9
-[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.80,attack_surface=9|business_value=8|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=9
-[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,6.75,attack_surface=6|business_value=9|tech_exposure=7|gate_ease=5|cloud_surface=7|freshness=5
-[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+[CHANGED] sts.vpbank.com ADFS devi[0m
 class: AUTH
 asset: digital-onboarding-stage.vpbank.com/users/sign_in
 confidence: 95
@@ -40,7 +35,9 @@ evidence_needed: POST /users/sign_in with valid credentials + injected user[tena
 verify_steps: GET https://digital-onboarding-dev.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults + _us_session); POST with valid email/password + injected user[tenant_id]=X; then GET /api/v1/tenants, /api/v1/current_user_details, /admin/api/v1/users with resulting cookie
 impact: Cross-tenant access on dev back-office with tenant enumeration vector; severity MEDIUM (dev environment)
 testability: HUMAN_ONLY
-[PARKED] PSD2 sandbox BOLA carries to production consent/account objects via shared cert/mTLS misconfig: mTLS enforced at TLS layer on openbanking.vpbank.com (certificate required) — anonymous probes blocked; requires valid TPP client certificate which we cannot obtain; no passive verification path; HUMAN_ONLY with credentials we don't have
+[PARKED] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office: HUMAN_ONLY testability blocks autonomous verification; requires valid test credentials from program
+[PARKED] Valid-credential session-context injection grants admin/impersonation on digital-onboarding prod back-office: HUMAN_ONLY testability; production asset requires careful coordination
+[PARKED] Valid-credential session-context injection grants cross-tenant access on digital-onboarding-dev back-office with tenant enumeration: HUMAN_ONLY testability; dev environment lower business_value
 [FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
 [FINAL] 2. [90] digital-onboarding.vpbank.com/users/sign_in: Valid-credential session-context injection grants admin/impersonation on digital-onboarding prod back-office
 [FINAL] 3. [85] digital-onboarding-dev.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant access on digital-onboarding-dev back-office with tenant enumeration
