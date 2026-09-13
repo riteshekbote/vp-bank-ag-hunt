@@ -154,3 +154,11 @@ TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 ## REPOSCAN 2026-09-13 06:46:19 UTC
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-13 12:41:46 UTC
+class: OTHER
+asset: GitHub (org:vpbdevops, cands.txt)
+confidence: 100
+reasoning: vpbdevops is the only confirmed VP Bank AG GitHub org; it has zero public repositories. scope.yml lists github_orgs: none-configured. cands.txt says "no org candidates". GitHub code search for vpbank.com / VP Bank AG + secret patterns returns 0 results across all public repos. No third-party repos contain VP Bank AG secrets.
+impact: N/A — no source-code audit possible
+verify_steps: Visit https://github.com/vpbdevops (0 public repos); confirm cands.txt content; GitHub code search API returns total_count=0 for all queries
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
