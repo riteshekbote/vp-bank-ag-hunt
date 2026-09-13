@@ -3832,3 +3832,33 @@ impact: cross-TPP read of consent/account/balance/payment objects on production 
 testability: HUMAN_ONLY
 [NEXT] HUMAN: POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + header `X-Request-ID: <uuid>` + `Content-Type: application/json`; capture `consentId` from HTTP 201, then GET `/consents/{id}/status`, `/accounts`, `/balances` from fresh anonymous session — non-404/200 cross-session reads restore the standing BOLA fixture.
 [RISK] vp-bank-ag: 72 — Approved sandbox BOLA (financial API, zero binding on consentId/paymentId) remains fixture-restable with one in-program POST; fleet-wide Devise session-context injection surface live at 3/3 venues (success-path unproven, needs creds); api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+## 2026-09-13 15:51:01 UTC [target] (model bigpickle)
+[HYP] reset_password session-endpoint exposes credential-validating reset flow that is bound only to (email,password), not to existing session/tenant — injection of tenant context may alter reset target
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/api/v1/sessions/reset_password (same live on dev/prod)
+confidence: 40
+reasoning: POST requires user[email] (400 when missing) and returns uniform 401 "email or password incorrect"; only email+password inputs accepted (id/login rejected 400); endpoint unauthenticated and identically live on 3/3 venues; no OTP/JWT gate observed; SPA bundles it as session API
+evidence_needed: a request where user[email]+user[password] combination yields non-401 (200/redirect token/OOB) proving reset can be driven without JWT; or differential response between valid-shaped and invalid-shaped email+password
+verify_steps: HUMAN: with valid stage creds POST reset_password user[email]=<valid>+user[password]=<valid> — observe 200/redirect vs 401; then test user[tenant_id] injected into same POST to see if reset binds to attacker tenant
+impact: if reset triggers on password-only validation, password-change + tenant-context pivot on back-office = ATO/HIGH
+testability: HUMAN_ONLY
+[HYP] Sandbox consent BOLA carries to production consent/account objects via shared handler
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 55
+reasoning: sandbox BOLA re-proven TODAY with fresh consent (anon 200, IBAN leaked, zero TPP binding); prod shares CN=openbanking.vpbank.com and identical Berlin Group spec; only mTLS separates; OpenAPI self-labels "PSD2 production server"
+evidence_needed: credentialed 200-vs-403/404 differential on non-owned consent/account id against production
+verify_steps: HUMAN: with any valid QWAC GET /psd2/berlin-group/v1/consents/{foreign-id}/status and /accounts → 200 = prod BOLA confirmed
+impact: cross-TPP read of consent/account/balance/payment objects on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in persists injected admin/tenant session-context (success-path never observed)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: fleet-wide overridden Users::SessionsController (3/3, defaults 4/129/7); failed-login path NEGATIVE 09-10 (context NOT written pre-auth); form live, hidden user[tenant_id]=7 unpinned; success-path behavior never observed
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants (baseline `{}`) or 200 on /admin/api/v1/users (baseline 401)
+verify_steps: HUMAN: GET /users/sign_in, POST email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; follow redirect; replay /api/v1/tenants + /admin/api/v1/users; diff vs anon baseline
+impact: cross-tenant admin session on back-office — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] HUMAN: Provide valid test credentials for `digital-onboarding-stage.vpbank.com`; POST `/users/sign_in` with email+password + injected `user[admin]=true&user[tenant_id]=1&user[user_id]=1` + CSRF (capture `authenticity_token` + `_us_session` from GET first); then replay cookie on `/api/v1/tenants`, `/admin/api/v1/users`, `/control-center/` and diff vs the already-locked anonymous baseline — resolves the FINAL#2 injection POC and the reset_password handler in one pass.
+[RISK] vp-bank-ag: 73 — Approved financial-API BOLA (sandbox, consent-ID cross-session read + IBAN exposure) fixture re-established and standing; unauthenticated custom session API (reset_password/secure_session) confirmed live fleet-wide proving overridden controller at API layer beyond the sign-in form; exploitation of both still gated on valid creds (HUMAN) or QWAC (prod carryover). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated; sandbox payment- and secure_session-BOLA axes dead.
