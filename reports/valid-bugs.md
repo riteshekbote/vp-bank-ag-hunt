@@ -36,3 +36,25 @@
   - | Q4 Provable non-invasively? | **PARTIAL** — HTML form evidence confirms field existence; controller customization confirmed via code analysis; but POST with forged params **requires a valid dev cred
   - | Q2 Attacker reachable? | YES — `/.well-known/openid-configuration` returns HTTP 200; device_code grant exposed; but `/adfs` returns HTTP 503 (service degraded); `/adfs/oauth2/devicecode` returns 405
   - | PSD2 sandbox BOLA @ developer.vpbank.com | **VALID** | 7.5 High | **Report to bugs.olivermaicher.eu** with synthetic-data PoC |
+
+- 24 lead(s) marked VALID at 2026-09-13 17:39:02 UTC
+  - | **Q1 Scope** | VALID — `developer.vpbank.com` is *.vpbank.com, company-owned PSD2 developer portal under "all company-owned infrastructure" |
+  - | **Q2 Reach** | VALID — publicly reachable, anonymous POST to `/psd2/berlin-group/v1/consents` returns 201; no client cert or basic auth required |
+  - | **Q3 Impact** | VALID — cross-session consent/account/balance/transaction/payment-status read without identity binding; if prod mirrors sandbox authz logic, cross-TPP financial data disclosure |
+  - | **Q4 Provable** | VALID — already proven end-to-end in sandbox (synthetic data): consent POST→201, fresh anonymous GET→200 across /consents/{id}, /accounts, /balances, /transactions, /payments/{id}/
+  - | **Q5 Novel** | VALID — no public disclosure found; spec self-labels server "PSD2 production server" suggesting this is untested behavior |
+  - | **Q6 Not always-rejected** | VALID — not on always-rejected list (not DoS, not info leak, not clickjacking, etc.) |
+  - | **Q7 Triager accept** | VALID — authorization bypass on a financial API is a real finding; caveat is sandbox-only (synthetic data) reduces severity |
+  - **Verdict: VALID**
+  - | **Q1 Scope** | VALID — `digital-onboarding.vpbank.com` is *.vpbank.com, company-owned multi-tenant bank onboarding/back-office platform |
+  - | **Q2 Reach** | VALID — publicly reachable; `/users/sign_in` serves HTTP 200 with form containing hidden fields |
+  - | **Q3 Impact** | VALID — if consumed, attacker-controlled `user[admin]`, `user[tenant_id]`, `user[user_id]` could grant admin/impersonation on bank back-office |
+  - | **Q5 Novel** | VALID — custom overridden SessionsController consuming client-controlled params is non-standard Devise behavior |
+  - | **Q6 Not always-rejected** | VALID — not on always-rejected list |
+  - | **Q1 Scope** | VALID — *.vpbank-dev.com / *.vpbank-stage.com are trusted origins in production CSP |
+  - | **Q2 Reach** | VALID — DNS resolves, Apache responds with maintenance redirect |
+  - | **Q1 Scope** | VALID |
+  - | **Q2 Reach** | VALID |
+  - | **Q1 Scope** | VALID |
+  - | **Q2 Reach** | VALID |
+  - | **Q3 Impact** | VALID (if proven) |
