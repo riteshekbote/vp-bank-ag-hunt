@@ -23067,3 +23067,80 @@ testability: HUMAN_ONLY
 
 ## STEP 7 — RISK
 [RISK] vp-bank-ag: 58 — No new exploitable delta; sandbox evidence fixture churned 500→404 back to uniform empty (classifies the churn as outage, NOT added authz — mechanism prior-proven still stands as ACCEPTED IDOR). Two ranked HUMAN threads decide the tail: stage valid-creds session-context injection (55) and prod PSD2 BOLA carryover (48) — neither resolvable passively. Sandbox, api/www/dev-stage/mobile/ebics/tracking/beta/concentsol/sts all negative or exhausted; without a HUMAN credential or TPP cert the residual executable risk is ~40% total-rejection.
+===== ANALYST bigpickle 2026-09-13 01:05:58 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m◈ [0mExa Web Search "VP Bank Liechtenstein PSD2 developer portal test credentials TPP sandbox onboarding QR code vendor "vpbank" stage demo login"
+[0m
+[0m$ [0mcurl -sk -m 15 -o /dev/null -w 'stage /users/sign_in -> %{http_code}|%{size_download}B\n' https://digital-onboarding-stage.vpbank.com/users/sign_in; sleep 1.2; curl -sk -m 15 -o /dev/null -w 'stage /api/v1/brand -> %{http_code}|%{size_download}B\n' 'https://digital-onboarding-stage.vpbank.com/api/v1/brand?force_tenant=vpbank'; sleep 1.2; curl -sk -m 15 -o /dev/null -w 'prod /api/v1/tenants -> %{http_code}|%{size_download}B\n' https://digital-onboarding.vpbank.com/api/v1/tenants
+stage /users/sign_in -> 200|24104B
+stage /api/v1/brand -> 200|6359B
+prod /api/v1/tenants -> 403|28B
+[0m
+[0m$ [0mfor u in \
+  "https://developer.vpbank.com/psd2/berlin-group/v1/consents/not-a-uuid" \
+  "https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status" \
+  "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" \
+  "https://developer.vpbank.com/psd2/berlin-group/v1/payments/1f2a3b4c-0000-4000-8000-000000000000/status"; do
+  code=$(curl -sk -m 15 -o /dev/null -w '%{http_code}|%{size_download}' "$u" 2>/dev/null); echo "$u -> $code"; sleep 1.3
+done
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/not-a-uuid -> 404|0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status -> 404|0
+https://developer.vpbank.com/psd2/berlin-group/v1/accounts -> 200|15
+https://developer.vpbank.com/psd2/berlin-group/v1/payments/1f2a3b4c-0000-4000-8000-000000000000/status -> 404|0
+[0m
+**STEP 1 — DELTA**
+- [CHANGED] developer.vpbank.com PSD2 sandbox: 09-12 uniform-500 churn fully reverted clean — `consents/not-a-uuid`→404(0B), old anchor `6b517824…/status`→404, `/accounts`→200 `[]` (15B), `payments/{uuid}/status`→404 — read path healthy, uniformly 404 on non-existent/expired ids (probed live this cycle)
+- [CHANGED] digital-onboarding-stage baseline stable: `/users/sign_in`→200/24104B (drift 24454→24104 only), `/api/v1/brand?force_tenant=vpbank`→200/6359B, prod `/api/v1/tenants`→403/28B — injection surface still live, no drift
+- [CHANGED] RAG hunt negative: PSD2 docs re-confirm prod TPP auth = eIDAS QWAC only (verify_certificate mTLS-gated); no public stage/TPP test credentials surfaced — both top threads still external-credential-gated
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] digital-onboarding-stage.vpbank.com, 7.2, back-office SaaS (custom Devise session-context injection, anonymous SPA+API config axis)
+- [PRIO] developer.vpbank.com, 6.7, PSD2 sandbox (functional BOLA-proven endpoints, anonymous reachable, restoration re-verifiable)
+- [PRIO] openbanking.vpbank.com, 5.7, prod ASPSP mTLS (carryover, QWAC-gated)
+
+**STEP 3 — HYPOTHESES**
+[HYP] Valid-credential session-context injection persists elevated admin/tenant in stage session
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); failed-login path NEGATIVE 09-10 (context not written pre-auth); form live this cycle 200/24104B with unpinned user[tenant_id]=7; RAG credential hunt negative
+evidence_needed: valid-creds POST yields cookie whose replay returns populated /api/v1/tenants or 200 on /admin/api/v1/users
+verify_steps: PASSIVE: GET /users/sign_in → confirm hidden fields unpinned + tokens (done, stable). HUMAN: POST email+password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; replay GET /api/v1/tenants (baseline {}) and /admin/api/v1/users (baseline 401); diff
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Re-minted sandbox consent restores cross-session BOLA read (outage-only, mechanism live)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 55
+reasoning: BOLA proven end-to-end pre-churn (anon POST 201 → 200 reads cross-session, zero binding); 09-12 500-churn reverted to clean 404s with /accounts 200 (read service healthy); not-a-uuid also 404 → no parse-error window; only blocker is TTL-expired anchor (6b517824… 404)
+evidence_needed: fresh POST returns consent id readable by a different anonymous session (200 on /consents/{id}, /accounts, /balances)
+verify_steps: PASSIVE: differential GET set executed this cycle (404/404/200/404-clean). HUMAN (sandbox-only, synthetic): POST /consents {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"<≤180d>","frequencyPerDay":100} with X-Request-ID; capture id in 201 → GET id/status, /accounts, /balances from fresh anonymous session
+impact: restores the live evidence fixture for the standing sandbox BOLA finding (synthetic, no prod impact)
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA carries to production consent/account/payment objects
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 45
+reasoning: mechanism prior-proven; prod shares Berlin Group v1.2 surface; only mTLS (QWAC) separates; docs confirm prod cert-only auth, no OAuth yet
+evidence_needed: credentialed replay of /consents/{foreign-real-id} or /payments/{id}/status returns 200-vs-404 differential
+verify_steps: HUMAN: with any valid QWAC, GET openbanking.vpbank.com/psd2/berlin-group/v1/consents/{foreign-real-id} and /payments/{id}/status; 200 on non-owned id = prod BOLA
+impact: cross-TPP read of consents/accounts/balances/payments on production ASPSP; CRITICAL
+testability: HUMAN_ONLY
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] Bare POST /api/v1/sessions/reset_password on stage: confidence 40, GET 404s uniform, proof is mutating POST against live stage — no passive evidence to raise; HUMAN secondary, not ranked
+- [PARKED] sts.vpbank.com device_code OAuth: blocks on client_id, prior rejected — not re-ranked
+- [FINAL] ranked: (1) stage valid-creds injection 50, (2) sandbox anchor re-mint 55, (3) prod BOLA carryover 45
+
+**STEP 5 — NEXT ACTION**
+- [NEXT] HUMAN: re-mint sandbox BOLA anchor (lowest external dependency, unblocks trail) — POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` with `X-Request-ID: <uuid ending 1>`, `content-type: application/json`, body `{"access":["accounts","balances","transactions","confirmationOfFunds"],"recurringIndicator":true,"validUntil":"<today+90d>","frequencyPerDay":100}`; capture consentId from 201, then re-run cross-session GET `/consents/{id}/status`, `/consents/{id}`, `/accounts`, `/accounts/{id}/balances` — 200 on all with zero session binding re-confirms BOLA live (par: provide one stage credential or one QWAC to instead run the two ranked HIGH/CRITICAL threads)
+
+**STEP 6 — LEARNING**
+- [LEARN] REJECTED MISCONFIG @ developer.vpbank.com (sandbox 09-12 uniform-500): clean reversion to uniform empty 404 + /accounts 200 — classified transient outage, NOT added authz; standing sandbox BOLA evidence unaffected
+- [LEARN] REJECTED OAUTH/AUTH @ RAG (credential hunt): no public stage/TPP/QWAC test credentials surfaced; both stage-injection and prod-carryover proofs remain strictly external-credential-gated
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com (sandbox BOLA): standstill confirmed — healthy read path, zero binding standing (synthetic anchor TTL-expired only)
+
+**STEP 7 — RISK**
+- [RISK] vp-bank-ag: 56 — No new exploitable delta; sandbox fixture healthy but TTL-expired (re-mint unblocks near-zero-cost), stage injection + prod carryover both external-credential-gated; executable standing value = sandbox BOLA (synthetic, proven) + fleet injection surface (3/3 venues). Total-rejection if BOTH human threads stay unresolved ≈40%.
