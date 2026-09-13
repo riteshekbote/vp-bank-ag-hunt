@@ -24186,3 +24186,47 @@ testability: HUMAN_ONLY
 
 **STEP 7 — RISK**
 [RISK] vp-bank-ag: 74 — Standing findings: sandbox financial-API BOLA (CRITICAL class, zero binding on consentId) now one in-program POST from re-proof (read path confirmed healthy); fleet-wide overridden Devise SessionsController at 3/3 venues live (success-path unproven, cred-gated). Exploitation still HUMAN-gated (sandbox mint / stage creds / QWAC for prod carryover). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+===== ANALYST bigpickle 2026-09-13 23:13:32 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && git log --oneline -5 2>/dev/null
+total 456
+drwxr-xr-x 12 runner runner   4096 Sep 13 23:11 .
+drwxr-xr-x  3 runner runner   4096 Sep 13 23:11 ..
+drwxr-xr-x  7 runner runner   4096 Sep 13 23:11 .git
+drwxr-xr-x  3 runner runner   4096 Sep 13 23:11 .github
+-rw-r--r--  1 runner runner   1752 Sep 13 23:11 README.md
+-rw-r--r--  1 runner runner     32 Sep 13 23:11 analyst-out.txt
+-rw-r--r--  1 runner runner 179015 Sep 13 23:11 analyst-prompt.txt
+-rw-r--r--  1 runner runner 175200 Sep 13 23:11 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 leads
+-rw-r--r--  1 runner runner  22926 Sep 13 23:11 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 reports
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 13 23:11 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 scripts
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 13 23:11 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 13 23:11 triage
+e296030 triage 2026-09-13-22-07
+[0m
+[0m✱ [0mGlob "**/*.sh"[90m 0 matches[0m
+[0m→ [0mRead analyst-out.txt
+[0m→ [0mRead state_bigpickle.json
+[0m
+[0m✗ [0mInvalid Tool
+The arguments provided to the tool are invalid: Model tried to call unavailable tool 'ls'. Available tools: bash, edit, glob, grep, invalid, read, skill, task, todowrite, webfetch, websearch, write.
+[0m
+[0m✗ [0mInvalid Tool
+The arguments provided to the tool are invalid: Model tried to call unavailable tool 'ls'. Available tools: bash, edit, glob, grep, invalid, read, skill, task, todowrite, webfetch, websearch, write.
+[0m
+[93m[1m! [0mpermission requested: doom_loop (invalid); auto-rejecting
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
