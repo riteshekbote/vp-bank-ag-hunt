@@ -1,23 +1,18 @@
-## 2026-09-14 13:18:24 UTC [target] (model bigpickle)
-[PRIO] digital-onboarding-stage.vpbank.com,9.3,attack_surface=9|business_value=9|tech_exposure=10|gate_ease=10|cloud_surface=8|freshness=10
-[PRIO] digital-onboarding.vpbank.com,9.0,attack_surface=8|business_value=9|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=9
-[PRIO] digital-onboarding-dev.vpbank.com,8.4,attack_surface=8|business_value=8|tech_exposure=8|gate_ease=9|cloud_surface=7|freshness=9
-[PRIO] developer.vpbank.com,7.8,attack_surface=7|business_value=7|tech_exposure=8|gate_ease=8|cloud_surface=5|freshness=9
-[PRIO] openbanking.vpbank.com,6.0,attack_surface=6|business_value=9|tech_exposure=8|gate_ease=2|cloud_surface=6|freshness=7
+## 2026-09-14 18:50:13 UTC [target] (model bigpickle)
 [HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
 class: AUTH
 asset: digital-onboarding-stage.vpbank.com/users/sign_in
 confidence: 95
-reasoning: fleet-wide overridden Users::SessionsController 3/3 venues (defaults 4/129/7); hidden user[tenant_id]/user[admin]/user[user_id] rendered in form HTML; failed-login path NEGATIVE 09-10 (context NOT written pre-auth); success-path NEVER observed; form accepts injected params without validation error on POST; injected values flow from POST body, not pinned server-side; stage is cleanest proof venue (unpinned defaults)
+reasoning: fleet-wide overridden Users::SessionsController 3/3 venues (defaults 4/129/7); hidden user[tenant_id]/user[admin]/user[user_id] rendered unpinned (stage default tenant_id=7); failed-login path NEGATIVE 09-10 (context NOT written pre-auth); success-path never observed; injected params accepted without validation error on POST
 evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
-verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs baseline (anon baseline: tenants=200 `{}`, users=401)
-impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status, role management; HIGH
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs baseline (anon: tenants=200 `{}`, users=401)
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
 testability: HUMAN_ONLY
 [HYP] Valid-credential session-context injection on digital-onboarding prod (success-path unobserved)
 class: AUTH
 asset: digital-onboarding.vpbank.com/users/sign_in
 confidence: 85
-reasoning: prod form renders hidden user[tenant_id]=4; overridden SessionsController confirmed; prod has stricter API posture (tenants 403 vs dev 200); if injected tenant_id=1 or other cross-tenant ID persists post-auth, tenant isolation bypass possible; prod default tenant_id=4 — lower confidence than stage due to stricter posture
+reasoning: prod form renders hidden user[tenant_id]=4; overridden SessionsController confirmed; prod API stricter (tenants 403 vs dev 200); if injected tenant_id persists post-auth, tenant isolation bypass possible
 evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1 yields cookie whose replay on /api/v1/tenants diverges from prod anon baseline (403 → 200 or non-empty)
 verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password+user[admin]=true&user[tenant_id]=1+CSRF; replay GET /api/v1/tenants; diff vs prod baseline (403)
 impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
@@ -26,20 +21,10 @@ testability: HUMAN_ONLY
 class: IDOR
 asset: developer.vpbank.com/psd2/berlin-group/v1/consents
 confidence: 65
-reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session reads consent/accounts/balances/transactions, zero binding on consentId/paymentId); read path live-verified 09-14 (anchor 404, /accounts 200 `{}`, /consents 405); 09-12 uniform-500 confirmed transient churn; only the TTL-expired synthetic anchor blocks re-proof; fresh anonymous POST mint should restore fixture
-evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances non-404/200)
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session reads consent/accounts/balances/transactions, zero binding); read path live-verified 09-14 (anchor 404, /accounts 200 `{"accounts":[]}`, /consents 405, spec 200 self-labels PSD2 production server, zero securitySchemes); 09-12 uniform-500 confirmed transient; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by different anonymous session (/consents/{id}/status, /accounts, /balances non-404/200)
 verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type:application/json`; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
 impact: cross-session consent/account/balance read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
 testability: HUMAN_ONLY
-[FINAL] Valid-credential session-context injection on stage (95): survived — success-path never observed, form live with unpinned fields, overridden controller proven, only needs valid creds
-[FINAL] Valid-credential session-context injection on prod (85): survived — same mechanism as stage but stricter prod posture, lower confidence on success-path impact
-[FINAL] PSD2 sandbox BOLA re-mint (65): survived — read path live-verified, only anchor expired, mechanism proven
-[NEXT] HUMAN: Provide valid test credentials for `digital-onboarding-stage.vpbank.com` to complete session-context injection POC — POST `/users/sign_in` with `email=<valid>&password=<valid>&user[admin]=true&user[tenant_id]=1&user[user_id]=1` + CSRF; then replay GET `/api/v1/tenants` and `/admin/api/v1/users`; diff vs anonymous baseline (tenants=200 `{}`, users=401)
-[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com (session-context injection surface): stage `/users/sign_in` POST probe executed — HTTP 200, injected params accepted without validation error, cookies renewed; baseline locked
-[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
-[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId; read path live-verified 09-14
-[LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay identical to anonymous baseline; session context NOT written pre-auth — negative, hypothesis-specific
-[LEARN] REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
-[LEARN] REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
-[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
-[RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program POST from re-proof with a twice-confirmed-healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95, prod=85); production carryover plausible but QWAC-gated (HUMAN_ONLY). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+[NEXT] HUMAN: Re-mint the sandbox BOLA anchor — POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` with `Content-Type: application/json` + `X-Request-ID: <new-uuid>` + body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` (documented-open synthetic sandbox); on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads re-verify the standing CRITICAL-class BOLA for the program report. (This is the single highest-leverage mutating step and the only one in-program testable without credentials.)
+[RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof with a twice-live-verified healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95/prod=85); prod PSD2 carryover plausible but QWAC-gated (HUMAN_ONLY). New hostnames from CT are parked/gated/static — no material change. Residual surface unchanged-negative elsewhere.

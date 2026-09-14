@@ -24749,3 +24749,385 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program POST from re-proof with a twice-confirmed-healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95, prod=85); production carryover plausible but QWAC-gated (HUMAN_ONLY). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+===== ANALYST bigpickle 2026-09-14 18:50:22 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m• [0mExplore workspace for notes[90m Explore Agent[0m
+[0m✱ [0mGlob "**/*.yml"[90m 1 match[0m
+[0m✱ [0mGlob "**/*.md"[90m 98 matches[0m
+[0m✓ [0mExplore workspace for notes[90m Explore Agent[0m
+[0m→ [0mRead state_bigpickle.json
+[0m→ [0mRead triage/run-2026-09-14-16-47.md
+[0m→ [0mRead scope.yml
+Let me review my state file and the most recent triage logs to establish the current baseline.
+[0m→ [0mRead triage/run-2026-09-14-10-46.md
+[0m→ [0mRead reports/valid-bugs.md
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status" -H "Consent-ID: 6b517824-e5af-4202-b9b0-7f483a68ee9f"
+status=404 bytes=0 ct=
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"
+status=200 bytes=15 ct=application/json;charset=UTF-8
+[0m
+Baseline established. Now running passive GET-only re-verification of the standing sandbox BOLA read path (documented-open test API) before emitting this cycle's analysis.
+[0m$ [0mcurl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/consents"
+status=405 bytes=0 ct=
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml"
+status=200 bytes=46112 ct=application/x-yaml
+[0m
+[0m$ [0mcurl -sk --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"
+{"accounts":[]}
+[0m
+[0m$ [0mcurl -sk --max-time 20 -o /tmp/opencode/psd2_spec_check.txt "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml" && rg -n "consents/|securitySchemes|type: oauth2|type: http|apiKey|client_credentials|password" /tmp/opencode/psd2_spec_check.txt | head -40
+/bin/bash: line 1: rg: command not found
+[0m
+[0m$ [0mgrep -nE "consents/|securitySchemes|type: oauth2|type: http|apiKey|client_credentials|password|openIdConnect" /tmp/opencode/psd2_spec_check.txt | head -40
+39:    /consents/{consentId}:
+83:    /consents/{consentId}/status:
+[0m
+[0m$ [0mgrep -nE "schemes|bearer|basic|token|auth|X-Request-ID|Consent-ID|Tpp-" /tmp/opencode/psd2_spec_check.txt | head -30
+25:                -   $ref: "#/components/parameters/X-Request-ID"
+50:                -   $ref: "#/components/parameters/X-Request-ID"
+71:                -   $ref: "#/components/parameters/X-Request-ID"
+94:                -   $ref: "#/components/parameters/X-Request-ID"
+121:                -   $ref: "#/components/parameters/X-Request-ID"
+148:    #        - $ref: "#/components/parameters/X-Request-ID"
+172:                -   $ref: "#/components/parameters/X-Request-ID"
+196:                -   $ref: "#/components/parameters/X-Request-ID"
+218:                -   $ref: "#/components/parameters/X-Request-ID"
+239:                -   $ref: "#/components/parameters/X-Request-ID"
+265:                -   $ref: "#/components/parameters/X-Request-ID"
+290:                -   $ref: "#/components/parameters/X-Request-ID"
+376:            name: Consent-ID
+383:        X-Request-ID:
+384:            name: X-Request-ID
+427:                X-Request-ID:
+428:                    $ref: "#/components/headers/X-Request-ID"
+433:                X-Request-ID:
+434:                    $ref: "#/components/headers/X-Request-ID"
+439:                X-Request-ID:
+440:                    $ref: "#/components/headers/X-Request-ID"
+446:                X-Request-ID:
+447:                    $ref: "#/components/headers/X-Request-ID"
+460:                X-Request-ID:
+461:                    $ref: "#/components/headers/X-Request-ID"
+470:                X-Request-ID:
+471:                    $ref: "#/components/headers/X-Request-ID"
+483:                X-Request-ID:
+484:                    $ref: "#/components/headers/X-Request-ID"
+493:                X-Request-ID:
+[0m
+[0m$ [0mgrep -nE "^  [a-z_]+:|server|basePath|host:" /tmp/opencode/psd2_spec_check.txt | head -20
+6:servers:
+8:        description: PSD2 production server
+[0m
+Read path live-verified (anchor expired 404, /accounts `{"accounts":[]}` 200, /consents 405, spec 200 self-labeling "PSD2 production server" with **zero securitySchemes** in YAML). Now checking CT logs for any subdomains minted since the 09-05 sweep (passive freshness check).
+[0m$ [0mcurl -sk --max-time 25 "https://crt.sh/?q=%25.vpbank.com&output=json" -o /tmp/opencode/crt.json 2>/dev/null; wc -c /tmp/opencode/crt.json 2>/dev/null
+855945 /tmp/opencode/crt.json
+[0m
+[0m$ [0mgrep -oE '"name_value":"[^"]+"' /tmp/opencode/crt.json | sed 's/"name_value":"//;s/"$//' | tr ',' '\n' | sed 's/^ *//' | sort -u | wc -l; grep -oE '"not_before":"[^"]+"' /tmp/opencode/crt.json | sort | tail -3
+283
+"not_before":"2026-08-20T17:13:43"
+"not_before":"2026-08-20T17:13:43"
+"not_before":"2026-08-31T12:58:16"
+[0m
+[0m$ [0mgrep -oE '"name_value":"[^"]+"' /tmp/opencode/crt.json | sed 's/"name_value":"//;s/"$//' | tr ',' '\n' | sed 's/^ *//' | sort -u > /tmp/opencode/ct_names.txt; wc -l /tmp/opencode/ct_names.txt
+283 /tmp/opencode/ct_names.txt
+[0m
+[0m$ [0mgrep -oE '"not_after":"[^"]+"' /tmp/opencode/crt.json | sort | tail -2
+"not_after":"2027-03-09T06:53:28"
+"not_after":"2027-03-09T06:53:28"
+[0m
+[0m→ [0mRead /tmp/opencode/ct_names.txt
+CT data reveals application-level hostnames never listed as probed in the knowledge base. Running a breadth DNS resolution + reachability sweep on the high-value subset (e-banking, cas, mfauth, tkgwy, amqgate, tax-reporting, viewer, wiki/jira/confluence, portal, drive, support, etraining, samwin).
+[0m
+[0m$ [0mfor h in e-banking e-bankingentw e-bankingstage cas cas-test mfauth tkgwy tkgwy-stage amqgate amqgate-stage tax-reporting viewer portal drive support wiki jira confluence extjira extwiki etraining samwin remote report reports signal-demo ebill-prod ebill-stage ebill-mq-prod zkr-prod sfa-prod mra moir vpeas profil profile guest guest2 sponsor concentsol-test developer-beta openbanking-beta tracking-beta tds-dev li100018-tds-dev fix trd mobileentw mobilestage onboarding-stage; do ip=$(getent hosts "$h.vpbank.com" | awk '{print $1}' | head -1); echo "$h.vpbank.com -> ${ip:-NO_DNS}"; done
+e-banking.vpbank.com -> NO_DNS
+e-bankingentw.vpbank.com -> NO_DNS
+e-bankingstage.vpbank.com -> NO_DNS
+cas.vpbank.com -> NO_DNS
+cas-test.vpbank.com -> NO_DNS
+mfauth.vpbank.com -> NO_DNS
+tkgwy.vpbank.com -> NO_DNS
+tkgwy-stage.vpbank.com -> NO_DNS
+amqgate.vpbank.com -> NO_DNS
+amqgate-stage.vpbank.com -> NO_DNS
+tax-reporting.vpbank.com -> NO_DNS
+viewer.vpbank.com -> NO_DNS
+portal.vpbank.com -> NO_DNS
+drive.vpbank.com -> NO_DNS
+support.vpbank.com -> NO_DNS
+wiki.vpbank.com -> NO_DNS
+jira.vpbank.com -> NO_DNS
+confluence.vpbank.com -> NO_DNS
+extjira.vpbank.com -> NO_DNS
+extwiki.vpbank.com -> NO_DNS
+etraining.vpbank.com -> 217.20.192.76
+samwin.vpbank.com -> NO_DNS
+remote.vpbank.com -> 188.92.55.161
+report.vpbank.com -> 193.222.70.149
+reports.vpbank.com -> 3.73.18.236
+signal-demo.vpbank.com -> NO_DNS
+ebill-prod.vpbank.com -> NO_DNS
+ebill-stage.vpbank.com -> NO_DNS
+ebill-mq-prod.vpbank.com -> NO_DNS
+zkr-prod.vpbank.com -> NO_DNS
+sfa-prod.vpbank.com -> NO_DNS
+mra.vpbank.com -> NO_DNS
+moir.vpbank.com -> 193.222.70.200
+vpeas.vpbank.com -> 193.222.70.201
+profil.vpbank.com -> NO_DNS
+profile.vpbank.com -> 136.243.111.209
+guest.vpbank.com -> 10.25.193.42
+guest2.vpbank.com -> 10.25.193.44
+sponsor.vpbank.com -> 10.25.193.42
+concentsol-test.vpbank.com -> 193.222.70.188
+developer-beta.vpbank.com -> NO_DNS
+openbanking-beta.vpbank.com -> NO_DNS
+tracking-beta.vpbank.com -> NO_DNS
+tds-dev.vpbank.com -> NO_DNS
+li100018-tds-dev.vpbank.com -> NO_DNS
+fix.vpbank.com -> 193.222.70.180
+trd.vpbank.com -> 193.222.70.190
+mobileentw.vpbank.com -> NO_DNS
+mobilestage.vpbank.com -> NO_DNS
+onboarding-stage.vpbank.com -> NO_DNS
+[0m
+Several resolvable hosts were never probed in the knowledge base — including an AWS host (`reports` 3.73.18.236), a Hetzner host (`profile` 136.243.111.209), off-net `etraining`/`remote`, and four new core-/24 hosts. Running read-only HTTPS reachability probes (~0.5 rps):
+[0m$ [0mfor h in reports profile etraining remote moir vpeas concentsol-test fix trd report; do echo -n "$h.vpbank.com: "; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type} server=%{header_json}" --max-time 15 "https://$h.vpbank.com/" 2>/dev/null | head -c 400; echo; sleep 0.6; done
+reports.vpbank.com: status=200 bytes=390 ct=text/html server={"date":["Mon, 14 Sep 2026 18:46:05 GMT"],
+"server":["Apache"],
+"last-modified":["Mon, 24 Aug 2026 16:06:56 GMT"],
+"etag":["\"186-659cd2ce8a59f\""],
+"accept-ranges":["bytes"],
+"content-length":["390"],
+"vary":["Accept-Encoding"],
+"content-type":["text/html"],
+"strict-transport-security":["max-age=31536000; includeSubDomains"]
+}
+profile.vpbank.com: status=200 bytes=3005 ct=text/html server={"server":["nginx"],
+"date":["Mon, 14 Sep 2026 18:46:06 GMT"],
+"content-type":["text/html"],
+"content-length":["3005"],
+"connection":["keep-alive"],
+"vary":["Accept-Encoding","Accept-Encoding"],
+"last-modified":["Wed, 18 May 2022 06:07:10 GMT"],
+"etag":["\"62848d0e-bbd\""],
+"strict-transport-security":["max-age=31536000"],
+"x-content-type-options":["nosnif
+etraining.vpbank.com: status=302 bytes=138 ct=text/html server={"date":["Mon, 14 Sep 2026 18:46:07 GMT"],
+"content-type":["text/html"],
+"content-length":["138"],
+"location":["https://etraining.vpbank.com/training"],
+"strict-transport-security":["max-age=31536000;"]
+}
+remote.vpbank.com: status=302 bytes=413 ct=text/html; charset=utf-8 server={"location":["/logon/LogonPoint/tmindex.html"],
+"strict-transport-security":["max-age=157680000; includeSubDomains; preload"],
+"content-security-policy":["default-src 'self'; script-src 'self'; connect-src 'self'; img-src http://localhost:* 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self'; child-src 'sel
+moir.vpbank.com: status=302 bytes=283 ct=text/html; charset=iso-8859-1 server={"date":["Mon, 14 Sep 2026 18:46:09 GMT"],
+"server":["server"],
+"referrer-policy":["strict-origin-when-cross-origin"],
+"strict-transport-security":["max-age=31536000; includeSubDomains"],
+"x-frame-options":["SameOrigin"],
+"x-content-type-options":["nosniff"],
+"location":["https://moir.vpbank.com/ssp/login"],
+"content-length":["283"],
+"co
+vpeas.vpbank.com: status=000 bytes=0 ct= server={
+}
+concentsol-test.vpbank.com: status=404 bytes=0 ct= server={"date":["Mon, 14 Sep 2026 18:46:11 GMT"],
+"server":["Kestrel"],
+"content-length":["0"],
+"strict-transport-security":["max-age=16070400; includeSubDomains"]
+}
+fix.vpbank.com: status=000 bytes=0 ct= server={
+}
+trd.vpbank.com: status=000 bytes=0 ct= server={
+}
+report.vpbank.com: status=301 bytes=312 ct=text/html; charset=iso-8859-1 server={"location":["https://www.vpbank.com/de/investor-relations/finanzinformationen"],
+"content-length":["312"],
+"content-type":["text/html; charset=iso-8859-1"],
+"date":["Mon, 14 Sep 2026 18:46:44 GMT"],
+"server":["Apache"]
+}
+[0m
+Four NEW reachable application hosts surfaced, never probed in the knowledge base. Fetching bodies of the small/static ones and the redirect targets (read-only).
+[0m$ [0mecho "=== reports ==="; curl -sk --max-time 15 "https://reports.vpbank.com/"; echo; echo "=== profile ==="; curl -sk --max-time 15 "https://profile.vpbank.com/"; sleep 1
+=== reports ===
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="refresh" content="0; url=https://reports.vpbank.com/2026/sar/">
+</head>
+<body>
+please wait while you are being redirected to <a href="https://reports.vpbank.com/2026/sar">https://reports.vpbank.com/2026/sar/</a>
+</body>
+</html>
+
+=== profile ===
+<!--Created by mareike on 21.09.2016.--><!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title data-translate="page-title"></title><script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js?t=1652861231723"></script><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="css/style.css?t=1652861231723" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&amp;display=swap" rel="stylesheet"><script src="js/lang.js?t=1652861231723"></script><link rel="icon" type="image/png" href="img/favicon-96x96.png" sizes="96x96"><title data-translate="profile-title"></title><script src="js/profile.js?t=1652861231723"></script></head><body><section id="content"><div class="panel forms"><div id="sub-form"><div class="panel-body"><div class="row"><div class="col-sm-6 col-image-hide"><image src="img/bg.jpg" class="col-images"></image></div><div class="col-sm-6"><div class="image"><a href="https://www.vpbank.com" target="_blank"><image id="logo" src="img/logo.png"></image></a></div><h3 data-translate="profile-title"></h3><p data-translate="profile-text"></p></div></div><div id="n2g_script"></div></div></div><div id="thankyou" class="message"><div class="panel-heading"><div style="text-align: center;" class="image"><a href="https://www.vpbank.com" target="_blank"><image id="logo" src="img/logo.png"></image></a></div><br><p data-translate="profile-title-success" class="texte message-success"></p></div><div class="panel-body"><!-- never delete!! --><p class="response-text text-center"></p><!-- or for custom HTML use -->
+<!--.message-success(data-translate="profile-text-success") --><div class="button"><button>ZURÜCK</button></div></div></div><br><div id="impressum" class="row"> <div style="line-height: 20px" class="col-sm-6"><image src="img/list-arrow.png" class="list-arrow"></image><span data-translate="footer-imprint"></span><br><image src="img/list-arrow.png" class="list-arrow"></image><span data-translate="footer-disclaimer"></span><br><image src="img/list-arrow.png" class="list-arrow"></image><span data-translate="footer-dataprotection"></span><br><image src="img/list-arrow.png" class="list-arrow"></image><span data-translate="footer-contact"></span></div><div class="col-sm-6"><div id="socials"><a href="https://twitter.com/vpbank" target="_blank"><image src="img/socials-twitter.png" class="socials-img"></image></a><a href="https://www.xing.com/companies/vpbankag" target="_blank"><image src="img/socials-xing.png" class="socials-img"></image></a><a href="https://www.linkedin.com/company/vp-bank" target="_blank"><image src="img/socials-linkedin.png" class="socials-img"></image></a><a href="https://www.facebook.com/VPBankTalents/" target="_blank"><image src="img/socials-facebook.png" class="socials-img"></image></a></div><p data-translate="footer-right" class="imprint"></p></div></div></div></section></body></html>
+[0m
+[0m$ [0mecho "=== moir /ssp/login (headers) ==="; curl -sk -I --max-time 15 "https://moir.vpbank.com/ssp/login"; sleep 1; echo "=== remote logon ==="; curl -sk -I --max-time 15 "https://remote.vpbank.com/logon/LogonPoint/tmindex.html"; sleep 0.5; echo "=== etraining /training ==="; curl -sk -I --max-time 15 "https://etraining.vpbank.com/training"
+=== moir /ssp/login (headers) ===
+HTTP/1.1 403 Forbidden
+Date: Mon, 14 Sep 2026 18:46:59 GMT
+Server: server
+Referrer-Policy: strict-origin-when-cross-origin
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SameOrigin
+X-Content-Type-Options: nosniff
+Vary: Accept-Language
+Last-Modified: Tue, 04 Aug 2026 14:04:42 GMT
+ETag: "81-6583922e3d280"
+Accept-Ranges: bytes
+Content-Length: 129
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+=== remote logon ===
+=== etraining /training ===
+HTTP/2 403 
+date: Mon, 14 Sep 2026 18:47:16 GMT
+content-type: text/html
+content-length: 147
+etag: "5d163e0e-93"
+[0m
+[0m$ [0mecho "=== reports /2026/sar/ ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 15 "https://reports.vpbank.com/2026/sar/"; sleep 0.5; echo "=== remote logon body ==="; curl -sk -o /tmp/opencode/remote.txt -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 15 "https://remote.vpbank.com/logon/LogonPoint/tmindex.html"; head -c 300 /tmp/opencode/remote.txt; echo; sleep 0.5; echo "=== etraining /training body ==="; curl -sk -o /tmp/opencode/etr.txt -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 15 "https://etraining.vpbank.com/training"; cat /tmp/opencode/etr.txt; echo
+=== reports /2026/sar/ ===
+status=200 bytes=1163 ct=text/html
+=== remote logon body ===
+status=000 bytes=0 ct=
+head: cannot open '/tmp/opencode/remote.txt' for reading: No such file or directory
+
+=== etraining /training body ===
+status=403 bytes=147 ct=text/html
+<html>
+
+<head><title>403 Access forbidden</title></head>
+
+<body bgcolor="white">
+
+<center><h1>403 Access forbidden</h1></center>
+
+</body>
+
+</html>
+[0m
+[0m$ [0mecho "=== reports /2026/sar body ==="; curl -sk --max-time 15 "https://reports.vpbank.com/2026/sar/"; echo; sleep 0.5; echo "=== moir /ssp/login GET browser-headers ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download}\n" --max-time 15 -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: en-US,en;q=0.9" "https://moir.vpbank.com/ssp/login"; sleep 0.5; echo "=== remote root retry ==="; curl -sk -o /tmp/opencode/remote2.txt -w "status=%{http_code} bytes=%{size_download}\n" -L --max-time 20 "https://remote.vpbank.com/"; head -c 400 /tmp/opencode/remote2.txt 2>/dev/null; echo
+=== reports /2026/sar body ===
+<!DOCTYPE html><html lang="de"><head><script>const languages = {"de":"de/home","en":"en/home","default":"de/home"};const userLang = navigator.language;const redirectUrl = languages[userLang] ?? languages[userLang.substring(0, 2)] ?? languages.default;const base = window.location.href + (window.location.href.endsWith("/")? "" : "/");window.location.replace(new URL(redirectUrl, base));</script><title>VP Bank Halbjahresbericht 2026 - VP Bank Halbjahresbericht 2026</title><meta property="og:title" content="VP Bank Halbjahresbericht 2026 - VP Bank Halbjahresbericht 2026" /><meta property="og:locale" content="de" /><meta property="og:type" content="website" /><meta name="twitter:card" content="summary_large_image" /><meta property="og:site_name" content="VP Bank Halbjahresbericht 2026" /><meta name="twitter:site" content="VP Bank Halbjahresbericht 2026" /><meta property="og:image" content="https://reports.vpbank.com/2026/sar/downloads/de/vp-seo-de.jpg" /><meta property="og:image:width" content="630" /><meta property="og:image:height" content="1200" /><link rel="canonical" href="https://reports.vpbank.com/2026/sar/de/home" /></head><body></body></html>
+=== moir /ssp/login GET browser-headers ===
+status=403 bytes=129
+=== remote root retry ===
+status=302 bytes=0
+[0m
+[0m$ [0mecho "=== moir root body ==="; curl -sk --max-time 15 "https://moir.vpbank.com/"; echo; echo "=== moir /ssp/login body ==="; curl -sk --max-time 15 "https://moir.vpbank.com/ssp/login"; echo; sleep 0.5
+=== moir root body ===
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>302 Found</title>
+</head><body>
+<h1>Found</h1>
+<p>The document has moved <a href="https://moir.vpbank.com/ssp/login">here</a>.</p>
+<hr>
+<address>server Server at moir.vpbank.com Port 443</address>
+</body></html>
+
+=== moir /ssp/login body ===
+<html>
+<body>
+	<h2>HTTP Status 403 - Access is denied</h2>
+	<h3>You are unauthorized to access this page.</h3>		
+</body>
+</html>
+[0m
+[0m$ [0mecho "=== profile.js ==="; curl -sk --max-time 15 "https://profile.vpbank.com/js/profile.js"; echo; echo "=== lang.js ==="; curl -sk --max-time 15 "https://profile.vpbank.com/js/lang.js" | head -c 1200; echo
+=== profile.js ===
+function showMessage(o,h,s){s?($("#thankyou .message-success").show(),$("#thankyou p").show()):($("#thankyou p").show(),$("#thankyou .message-success").hide()),h=h||"form",$("#thankyou p").html(o),$(h).hide(),$("#thankyou").show(),$("#thankyou button").on("click",function(){$("#thankyou").hide(),$(h).show()})}
+=== lang.js ===
+var getLang=function(){var a=new URL(location.href),e=a.searchParams.get("lang");if(e)return e};setTimeout(function(){"en"==getLang()&&($("#n2g_script > form > div > div:nth-child(3) > div:nth-child(2) > span > label:nth-child(2)").text("Media releases"),$("#n2g_script > form > div > div:nth-child(3) > div:nth-child(2) > span > label:nth-child(5)").text("Ad hoc releases"),$("#n2g_script > form > div > div:nth-child(3) > div:nth-child(2) > span > label:nth-child(8)").text("Annual and semi-annual report"),$("#n2g_script > form > div > div:nth-child(3) > div:nth-child(2) > span > label:nth-child(11)").text("Invitation to the media and analyst conference"),$("#n2g_script > form > div > div:nth-child(3) > div:nth-child(2) > span > label:nth-child(14)").text("Spot analyses"))},1500);var FORM_CODE=[];FORM_CODE.de_DE="bkgnq08z-5gga3g77-1cyf",FORM_CODE.en_EN="bkgnq08z-phlzafav-hdh",!function(a,e,t,n,s,i,l){a.Newsletter2GoTrackingObject=s,a[s]=a[s]||function(){(a[s].q=a[s].q||[]).push(arguments)},a[s].l=1*new Date,i=e.createElement(t),l=e.getElementsByTagName(t)[0],i.async=1,i.src=n,l.parentNode.insertBefore(i,l)}(window,document,"script","https://static.newsletter2go.com/utils.js","n2g"),$(
+[0m
+[0m$ [0mecho "=== reports de/home ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 15 "https://reports.vpbank.com/2026/sar/de/home"; sleep 0.5; echo "=== reports downloads dir ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} ct=%{content_type}\n" --max-time 15 "https://reports.vpbank.com/2026/sar/downloads/"; sleep 0.5; echo "=== reports /2026/ ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download}\n" --max-time 15 "https://reports.vpbank.com/2026/"; sleep 0.5; echo "=== etraining root full ==="; curl -sk -o /dev/null -w "status=%{http_code} bytes=%{size_download} loc=%{redirect_url}\n" --max-time 15 "https://etraining.vpbank.com/"
+=== reports de/home ===
+status=200 bytes=17459 ct=text/html
+=== reports downloads dir ===
+status=403 bytes=199 ct=text/html; charset=iso-8859-1
+=== reports /2026/ ===
+status=200 bytes=390
+=== etraining root full ===
+status=302 bytes=138 loc=https://etraining.vpbank.com/training
+[0m
+Analysis complete. The CT sweep surfaced several never-probed hosts; most resolved to parked/gated/out-of-scope surfaces, but one new in-scope AWS asset was confirmed. Structured output below.
+
+---
+
+**STEP 1 — DELTA**
+- [NEW] CT (crt.sh) sweep surfaces ~13 resolvable hosts absent from knowledge base: `reports.vpbank.com` (AWS 3.73.18.236), `profile.vpbank.com` (Hetzner 136.243.111.209), `etraining.vpbank.com` (217.20.192.76), `remote.vpbank.com` (188.92.55.161, SSL VPN LogonPoint), `moir.vpbank.com` (193.222.70.200, Tomcat SSO), `concentsol-test.vpbank.com` (193.222.70.188, Kestrel parked-twin), `vpeas`/`fix`/`trd` (TLS-drop), `report.vpbank.com` (301→www IR redirect); `guest`/`guest2`/`sponsor` resolve RFC1918 10.25.193.x (internal, not publicly routable).
+- [NEW] `reports.vpbank.com` confirmed as live in-scope AWS-hosted VP Bank 2026 semi-annual-report microsite — `/` 200 meta-redirect→`/2026/sar/` (200, 17KB de/home, Last-Modified 2026-08-24), `/2026/sar/downloads/` 403 (dir listing disabled). New cloud asset, low interactive depth.
+- [NEW] `profile.vpbank.com` = Newsletter2Go subscriber-profile widget page (n2g script, jQuery 3.0.0-beta1 old) — marketing opt-in form, third-party SaaS; low value.
+- [CHANGED] PSD2 sandbox BOLA read-path **live re-verified this cycle**: expired anchor `/consents/{uuid}/status`=404, `/accounts`=200 `{"accounts":[]}`, `/consents` GET=405, `/psd2_api.yaml`=200 still self-labels "PSD2 production server" with **zero securitySchemes** — mechanism intact, only synthetic re-mint missing.
+- [CHANGED] `api.vpbank.com` remains exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500); all standing top hypotheses remain HUMAN_ONLY/cred-gated.
+
+**STEP 2 — PRIORITIZE**
+- [PRIO] digital-onboarding-stage.vpbank.com,9.3,attack_surface=9|business_value=9|tech_exposure=10|gate_ease=10|cloud_surface=8|freshness=10
+- [PRIO] digital-onboarding.vpbank.com,9.0,attack_surface=8|business_value=9|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=9
+- [PRIO] digital-onboarding-dev.vpbank.com,8.4,attack_surface=8|business_value=8|tech_exposure=8|gate_ease=9|cloud_surface=7|freshness=9
+- [PRIO] developer.vpbank.com,7.8,attack_surface=7|business_value=7|tech_exposure=8|gate_ease=8|cloud_surface=5|freshness=9
+- [PRIO] reports.vpbank.com,5.0,attack_surface=2|business_value=4|tech_exposure=3|gate_ease=9|cloud_surface=8|freshness=9 — new AWS asset, static-only
+- [PRIO] moir.vpbank.com,4.6,attack_surface=3|business_value=5|tech_exposure=6|gate_ease=1|cloud_surface=6|freshness=9 — IP-gated Tomcat SSO
+
+**STEP 3 — HYPOTHESES**
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController 3/3 venues (defaults 4/129/7); hidden user[tenant_id]/user[admin]/user[user_id] rendered unpinned (stage default tenant_id=7); failed-login path NEGATIVE 09-10 (context NOT written pre-auth); success-path never observed; injected params accepted without validation error on POST
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs baseline (anon: tenants=200 `{}`, users=401)
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+
+[HYP] Valid-credential session-context injection on digital-onboarding prod (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod form renders hidden user[tenant_id]=4; overridden SessionsController confirmed; prod API stricter (tenants 403 vs dev 200); if injected tenant_id persists post-auth, tenant isolation bypass possible
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1 yields cookie whose replay on /api/v1/tenants diverges from prod anon baseline (403 → 200 or non-empty)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password+user[admin]=true&user[tenant_id]=1+CSRF; replay GET /api/v1/tenants; diff vs prod baseline (403)
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 65
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session reads consent/accounts/balances/transactions, zero binding); read path live-verified 09-14 (anchor 404, /accounts 200 `{"accounts":[]}`, /consents 405, spec 200 self-labels PSD2 production server, zero securitySchemes); 09-12 uniform-500 confirmed transient; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by different anonymous session (/consents/{id}/status, /accounts, /balances non-404/200)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type:application/json`; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+
+**STEP 4 — SELF-CRITIQUE**
+- [PARKED] moir/remote/etraining.vpbank.com: all three are public login panels or IP-allowlisted (moir 403 Tomcat, remote SSLVPN LogonPoint, etraining 403 on /training) — program out-of-scope class ("publicly accessible login panels"), no deeper probe warranted.
+- [PARKED] profile.vpbank.com: Newsletter2Go third-party opt-in marketing widget on Hetzner; no security-relevant class; old jQuery = known-lib-without-exploit (out-of-scope).
+- [PARKED] reports.vpbank.com: static Apache microsite, dir-listing 403, no parameterized surface; only note-worthy for inventory (new AWS asset).
+- [FINAL] Valid-credential session-context injection on stage (95): survived — success-path never observed, live unpinned fields, overridden controller proven, only needs valid creds. Highest-confidence actionable.
+- [FINAL] Valid-credential session-context injection on prod (85): survived — same mechanism, stricter prod posture.
+- [FINAL] PSD2 sandbox BOLA re-mint (65): survived — read path re-verified healthy this cycle, mechanism standing, only synthetic re-mint missing.
+
+**STEP 5 — NEXT ACTION**
+[NEXT] HUMAN: Re-mint the sandbox BOLA anchor — POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` with `Content-Type: application/json` + `X-Request-ID: <new-uuid>` + body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` (documented-open synthetic sandbox); on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads re-verify the standing CRITICAL-class BOLA for the program report. (This is the single highest-leverage mutating step and the only one in-program testable without credentials.)
+
+**STEP 6 — LEARNING**
+- [LEARN] NEW INFO @ CT sweep: resolvable hosts absent from knowledge base — reports.vpbank.com (AWS 3.73.18.236, live 2026 SAR microsite), profile.vpbank.com (Hetzner, Newsletter2Go widget), etraining.vpbank.com (217.20.192.76), remote.vpbank.com (188.92.55.161 SSLVPN LogonPoint), moir.vpbank.com (193.222.70.200 IP-gated Tomcat SSO), concentsol-test.vpbank.com (193.222.70.188 Kestrel parked-twin), vpeas/fix/trd (TLS-drop), guest/guest2/sponsor RFC1918 internal.
+- [LEARN] REJECTED MISCONFIG @ moir/remote/etraining.vpbank.com: public login panels / IP-allowlisted 403 — program out-of-scope class.
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com (sandbox read-path live-verify 09-14): expired anchor 404, /accounts 200 `{"accounts":[]}`, /consents 405, /psd2_api.yaml 200 self-labels "PSD2 production server" with zero securitySchemes — standing BOLA mechanism intact, pending synthetic re-mint.
+- [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: sign_in baseline stable, hidden fields unpinned — injection surface stands (standing).
+- [LEARN] REJECTED MISCONFIG @ api.vpbank.com: all vectors exhausted, uniform INVALID_REQUEST_RESOURCE 500 (standing).
+
+**STEP 7 — RISK**
+[RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof with a twice-live-verified healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95/prod=85); prod PSD2 carryover plausible but QWAC-gated (HUMAN_ONLY). New hostnames from CT are parked/gated/static — no material change. Residual surface unchanged-negative elsewhere.
