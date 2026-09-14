@@ -282,3 +282,7 @@
 - 2026-09-14 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
 - 2026-09-14 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox): consent-read path live-verified 09-14 — expired anchor 404, /accounts 200 `{}`, /consents 405; 09-12 uniform-500 was transient churn, no authz gate added; BOLA mechanism stands pending synthetic re-mint.
 - 2026-09-14 REJECTED MISCONFIG @ developer.vpbank.com (sandbox consent reads): 400-on-malformed-uuid vs 404-on-valid-expired-uuid is schema parsing only — no authz differential, not reportable.
+- 2026-09-14 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId; read path live-verified 09-14
+- 2026-09-14 REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay identical to anonymous baseline; session context NOT written pre-auth — negative, hypothesis-specific
+- 2026-09-14 REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine, Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
+- 2026-09-14 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
