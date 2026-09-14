@@ -3953,3 +3953,55 @@ impact: cross-tenant admin back-office session — onboarding PII, ident docs, w
 testability: HUMAN_ONLY
 [NEXT] HUMAN: POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type: application/json`; on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads restore the standing sandbox BOLA fixture (read path re-verified healthy this cycle: anchor 404, /accounts 200, /consents 405).
 [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program POST from re-proof with a twice-confirmed-healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated); production carryover plausible but mTLS-blocked (HUMAN_ONLY). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+## 2026-09-14 06:25:11 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox BOLA carries to production consent/account objects via shared Berlin Group handler
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 45
+reasoning: mechanism prior-proven on sandbox; prod shares Berlin Group v1 surface + CN=openbanking.vpbank.com; spec self-labels server without OAuth securitySchemes; only QWAC mTLS separates
+evidence_needed: credentialed 200-vs-404 differential on non-owned consent/account id against production
+verify_steps: HUMAN: with any valid QWAC GET `/psd2/berlin-group/v1/consents/{foreign-id}/status` and `/accounts`
+impact: cross-TPP read on production ASPSP — CRITICAL
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in persists injected admin/tenant session-context on stage (success-path unobserved)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: fleet-wide overridden Users::SessionsController 3/3 (defaults 4/129/7); failed-login NEGATIVE 09-10 (context not written pre-auth); form live with unpinned hidden user[tenant_id]; success-path never observed
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session; POST email/password+injected params+CSRF; replay /api/v1/tenants and /admin/api/v1/users; diff vs baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] HUMAN: POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type: application/json`; on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads restore the standing sandbox BOLA fixture (read path re-verified healthy this cycle: anchor 404, /accounts 200, /consents 405).
+[RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program POST from re-proof with a twice-confirmed-healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated); production carryover plausible but mTLS-blocked (HUMAN_ONLY). Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.
+[HYP] Sandbox consent re-mint restores cross-session BOLA fixture
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 65
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session reads consent/accounts/balances/transactions, zero binding on consentId/paymentId); 09-12 uniform-500 confirmed transient (09-14 live: anchor 404, /accounts 200 `{}`, /consents 405) — read path anonymous, no authz gate; only the TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances non-404/200)
+verify_steps: HUMAN (official sandbox, synthetic): POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type:application/json`; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[HYP] Valid-credential sign_in persists injected admin/tenant session-context on stage (success-path unobserved)
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 50
+reasoning: overridden Users::SessionsController consumes client-controlled user[tenant_id]/user[admin]/user[user_id] at 3/3 venues; failed-login path negative 09-10 (context NOT written pre-auth); form live (200) with unpinned hidden fields; success-path never observed
+evidence_needed: valid-creds POST + injected params yields cookie whose replay diverges from anonymous baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token + _us_session; POST email/password + user[admin]=true&user[tenant_id]=1&user[user_id]=1 + CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Sandbox BOLA mechanism carries to production consent/account objects via shared Berlin Group handler
+class: IDOR
+asset: openbanking.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 45
+reasoning: mechanism prior-proven on sandbox; prod shares Berlin Group v1 surface, CN=openbanking.vpbank.com; spec self-labels server with no OAuth securitySchemes; only QWAC mTLS separates
+evidence_needed: credentialed 200-vs-404 differential on non-owned consent/account id against production
+verify_steps: HUMAN: with any valid QWAC GET /psd2/berlin-group/v1/consents/{foreign-id}/status and /accounts
+impact: cross-TPP read of consent/account/balance/payment on production ASPSP — CRITICAL
+testability: HUMAN_ONLY
+[NEXT] HUMAN: POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type: application/json`; on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads restore the standing CRITICAL-class sandbox BOLA fixture (read path live-verified healthy 2026-09-14: anchor 404, /accounts 200 `{}`, /consents 405).
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox): consent-read path live-verified 09-14 — expired anchor 404, /accounts 200 `{}`, /consents 405; 09-12 uniform-500 was transient churn, no authz gate added; BOLA mechanism stands pending synthetic re-mint.
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (sandbox consent reads): 400-on-malformed-uuid vs 404-on-valid-expired-uuid is schema parsing only — no authz differential, not reportable.
+[RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof on a twice-live-verified-healthy read path; dev/stage CSP debug misconfigs (sentr_env production/test2) are flavor only; prod PSD2 carryover plausible but QWAC-gated; stage session-context success-path remains cred-gated. Residual surface unchanged-negative: api/www/dev-stage/sts/mobile/ebics/tracking/beta/concentsol exhausted or gated.

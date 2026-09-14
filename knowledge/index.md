@@ -280,3 +280,5 @@
 - 2026-09-14 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-14 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-14 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-14 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox): consent-read path live-verified 09-14 — expired anchor 404, /accounts 200 `{}`, /consents 405; 09-12 uniform-500 was transient churn, no authz gate added; BOLA mechanism stands pending synthetic re-mint.
+- 2026-09-14 REJECTED MISCONFIG @ developer.vpbank.com (sandbox consent reads): 400-on-malformed-uuid vs 404-on-valid-expired-uuid is schema parsing only — no authz differential, not reportable.
