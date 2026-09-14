@@ -1,4 +1,4 @@
-## 2026-09-14 18:48:02 UTC [target] (model nemotron3)
+## 2026-09-14 22:19:14 UTC [target] (model nemotron3)
 [NEW] developer.vpbank.com PSD2 sandbox consent-read endpoints degraded to uniform HTTP 500 (was 200/404), /accounts 200 `[]`, /consents GET 405, spec 200 — service degradation or added authz; anchor consent expired (404), mechanism intact per knowledge base
 [NEW] digital-onboarding-stage.vpbank.com CSP report-uri confirms Sentry debug telemetry (sentry_environment=stage-vpbank, release 5e237eae) — stage misconfigured as production
 [NEW] digital-onboarding-dev.vpbank.com CSP report-uri shows sentry_environment=test2 with consentManager.env="production" — dev misconfigured as production

@@ -25131,3 +25131,15 @@ testability: HUMAN_ONLY
 
 **STEP 7 — RISK**
 [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof with a twice-live-verified healthy read path; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95/prod=85); prod PSD2 carryover plausible but QWAC-gated (HUMAN_ONLY). New hostnames from CT are parked/gated/static — no material change. Residual surface unchanged-negative elsewhere.
+===== ANALYST bigpickle 2026-09-14 22:19:22 UTC =====
+[0m
+> build · big-pickle
+[0m
+[93m[1m! [0mpermission requested: external_directory (/proc/sys/kernel/random/*); auto-rejecting
+[0m✗ [0mcurl -sk -o /dev/null -w "consents-list:%{http_code} ct:%{content_type}\n" -H "X-Request-ID: $(cat /proc/sys/kernel/random/uuid)" "https://developer.vpbank.com/psd2/berlin-group/v1/consents" ; curl -sk -o /dev/null -w "accounts:%{http_code} ct:%{content_type}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts" failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[0m
+[0m$ [0mcurl -sk -o /dev/null -w "stage-sign_in:%{http_code} size:%{size_download}\n" "https://digital-onboarding-stage.vpbank.com/users/sign_in"; curl -sk -o /dev/null -w "prod-sign_in:%{http_code} size:%{size_download}\n" "https://digital-onboarding.vpbank.com/users/sign_in"
+stage-sign_in:200 size:24988
+prod-sign_in:200 size:44419
+[0m
