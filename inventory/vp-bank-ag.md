@@ -829,3 +829,11 @@ www.vpbank.com
 - CHANGED sts.vpbank.com ADFS device_code grant exposed (metadata 200) but service 503 + client_id unknown — no viable path
 
 ## 2026-09-15 00:44:48 UTC
+
+## 2026-09-15 05:44:08 UTC
+- NEW developer.vpbank.com PSD2 sandbox consent-read path live-verified 09-15: /accounts 200 `{"accounts":[]}`, /consents 405, spec 200 46KB; 09-12 uniform-500 was transient churn, no authz gate added
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields; injection surface baseline live
+- NEW digital-onboarding.vpbank.com /api/v1/tenants 403 `{"message":"Not authorized"}` re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
+- CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
+- CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts)
