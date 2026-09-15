@@ -25360,3 +25360,66 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof with a twice-live-verified healthy read path incl. today; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95/prod=85); prod PSD2 carryover plausible but QWAC-gated (HUMAN_ONLY). Residual surface unchanged-negative/gated elsewhere; no new in-scope exposure detected this cycle.
+===== ANALYST bigpickle 2026-09-15 19:28:18 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "developer/accounts %{http_code} %{size_download}B\n" --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/accounts; sleep 1; curl -s -o /dev/null -w "stage/sign_in %{http_code} %{size_download}B\n" --max-time 20 https://digital-onboarding-stage.vpbank.com/users/sign_in; sleep 1; curl -s -o /dev/null -w "prod/tenants %{http_code} %{size_download}B\n" --max-time 20 https://digital-onboarding.vpbank.com/api/v1/tenants
+developer/accounts 200 15B
+stage/sign_in 200 23883B
+prod/tenants 403 28B
+[0m
+STEP 1 — DELTA
+- [CONFIRMED] Fresh read-only probes this cycle identical to 15:35 baseline: developer.vpbank.com/psd2/berlin-group/v1/accounts 200 (15B `{"accounts":[]}`), stage /users/sign_in 200 (23883B), prod /api/v1/tenants 403 (28B) — no surface change since last cycle.
+- [NO_DELTA] No new inventory, no changed status codes, no new anomalies on any in-scope host versus last leads.
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,8.5,IDOR-BOLA re-mint (0.25·9+0.25·9+0.15·7+0.15·10+0.10·4+0.10·8)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,8.0,AUTH session-context injection (0.25·8+0.25·8+0.15·8+0.15·9+0.10·3+0.10·9)
+- [PRIO] digital-onboarding.vpbank.com/users/sign_in,7.0,AUTH prod carryover (0.25·7+0.25·9+0.15·8+0.15·7+0.10·5+0.10·3)
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 65
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session reads consent/accounts/balances/transactions, zero binding on consentId/paymentId); read path live-verified 09-14, 09-15, and re-confirmed 200/15B this cycle — no authz gate added since 09-12 churn; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (consents/{id}/status, /accounts, /balances non-404/200)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<new-uuid>` + `Content-Type:application/json`; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController 3/3 venues (defaults 4/129/7); stage form re-confirmed live this cycle (200/23883B) with unpinned hidden user[tenant_id]/user[admin]/user[user_id]; failed-login path NEGATIVE (context NOT written pre-auth, 5 cycles); success-path never observed; injected params accepted without validation error on prior POSTs
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon baseline (tenants=200 `{}`, users=401)
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on production digital-onboarding (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod renders hidden user[tenant_id]=4; overridden SessionsController proven fleet-wide; prod API stricter (/api/v1/tenants 403 re-confirmed this cycle, 28B); if injected tenant_id persists post-auth, tenant isolation bypass on prod
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1 yields cookie whose replay on /api/v1/tenants diverges from 403 baseline
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password+user[admin]=true&user[tenant_id]=1+CSRF; replay GET /api/v1/tenants; diff vs 403 baseline
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Valid-credential session-context injection on stage (95): survived — form live (23883B) this cycle, mechanism proven, only valid creds missing.
+- [PARKED] Valid-credential session-context injection on prod (85): survived — same mechanism, stricter posture (tenants 403 re-confirmed).
+- [PARKED] PSD2 sandbox BOLA re-mint (65): survived — read path healthy this cycle (accounts 200/15B), only anchor expired.
+- [FINAL] PSD2 sandbox BOLA re-mint (65) — only HUMAN-verifiable in-program without credentials; stage injection (95); prod injection (85).
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: Re-mint the sandbox BOLA anchor — POST `https://developer.vpbank.com/psd2/berlin-group/v1/consents` with `Content-Type: application/json` + `X-Request-ID: <new-uuid>` + body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` (documented-open synthetic sandbox); on HTTP 201 capture `consentId`, then from a fresh anonymous session GET `/consents/{consentId}/status`, `/accounts`, `/balances` — non-404/200 cross-session reads re-verify the standing CRITICAL-class BOLA for the program report. Read path re-confirmed 200/15B this cycle.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED BASELINE @ developer.vpbank.com: PSD2 sandbox read path re-probed 09-15 gen.3 — /accounts 200 15B `{"accounts":[]}`; BOLA read path healthy, no authz gate; anchor-only TTL gap.
+- [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com/users/sign_in: 200/23883B this cycle — injection surface baseline live, hidden fields unpinned.
+- [LEARN] ACCEPTED BASELINE @ digital-onboarding.vpbank.com: /api/v1/tenants 403 28B this cycle — prod anon differential uneroded.
+
+STEP 7 — RISK
+- [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) one in-program synthetic POST from re-proof with read path live-verified three consecutive cycles incl. today; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path cred-gated, stage=95/prod=85); all three top hypotheses HUMAN-gated, no passively-testable advance remains; residual surface unchanged-negative elsewhere — no new exposure this cycle.
