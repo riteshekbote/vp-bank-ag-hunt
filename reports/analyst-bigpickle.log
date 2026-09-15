@@ -25284,3 +25284,18 @@ STEP 6 — LEARNING
 STEP 7 — RISK
 
 [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA (zero binding on consentId/paymentId) is one in-program synthetic POST from re-proof with a twice-live-verified healthy read path incl. today; fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path still cred-gated, stage=95/prod=85); prod PSD2 carryover plausible but QWAC-gated (HUMAN_ONLY). Residual surface unchanged-negative/gated elsewhere; no new in-scope exposure detected this cycle.
+===== ANALYST bigpickle 2026-09-15 10:57:04 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -sk -o /tmp/op_p1.txt -w "HTTP %{http_code} ct=%{content_type} size=%{size_download} t=%{time_total}\n" -H "Accept: application/json" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/card-accounts"; sleep 1; curl -sk -o /tmp/op_p2.txt -w "HTTP %{http_code} ct=%{content_type} size=%{size_download} t=%{time_total}\n" -H "Accept: application/json" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/funds-confirmations"; sleep 1; curl -sk -o /tmp/op_p3.txt -w "HTTP %{http_code} ct=%{content_type} size=%{size_download} t=%{time_total}\n" -H "Accept: application/json" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/signing-baskets"
+HTTP 404 ct=text/html; charset=utf-8 size=53 t=0.600965
+HTTP 405 ct= size=0 t=0.591530
+HTTP 404 ct=text/html; charset=utf-8 size=53 t=0.348008
+[0m
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mRead /tmp/op_p1.txt failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mRead /tmp/op_p3.txt failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
