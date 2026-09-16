@@ -28067,3 +28067,90 @@ Self-critique note: nemotron3 marks the BOLA re-mint as `testability: PASSIVE` b
 ```
 [RISK] vp-bank-ag: 48 — standing accepted surfaces only (PSD2 sandbox anonymous read path + stage/prod injection surface + prod anon config differential); no new exploit confirmed this cycle; all decisive proofs remain HUMAN_ONLY and unexecuted for 6+ consecutive cycles; risk score bounded by execution gap, not discovery gap
 ```
+===== ANALYST bigpickle 2026-09-16 14:48:38 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m• [0mCheck workspace for config[90m Explore Agent[0m
+[0m✓ [0mCheck workspace for config[90m Explore Agent[0m
+[0m
+[0m$ [0mls -la /tmp/opencode 2>/dev/null; ls /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt
+total 8
+drwxr-xr-x  2 runner runner 4096 Sep 16 14:45 .
+drwxrwxrwt 15 root   root   4096 Sep 16 14:45 ..
+README.md
+analyst-out.txt
+analyst-prompt.txt
+ctx.txt
+inventory
+knowledge
+leads
+probe-results.md
+recon-notes
+reports
+reposcan-raw
+scope.yml
+scripts
+state_bigpickle.json
+state_laguna.json
+state_ling3.json
+state_longcat.json
+state_mimo.json
+state_nemotron3.json
+triage
+[0m
+[0m◈ [0mExa Web Search "VP Bank "digital-onboarding" "Business Control Center" login default credentials onboarding back-office"
+STEP 1 — DELTA
+- NEW @ digital-onboarding.vpbank.com (back-office): 'US' branding + off-net hosting identified as white-label **United Signals GmbH** product ("Business Control Center" / Digital Onboarding; clients incl. UBS, BNP Paribas, VP Bank AG) — vendor attribution for the injected session-context params (multi-tenant SaaS by design)
+- CHANGED api.vpbank.com: no change — remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500 across all vectors)
+
+STEP 2 — PRIORITIZE
+- [PRIO] digital-onboarding-stage.vpbank.com,6.4,axis=auth-injection(0.25*7+0.25*8+0.15*8+0.15*2+0.10*2+0.10*9)
+- [PRIO] digital-onboarding.vpbank.com,6.3,axis=prod-authz(0.25*7+0.25*9+0.15*8+0.15*2+0.10*2+0.10*6)
+- [PRIO] developer.vpbank.com,6.1,axis=BOLA-remint(0.25*6+0.25*8+0.15*7+0.15*5+0.10*1+0.10*7)
+
+STEP 3 — HYPOTHESES
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController confirmed fleet-wide (3/3 venues, defaults 4/129/7); stage /users/sign_in re-confirmed HTTP 200/25,093B with unpinned hidden user[tenant_id]/user[admin]/user[user_id]; failed-login path negative 5+ consecutive cycles (context NOT written pre-auth); injected params accepted without validation error on POST; pre-auth _us_session+session_expiry set; NEW: platform attributed to United Signals multi-tenant white-label SaaS — tenant/admin/user ids are first-class product concepts fed at session create
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != {} or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 {}/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on production digital-onboarding (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod renders hidden user[tenant_id]=4; overridden controller proven fleet-wide; prod /api/v1/tenants 403/28B stricter posture; if injected tenant_id persists post-auth, production tenant isolation bypass; prod anon differential (403 vs 200 dev/stage) re-confirmed 09-16 untouched
+evidence_needed: valid-creds POST + user[tenant_id]=4/admin=true yields cookie whose /api/v1/tenants replay diverges from 403 baseline
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password + injected params + CSRF; replay GET /api/v1/tenants; diff vs 403 baseline
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session read consents/accounts/balances/transactions, zero binding); read path re-verified 09-16 (accounts 200 {"accounts":[]}, consents GET 405, spec 200 46,112B, zero securitySchemes); /funds-confirmations POST-only 405 on GET, same unbound family; 09-12 uniform-500 confirmed transient; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances), optionally /funds-confirmations 200
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance + confirmation-of-funds read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] api.vpbank.com Layer7 error-handling info leak: all vectors exhausted across models; uniform 500 JSON; no new differential possible
+- [PARKED] OAuth redirect_uri bypass on www.vpbank.com: no client_id obtainable; blocked permanently without client context
+- [PARKED] CSRF CSRFT759 token: no predictability/leak evidence since 09-04
+- [FINAL] stage inject (95) > prod inject (85) > BOLA re-mint (66)
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents -H "Content-Type: application/json" -H "X-Request-ID: $(uuidgen)" -d '{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}'; on 201 capture consentId, then from a fresh anonymous session GET /consents/{id}/status, /accounts/{id}/balances; optional RAG follow-up: United Signals product/API docs for test-tenant credentials to unlock stage valid-creds inject
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED INFO @ digital-onboarding.vpbank.com: back-office identified as United Signals GmbH white-label SaaS (Business Control Center / Digital Onboarding; VP Bank is a confirmed client) — off-net multi-tenant hosting consistent; session-context params are product-native fields, not custom VP Bank code
+- [LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 sandbox read path): re-probed 2026-09-16 — accounts 200 {"accounts":[]} (15B), consents GET 405, spec 200 46,112B (11 paths), expired-anchor /consents/{id}/status 404; no authz gate added
+- [LEARN] REJECTED MISCONFIG @ developer.vpbank.com (anon account-level reads): /accounts/{id} 404, /{id}/balances 404, /funds-confirmations GET 405 — no new anon data surface beyond /accounts 200 {}; BOLA blocked on re-mint only
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged (PSD2 sandbox anonymous read path, fleet-wide session-context injection surface on prod/dev/stage, prod anon config differential); vendor attribution slightly raises stage-inject signal but no decisive proof landed this cycle; risk bounded by 6+ cycles of unexecuted HUMAN_ONLY proofs, not by discovery gap

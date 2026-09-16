@@ -1,4 +1,4 @@
-## 2026-09-16 10:00:51 UTC [target] (model nemotron3)
+## 2026-09-16 14:48:17 UTC [target] (model nemotron3)
 [NEW] developer.vpbank.com PSD2 sandbox: /funds-confirmations endpoint confirmed POST-only (GET→405); spec unchanged 46,112B with 11 paths
 [NEW] developer.vpbank.com sandbox: anonymous account-level reads gated — /accounts/nonexistent→404, /accounts/nonexistent/balances→404 (no authz differential without valid anchor)
 [CHANGED] api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required

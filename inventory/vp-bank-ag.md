@@ -908,3 +908,12 @@ www.vpbank.com
 - CHANGED developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
 - CHANGED digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
 - CHANGED digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded
+
+## 2026-09-16 14:48:38 UTC
+- NEW developer.vpbank.com PSD2 sandbox: /funds-confirmations endpoint confirmed POST-only (GET→405); spec unchanged 46,112B with 11 paths
+- NEW developer.vpbank.com sandbox: anonymous account-level reads gated — /accounts/nonexistent→404, /accounts/nonexistent/balances→404 (no authz differential without valid anchor)
+- CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
+- CHANGED developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
+- CHANGED digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded

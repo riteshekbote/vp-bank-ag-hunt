@@ -4635,3 +4635,33 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 [LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
 [RISK] vp-bank-ag: 48 — standing accepted surfaces only (PSD2 sandbox anonymous read path + stage/prod injection surface + prod anon config differential); no new exploit confirmed this cycle; all decisive proofs remain HUMAN_ONLY and unexecuted for 6+ consecutive cycles; risk score bounded by execution gap, not discovery gap
+## 2026-09-16 14:48:27 UTC [target] (model bigpickle)
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController confirmed fleet-wide (3/3 venues, defaults 4/129/7); stage /users/sign_in re-confirmed HTTP 200/25,093B with unpinned hidden user[tenant_id]/user[admin]/user[user_id]; failed-login path negative 5+ consecutive cycles (context NOT written pre-auth); injected params accepted without validation error on POST; pre-auth _us_session+session_expiry set; NEW: platform attributed to United Signals multi-tenant white-label SaaS — tenant/admin/user ids are first-class product concepts fed at session create
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != {} or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 {}/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on production digital-onboarding (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod renders hidden user[tenant_id]=4; overridden controller proven fleet-wide; prod /api/v1/tenants 403/28B stricter posture; if injected tenant_id persists post-auth, production tenant isolation bypass; prod anon differential (403 vs 200 dev/stage) re-confirmed 09-16 untouched
+evidence_needed: valid-creds POST + user[tenant_id]=4/admin=true yields cookie whose /api/v1/tenants replay diverges from 403 baseline
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password + injected params + CSRF; replay GET /api/v1/tenants; diff vs 403 baseline
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session read consents/accounts/balances/transactions, zero binding); read path re-verified 09-16 (accounts 200 {"accounts":[]}, consents GET 405, spec 200 46,112B, zero securitySchemes); /funds-confirmations POST-only 405 on GET, same unbound family; 09-12 uniform-500 confirmed transient; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances), optionally /funds-confirmations 200
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance + confirmation-of-funds read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[NEXT] HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents -H "Content-Type: application/json" -H "X-Request-ID: $(uuidgen)" -d '{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}'; on 201 capture consentId, then from a fresh anonymous session GET /consents/{id}/status, /accounts/{id}/balances; optional RAG follow-up: United Signals product/API docs for test-tenant credentials to unlock stage valid-creds inject
+[RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged (PSD2 sandbox anonymous read path, fleet-wide session-context injection surface on prod/dev/stage, prod anon config differential); vendor attribution slightly raises stage-inject signal but no decisive proof landed this cycle; risk bounded by 6+ cycles of unexecuted HUMAN_ONLY proofs, not by discovery gap
