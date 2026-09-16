@@ -1953,3 +1953,10 @@
 - [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office (from art/lead_bigpickle.txt)
 - NEXT(hypotheses-bigpickle.txt): HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents -H "Content-Type: application/json" -H "X-Request-ID: $(uui
 - LEARN: REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
+
+## RANKED HYPOTHESES 2026-09-16 21:42:29 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection on digital-onboarding-stage back-office (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents -H "Content-Type: application/json" -H "X-Request-ID: $(uui
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no poli
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com: fresh read-only cycle — accounts 200 {"accounts":[]} (15B), consents GET 405, spec unchanged; no authz gate added; BOLA me
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B
