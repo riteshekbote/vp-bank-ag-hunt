@@ -528,3 +528,17 @@ https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
 https://developer.vpbank.com/psd2/berlin-group/v1/consents` -> HTTP 400
+
+## 2026-09-16 00:30:18 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://developer.vpbank.com/psd2/berlin-group/v1/consents` -> HTTP 400
+https://api.vpbank.com/v1 -> HTTP 500
+https://api.vpbank.com/v2 -> HTTP 500
+https://api.vpbank.com/swagger.json -> HTTP 500
+https://api.vpbank.com/openapi.json -> HTTP 500
+https://api.vpbank.com/actuator/health -> HTTP 500
+https://api.vpbank.com/.well-known/security.txt -> HTTP 500
+https://vpbank.com/.well-known/openid-configuration -> HTTP 404
+https://vpbank.com/oauth/authorize?client_id=test&redirect_uri=https://evil.com&response_type=code&state=x -> HTTP 404

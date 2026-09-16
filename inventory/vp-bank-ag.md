@@ -863,3 +863,27 @@ www.vpbank.com
 - CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
 - CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
 - CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts)
+
+## 2026-09-16 00:29:54 UTC
+- NEW Live HTTP probes completed on all 3 inventory hosts (previously 0 live)
+- NEW api.vpbank.com confirmed running Layer7-API-Gateway (CA API Gateway); all versioned/debug paths return HTTP 500 with JSON 404 error (INVALID_REQUEST_RESOURCE)
+- NEW www.vpbank.com serves marketing site on Apache; OAuth/OIDC endpoints exist but reject invalid requests with 303 to error page
+- NEW vpbank.com redirects to www.vpbank.com for all tested paths
+- CHANGED api.vpbank.com attack surface reduced: no exposed API versions, Swagger, OpenAPI, actuator, or security.txt
+- NEW Live HTTP probes completed on all 3 inventory hosts (previously 0 live)
+- NEW api.vpbank.com confirmed running Layer7-API-Gateway (CA API Gateway); all versioned/debug paths return HTTP 500 with JSON 404 error (INVALID_REQUEST_RESOURCE)
+- NEW www.vpbank.com serves marketing site on Apache; OAuth/OIDC endpoints exist but reject invalid requests with 303 to error page
+- NEW vpbank.com redirects to www.vpbank.com for all tested paths
+- CHANGED api.vpbank.com attack surface reduced: no exposed API versions, Swagger, OpenAPI, actuator, or security.txt
+- NEW developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
+- NEW digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
+- CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
+- CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts)
+- NEW developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
+- NEW digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
+- CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
+- CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts)
