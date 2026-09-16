@@ -58,3 +58,7 @@
   - | **Q1 Scope** | VALID |
   - | **Q2 Reach** | VALID |
   - | **Q3 Impact** | VALID (if proven) |
+
+- 2 lead(s) marked VALID at 2026-09-16 18:14:17 UTC
+  - **VERDICT: VALID**
+  - | PSD2 BOLA (developer) | VALID | 8.6 | Report to program |
