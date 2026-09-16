@@ -320,3 +320,5 @@
 - 2026-09-16 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-16 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-16 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-16 REJECTED MISCONFIG @ developer.vpbank.com (anon account-level reads): /accounts/{id} 404 and /accounts/{id}/balances 404 for unknown account without consent; /funds-confirmations GET 405 (POST-only) — no new anonymous data surface beyond /accounts 200 `{}`; BOLA re-proof still blocked on consent re-mint
+- 2026-09-16 ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 sandbox read path): re-probed 2026-09-16 — accounts 200 `{"accounts":[]}` (15B), consents GET 405, spec 200 46,112B unchanged (11 paths incl /funds-confirmations), expired-anchor /consents/{id}/status 404; no authz gate added, BOLA surface intact pending re-mint

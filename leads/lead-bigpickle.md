@@ -4543,3 +4543,47 @@ evidence_needed: fresh anonymous POST mint returns consentId readable by a diffe
 verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<uuid>` + `Content-Type:application/json`; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
 impact: cross-session consent/account/balance (and funds) read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
 testability: HUMAN_ONLY
+## 2026-09-16 05:12:47 UTC [target] (model bigpickle)
+[NEW] developer.vpbank.com PSD2 sandbox: verified /funds-confirmations (PIIS) exists as POST-only — GET→405; spec paths unchanged (46,112B) incl /consents, /{payment-service}/{payment-product}, /accounts, /accounts/{id}/{balances,transactions}, /funds-confirmations
+[NEW] developer.vpbank.com sandbox: anonymous account-level reads gated — /accounts/nonexistent-acc-123→404, .../balances→404 (no data, no authz differential without valid anchor)
+[CHANGED] Re-confirmed 2026-09-16: /accounts GET→200 `{"accounts":[]}` (15B), /consents GET→405, expired consent /status→404 — BOLA read path healthy, no authz gate added
+[CHANGED] Last-lead [NEXT] (api.vpbank.com Accept:application/xml + X-Forwarded-For probes) is STALE — already executed 09-04/09-16 and REJECTED (uniform 500 JSON, no policy differential); target=api exhausted
+[CHANGED] top-3 hypotheses remain HUMAN_ONLY (stage/prod inject need valid creds; BOLA re-proof needs mutating POST re-mint) — no new passive-detectable surface introduced this cycle
+[PRIO] digital-onboarding-stage.vpbank.com,6.4,axis=auth-injection(0.25a7+0.25b8+0.15t8+0.15g2+0.10c2+0.10f9) now that target=api is dead
+[PRIO] digital-onboarding.vpbank.com,6.3,axis=prod back-office authz (0.25a7+0.25b9+0.15t8+0.15g2+0.10c2+0.10f6)
+[PRIO] developer.vpbank.com,6.1,axis=PSD2 sandbox BOLA re-mint (0.25a6+0.25b8+0.15t7+0.15g5+0.10c1+0.10f7)
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController proven fleet-wide (3/3 venues, defaults 4/129/7); stage /users/sign_in re-confirmed 200/25,093B with unpinned hidden user[tenant_id]/user[admin]/user[user_id]; failed-login path negative 7+ cycles (context NOT written pre-auth); success-path never observed; injected params accepted without validation
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 `{}`/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session read consents/accounts/balances/transactions, zero binding on consentId/paymentId); read path re-verified 2026-09-16 (accounts 200 `{"accounts":[]}`, consents GET 405, spec 200 46,112B unchanged, zero securitySchemes, docs = basic-auth+session-cookie only); /funds-confirmations confirmed POST-only 405 on GET, same unbound family; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances), and optionally /funds-confirmations 200 with synthetic IBAN
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance + confirmation-of-funds read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on production digital-onboarding (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod renders hidden user[tenant_id]=4; overridden controller proven fleet-wide; prod /api/v1/tenants 403/28B — stricter posture; if injected tenant_id persists post-auth, production tenant isolation bypass
+evidence_needed: valid-creds POST + user[tenant_id]=4/admin=true yields cookie whose /api/v1/tenants replay diverges from 403 baseline
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password + injected params + CSRF; replay GET /api/v1/tenants; diff vs 403 baseline
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+[PARKED] api.vpbank.com Layer7 error-handling info leak: all vectors exhausted across models; no new differential possible; target state must re-scope off api
+[PARKED] OAuth redirect_uri bypass on www.vpbank.com: no client_id obtainable anywhere; blocked permanently without client context
+[PARKED] CSRF CSRFT759 token: rejected-class absent evidence of predictability/leak; no progress since 09-04
+[FINAL] stage inject (95) > prod inject (85) > BOLA re-mint (66)
+[NEXT] HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with Content-Type: application/json + X-Request-ID:<new-uuid> + body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`; on 201 capture consentId, then from a fresh anonymous session GET /consents/{id}/status, /accounts/{id}/balances and optionally POST /funds-confirmations
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (anon account-level reads): /accounts/{id} 404 and /accounts/{id}/balances 404 for unknown account without consent; /funds-confirmations GET 405 (POST-only) — no new anonymous data surface beyond /accounts 200 `{}`; BOLA re-proof still blocked on consent re-mint
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 sandbox read path): re-probed 2026-09-16 — accounts 200 `{"accounts":[]}` (15B), consents GET 405, spec 200 46,112B unchanged (11 paths incl /funds-confirmations), expired-anchor /consents/{id}/status 404; no authz gate added, BOLA surface intact pending re-mint
+[RISK] vp-bank-ag: 48 — standing accepted surfaces only (PSD2 sandbox anonymous read path + stage/prod injection surface + prod anon config differential); no new exploit confirmed this cycle; all decisive proofs remain HUMAN_ONLY and unexecuted

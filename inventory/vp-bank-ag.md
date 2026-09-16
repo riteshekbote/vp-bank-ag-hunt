@@ -887,3 +887,15 @@ www.vpbank.com
 - CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
 - CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
 - CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts)
+
+## 2026-09-16 05:13:22 UTC
+- NEW developer.vpbank.com PSD2 sandbox: verified /funds-confirmations (PIIS) exists as POST-only — GET→405; spec paths unchanged (46,112B) incl /consents, /{payment-service}/{payment-product}, /accounts, /
+- NEW developer.vpbank.com sandbox: anonymous account-level reads gated — /accounts/nonexistent-acc-123→404, .../balances→404 (no data, no authz differential without valid anchor)
+- CHANGED Re-confirmed 2026-09-16: /accounts GET→200 `{"accounts":[]}` (15B), /consents GET→405, expired consent /status→404 — BOLA read path healthy, no authz gate added
+- CHANGED Last-lead [NEXT] (api.vpbank.com Accept:application/xml + X-Forwarded-For probes) is STALE — already executed 09-04/09-16 and REJECTED (uniform 500 JSON, no policy differential); target=api exhausted
+- CHANGED top-3 hypotheses remain HUMAN_ONLY (stage/prod inject need valid creds; BOLA re-proof needs mutating POST re-mint) — no new passive-detectable surface introduced this cycle
+- CHANGED api.vpbank.com remains fully exhausted (uniform INVALID_REQUEST_RESOURCE JSON 500) — pivot target confirmed required
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14) — session context NOT written pre-auth on any venue
+- NEW developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
+- NEW digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
+- NEW digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded

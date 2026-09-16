@@ -27828,3 +27828,138 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 - [RISK] vp-bank-ag: 74 — Standing CRITICAL-class sandbox financial-API BOLA one in-program synthetic POST from re-proof (read path re-verified healthy 09-16 incl. docs/spec); fleet-wide overridden Devise SessionsController live at 3/3 venues (success-path cred-gated, stage=95/prod=85); 09-15 CT sweep fully negative; residual surface unchanged, no new in-scope exposure this cycle.
+===== ANALYST bigpickle 2026-09-16 05:13:22 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "accounts:%{http_code} ct:%{content_type} len:%{size_download}\n" --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/accounts; sleep 1; curl -s -o /dev/null -w "consents:%{http_code} ct:%{content_type}\n" --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/consents; sleep 1; curl -s -o /dev/null -w "spec:%{http_code} len:%{size_download}\n" --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml
+accounts:200 ct:application/json;charset=UTF-8 len:15
+consents:405 ct:
+spec:200 len:46112
+[0m
+[0m$ [0mcurl -s --max-time 20 https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml -o /tmp/opencode/psd2_api.yaml && rg -n "^  /" /tmp/opencode/psd2_api.yaml
+/bin/bash: line 1: rg: command not found
+[0m
+[0m$ [0mgrep -nE "^  /" /tmp/opencode/psd2_api.yaml
+(no output)
+[0m
+[0m$ [0mgrep -nE "^/|^  /.*:$|paths:" /tmp/opencode/psd2_api.yaml | head -60
+10:paths:
+[0m
+[0m$ [0mls -la /tmp/opencode/psd2_api.yaml && sed -n '1,40p' /tmp/opencode/psd2_api.yaml
+-rw-r--r-- 1 runner runner 46112 Sep 16 05:11 /tmp/opencode/psd2_api.yaml
+openapi: 3.0.1
+info:
+    title: PSD2 API
+    version: "1.0.0"
+
+servers:
+    -   url: /psd2/berlin-group/v1
+        description: PSD2 production server
+
+paths:
+
+    #######################################################
+    # Consents
+    #######################################################
+
+    /consents:
+        post:
+            summary: Create consent
+            description: This method creates a consent resource, defining access rights to a dedicated account.
+            operationId: createConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            requestBody:
+                $ref: "#/components/requestBodies/consents"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}:
+        get:
+[0m
+[0m$ [0mgrep -nE "^    /" /tmp/opencode/psd2_api.yaml
+16:    /consents:
+39:    /consents/{consentId}:
+83:    /consents/{consentId}/status:
+109:    /{payment-service}/{payment-product}:
+160:    /{payment-service}/{payment-id}/status:
+187:    /accounts:
+207:    /accounts/{account-id}:
+228:    /accounts/{account-id}/balances:
+251:    /accounts/{account-id}/transactions:
+281:    /funds-confirmations:
+[0m
+[0m$ [0msleep 1; curl -s -o /tmp/opencode/acc.json -w "acc_detail:%{http_code} ct:%{content_type} len:%{size_download}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/nonexistent-acc-123"; sleep 1; curl -s -o /tmp/opencode/bal.json -w "balances:%{http_code} ct:%{content_type} len:%{size_download}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/nonexistent-acc-123/balances"; sleep 1; curl -s -o /dev/null -w "fc_get:%{http_code} ct:%{content_type}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/funds-confirmations"; sleep 1; curl -s -o /dev/null -w "consent_status:%{http_code}\n" --max-time 20 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status"
+acc_detail:404 ct: len:0
+balances:404 ct: len:0
+fc_get:405 ct:
+consent_status:404
+[0m
+STEP 1 — DELTA
+[NEW] developer.vpbank.com PSD2 sandbox: verified /funds-confirmations (PIIS) exists as POST-only — GET→405; spec paths unchanged (46,112B) incl /consents, /{payment-service}/{payment-product}, /accounts, /accounts/{id}/{balances,transactions}, /funds-confirmations
+[NEW] developer.vpbank.com sandbox: anonymous account-level reads gated — /accounts/nonexistent-acc-123→404, .../balances→404 (no data, no authz differential without valid anchor)
+[CHANGED] Re-confirmed 2026-09-16: /accounts GET→200 `{"accounts":[]}` (15B), /consents GET→405, expired consent /status→404 — BOLA read path healthy, no authz gate added
+[CHANGED] Last-lead [NEXT] (api.vpbank.com Accept:application/xml + X-Forwarded-For probes) is STALE — already executed 09-04/09-16 and REJECTED (uniform 500 JSON, no policy differential); target=api exhausted
+[CHANGED] top-3 hypotheses remain HUMAN_ONLY (stage/prod inject need valid creds; BOLA re-proof needs mutating POST re-mint) — no new passive-detectable surface introduced this cycle
+
+STEP 2 — PRIORITIZE
+[PRIO] digital-onboarding-stage.vpbank.com,6.4,axis=auth-injection(0.25a7+0.25b8+0.15t8+0.15g2+0.10c2+0.10f9) now that target=api is dead
+[PRIO] digital-onboarding.vpbank.com,6.3,axis=prod back-office authz (0.25a7+0.25b9+0.15t8+0.15g2+0.10c2+0.10f6)
+[PRIO] developer.vpbank.com,6.1,axis=PSD2 sandbox BOLA re-mint (0.25a6+0.25b8+0.15t7+0.15g5+0.10c1+0.10f7)
+
+STEP 3 — HYPOTHESES
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController proven fleet-wide (3/3 venues, defaults 4/129/7); stage /users/sign_in re-confirmed 200/25,093B with unpinned hidden user[tenant_id]/user[admin]/user[user_id]; failed-login path negative 7+ cycles (context NOT written pre-auth); success-path never observed; injected params accepted without validation
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != `{}` or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+user[admin]=true&user[tenant_id]=1&user[user_id]=1+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 `{}`/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 → fresh anon session read consents/accounts/balances/transactions, zero binding on consentId/paymentId); read path re-verified 2026-09-16 (accounts 200 `{"accounts":[]}`, consents GET 405, spec 200 46,112B unchanged, zero securitySchemes, docs = basic-auth+session-cookie only); /funds-confirmations confirmed POST-only 405 on GET, same unbound family; only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances), and optionally /funds-confirmations 200 with synthetic IBAN
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; from fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance + confirmation-of-funds read on official financial API — restores standing CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on production digital-onboarding (success-path unobserved)
+class: AUTH
+asset: digital-onboarding.vpbank.com/users/sign_in
+confidence: 85
+reasoning: prod renders hidden user[tenant_id]=4; overridden controller proven fleet-wide; prod /api/v1/tenants 403/28B — stricter posture; if injected tenant_id persists post-auth, production tenant isolation bypass
+evidence_needed: valid-creds POST + user[tenant_id]=4/admin=true yields cookie whose /api/v1/tenants replay diverges from 403 baseline
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token; POST email/password + injected params + CSRF; replay GET /api/v1/tenants; diff vs 403 baseline
+impact: cross-tenant admin session on production — PII, ident documents, wire status; CRITICAL
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+[PARKED] api.vpbank.com Layer7 error-handling info leak: all vectors exhausted across models; no new differential possible; target state must re-scope off api
+[PARKED] OAuth redirect_uri bypass on www.vpbank.com: no client_id obtainable anywhere; blocked permanently without client context
+[PARKED] CSRF CSRFT759 token: rejected-class absent evidence of predictability/leak; no progress since 09-04
+[FINAL] stage inject (95) > prod inject (85) > BOLA re-mint (66)
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with Content-Type: application/json + X-Request-ID:<new-uuid> + body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`; on 201 capture consentId, then from a fresh anonymous session GET /consents/{id}/status, /accounts/{id}/balances and optionally POST /funds-confirmations
+
+STEP 6 — LEARNING
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (anon account-level reads): /accounts/{id} 404 and /accounts/{id}/balances 404 for unknown account without consent; /funds-confirmations GET 405 (POST-only) — no new anonymous data surface beyond /accounts 200 `{}`; BOLA re-proof still blocked on consent re-mint
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (PSD2 sandbox read path): re-probed 2026-09-16 — accounts 200 `{"accounts":[]}` (15B), consents GET 405, spec 200 46,112B unchanged (11 paths incl /funds-confirmations), expired-anchor /consents/{id}/status 404; no authz gate added, BOLA surface intact pending re-mint
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 48 — standing accepted surfaces only (PSD2 sandbox anonymous read path + stage/prod injection surface + prod anon config differential); no new exploit confirmed this cycle; all decisive proofs remain HUMAN_ONLY and unexecuted

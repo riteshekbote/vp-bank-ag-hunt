@@ -542,3 +542,8 @@ https://api.vpbank.com/actuator/health -> HTTP 500
 https://api.vpbank.com/.well-known/security.txt -> HTTP 500
 https://vpbank.com/.well-known/openid-configuration -> HTTP 404
 https://vpbank.com/oauth/authorize?client_id=test&redirect_uri=https://evil.com&response_type=code&state=x -> HTTP 404
+
+## 2026-09-16 05:13:27 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
