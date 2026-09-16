@@ -557,3 +557,8 @@ https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
 https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-16 18:57:03 UTC
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403

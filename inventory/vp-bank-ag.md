@@ -917,3 +917,9 @@ www.vpbank.com
 - CHANGED developer.vpbank.com PSD2 sandbox consent-read path recovered 09-15: /accounts 200 {"accounts":[]}, /consents 405, spec 200 46KB — 09-12 uniform-500 was transient churn, no authz gate added; BOLA read
 - CHANGED digital-onboarding-stage.vpbank.com/users/sign_in re-confirmed 09-15 — HTTP 200/25,093B with unpinned hidden session-context fields (tenant_id=7, admin=false, user_id=0); injection surface baseline li
 - CHANGED digital-onboarding.vpbank.com /api/v1/tenants 403 {"message":"Not authorized"} re-confirmed 09-15 — prod anon differential (vs dev/stage 200) uneroded
+
+## 2026-09-16 18:56:56 UTC
+- NEW vpbank-dev.com + vpbank-stage.com discovered via production CSP (www.vpbank.com) as trusted origins; both resolve (193.222.70.165/.166) and are live Apache servers
+- NEW www.vpbank.com responds 200 on /en; Drupal + Envoy proxy; robust CSP present; CSRFT759 + AL_SESS cookies
+- NEW www.vpbank-dev.com and www.vpbank-stage.com redirect 302 to /error_path/maintenance.html (real maintenance site, not parked)
+- CHANGED attack surface expanded beyond 3 inventory hosts; dev/stage domains are scoped (company-operated) and in production trust chain

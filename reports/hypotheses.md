@@ -1948,3 +1948,8 @@
 - LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-16 18:56:56 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: re-mint sandbox BOLA anchor — POST https://developer.vpbank.com/psd2/berlin-group/v1/consents -H "Content-Type: application/json" -H "X-Request-ID: $(uui
+- LEARN: REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
