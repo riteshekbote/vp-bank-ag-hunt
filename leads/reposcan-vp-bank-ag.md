@@ -212,3 +212,12 @@ TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 ## REPOSCAN 2026-09-16 12:33:22 UTC
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-16 17:17:25 UTC
+[HYP] No candidate repositories available for source-code audit
+class: OTHER
+asset: N/A (no org candidates)
+confidence: 100
+reasoning: cands.txt explicitly states "no org candidates"; scope.yml lists github_orgs: none-configured; reposcan-raw confirms TARGET_ORG not configured; vpbdevops has 0 public repos.
+impact: N/A — no source-code findings possible
+verify_steps: Confirm cands.txt content; github.com/vpbdevops shows 0 public repos
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
