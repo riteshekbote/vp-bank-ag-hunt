@@ -951,3 +951,13 @@ www.vpbank.com
 - CHANGED api.vpbank.com fully exhausted (15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500) — no actionable surface remains on target=api
 - CHANGED developer.vpbank.com PSD2 sandbox read path healthy (/accounts 200 `{"accounts":[]}`, /consents 405, spec 200 46KB) — BOLA mechanism intact, anchor consent expired (needs re-mint via POST)
 - CHANGED digital-onboarding-stage.vpbank.com/users/sign_in confirms hidden fields `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token ×3 + pre-auth `_us_session`/`session_expiry` c
+
+## 2026-09-17 21:46:58 UTC
+- NEW digital-onboarding-stage.vpbank.com JS bundle redeployed: hash `4297ba05...` (was `7f7cb839...`); `/users/sign_in` body grew 25,093B→43,608B (74% increase) — frontend redeployment may alter controller
+- NEW digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js — fresh JS bundle unexamined for new endpoints; prior bundle mapped 11 API en
+- NEW developer.vpbank.com PSD2 sandbox consent re-mint SUCCESSFUL: POST /consents with basic auth (test:test) + X-Request-ID ending in 5 + frequencyPerDay returned 201 with consentId `b48218e7-5291-480f-a7
+- CHANGED api.vpbank.com fully exhausted (15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500) — no actionable surface remains on target=api
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in confirms hidden fields `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token ×3 + pre-auth `_us_session`/`session_expiry` c
+- CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context 
+- CHANGED PSD2 sandbox BOLA mechanism intact: consent/account/payment cross-session read with zero identity binding on consentId/paymentId
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, but post-POST co

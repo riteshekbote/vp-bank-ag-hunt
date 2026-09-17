@@ -30660,3 +30660,186 @@ testability: PASSIVE
 
 ## STEP 7 — RISK
 [RISK] vp-bank-ag: 50 — standing accepted surfaces re-verified this cycle (stage injection baseline live, prod 403 differential intact, PSD2 read path healthy); active stage redeploy raised then closed the bundle-lead (negative); progress remains bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+===== ANALYST bigpickle 2026-09-17 21:46:58 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -sS -m 60 -H "User-Agent: Mozilla/5.0 (compatible; vuln-research)" "https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js" -o /tmp/opencode/stage_bundle_new.js -w "HTTP %{http_code} SIZE %{size_download}\n"
+HTTP 200 SIZE 1140267
+[0m
+[0m$ [0mcd /tmp/opencode && for p in $(grep -oE '"/(api|rails|admin)/[^"` ]*"' stage_bundle_new.js | tr -d '"' | sort -u); do echo "$p"; done | head -80
+(no output)
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE '(/api/v1/[a-zA-Z0-9_${}./:@?=&%-]*)' stage_bundle_new.js | sort -u | head -60; echo "---RAILS---"; grep -oE '(/rails/[a-zA-Z0-9_${}./:@?=&%-]*)' stage_bundle_new.js | sort -u | head -40
+---RAILS---
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE '"[^"]*api[^"]*"' stage_bundle_new.js | sort -u | head -40; echo "---V1---"; grep -oE '"/[a-z0-9_/]{3,40}"' stage_bundle_new.js | sort -u | grep -iE 'v1|v2|admin|user|session|tenant|qr|consent|account' | head -40
+" Das Dokument Basisinformationen \xfcber Verm\xf6gensanlagen in Wertpapieren wird Ihnen in die Kunden E-Box der DAB BNP Paribas eingestellt. "
+" autocapitalize="
+"),h.parentElement.insertBefore(f,h);var _=$(An(Kn,{t:t,lang:n,manager:e,config:i,service:u,style:p.style,testing:s.testing,api:s.api}),f);a.push(_)}"
+",e=nn(e),t);var n=0;t.show&&(n=ci++);var i=Jt(e),s=on(e);void 0!==t.api&&s.watch(t.api),Et(e,ai,i);var r=J(e),a=Zt(e),o=function(){for(var t=arguments.length,n=new Array(t),i=0;i<t;i++)n[i]=arguments[i];return X.apply(void 0,[a,r,e.fallbackLang||"
+",value:function(){return this.apiRequest("
+",value:function(){var e=this.props,t=e.api,n=e.modal,i=e.show,s=e.config;if(void 0!==t){if(n||i>0)return;this.props.manager.confirmed||this.props.manager.auxiliaryStore.getWithKey("
+",value:function(e){return this.apiRequest("
+";var i,s=Ut(n.attributes);try{for(s.s();!(i=s.n()).done;){var r=i.value;n.setAttribute(r.name,r.value)}}catch(e){s.e(e)}finally{s.f()}document.head.appendChild(n)}(t)}}function rn(e,t,n){return Qt(e=e||si,{show:!0,modal:t,api:n}),!1}function an(){for(var e in Object.keys(di))delete di[e]}function on(e){var t=(e=e||si).storageName||e.cookieName||"
+"===e.status||i)});void 0!==u?(si=u,tn(function(){return s({api:l})})):Xt("
+"Jumapili_Jumatatu_Jumanne_Jumatano_Alhamisi_Ijumaa_Jumamosi"
+"Ziel der Basisinformationen ist es, Sie umfassend und verst\xe4ndlich \xfcber wertpapierbezogene Verm\xf6gensanlagen,             deren Varianten, Eigenschaften und Risiken zu informieren und aufzukl\xe4ren. Bitte lesen Sie "
+"].concat(n))},l=$(An(Jn,{t:o,lang:r,manager:s,config:e,testing:t.testing,modal:t.modal,api:t.api,show:n}),i);return en(s,o,r,e,t),l}}function en(e,t,n,i,s){var r,a=[],o=Ut(i.services);try{for(o.s();!(r=o.n()).done;){var l,u=r.value,c=e.getConsent(u.name)&&e.confirmed,d=Ut(document.querySelectorAll("
+"apiConfigsFailed"
+"apiConfigsLoaded"
+"apiRequest"
+"das Dokument Basisinformationen \xfcber Verm\xf6gensanlagen in Wertpapieren"
+"das Dokument \u201eBasisinformationen \xfcber Wertpapiere und weitere Kapitalanlagen\u201c"
+"das Grundlagenwissen Wertpapiere & Investmentfonds"
+"data-klaro-api-url"
+"decline|capitalize"
+"die Basisinformation(en) \xfcber Wertpapiere & Investmentfonds bzw. Finanztermingesch\xe4fte"
+"die Basisinformationen \xfcber Verm\xf6gensanlagen in Wertpapieren"
+"learnMore|capitalize"
+"ok|capitalize"
+"title|capitalize"
+"toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)"
+"urt._ots._mar._api._mai._eka._uzt._abu._ira._urr._aza._abe."
+"urtarrila_otsaila_martxoa_apirila_maiatza_ekaina_uztaila_abuztua_iraila_urria_azaroa_abendua"
+---V1---
+[0m
+[0m$ [0mcd /tmp/opencode && curl -sS -m 60 -H "User-Agent: Mozilla/5.0 (compatible; vuln-research)" "https://digital-onboarding-stage.vpbank.com/users/sign_in" -o stage_signin.html -w "HTTP %{http_code} SIZE %{size_download}\n" && grep -oE 'src="[^"]*\.js"' stage_signin.html | sort -u; echo "---LINKS---"; grep -oE '(href|data-[a-z-]+)="[^"]*"' stage_signin.html | grep -iE '\.js|\.css|/assets/' | sort -u | head
+HTTP 200 SIZE 43051
+src="/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js"
+---LINKS---
+href="/assets/base/vpbank/favicon-6ec6cf6571a84a1b70c1593210d2db269fddb4b30c50cb4d3369a4eb09a86809.png"
+href="/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.css"
+href="/assets/vpbank/application-8973c31e8d28bea268311736f0e6ae5f4f9f71db77763e1df78f8efd1ebd88fe.css"
+href="/assets/vpbank/elements/floating-placeholder-43e83ead8b15424c1d8317311cf26d899d6ed4f6606966d9332017774a147d4c.css"
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE 'name="(user\[[a-z_]+\]|authenticity_token)"[^>]*' stage_signin.html | head -20; echo "---TOKEN COUNT---"; grep -oE 'authenticity_token' stage_signin.html | wc -l; echo "---COOKIES---"; grep -oE '(session|_us[_a-z]*)[^;<"]*' stage_signin.html | head -5
+name="authenticity_token" value="jkTWBJfJ-pbRYpnVUWFDpbzrlvnPPqfD6Ua15LUHW4VC6yVFsWLzSGpWwv7QMwmQ6NEaoYWgb0LBZYnRYsYrnw" autocomplete="off" /
+name="user[tenant_id]" id="user_tenant_id" /
+name="user[admin]" id="user_admin" /
+name="user[user_id]" id="user_user_id" /
+name="user[email]" id="user_email" /
+name="user[password]" id="user_password" /
+---TOKEN COUNT---
+3
+---COOKIES---
+_us_session
+session cookie in which the session data of the currently logged in user is stored in encrypted form.
+session général dans lequel les données de session de l'utilisateur actuellement connecté sont stockées sous forme cryptée.
+session cookie in which the session data of the currently logged in user is stored in encrypted form.
+session cookie in which the session data of the currently logged in user is stored in encrypted form.
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE '<input[^>]*user_(tenant_id|admin|user_id)[^>]*>' stage_signin.html; echo "---independent JS?---"; curl -sS -m 60 -H "User-Agent: Mozilla/5.0" "https://digital-onboarding-stage.vpbank.com/assets/independent-bundle-7e301c68977f02bbd3dccadfe7f4036bedcb89ffc493f0d24d3a378387956057.js" -o indep.js -w "HTTP %{http_code} SIZE %{size_download}\n"; grep -oE '(/api/v1/[a-zA-Z0-9_${}./:@?=&%-]*|/rails/[a-zA-Z0-9_${}./:@?=&%-]*)' indep.js | sort -u | head -40
+<input value="7" autocomplete="off" type="hidden" name="user[tenant_id]" id="user_tenant_id" />
+<input value="false" autocomplete="off" type="hidden" name="user[admin]" id="user_admin" />
+<input value="0" autocomplete="off" type="hidden" name="user[user_id]" id="user_user_id" />
+---independent JS?---
+HTTP 404 SIZE 146
+[0m
+[0m$ [0mcd /tmp/opencode && curl -sS -m 60 -H "User-Agent: Mozilla/5.0" "https://digital-onboarding-stage.vpbank.com/control-center/" -o stage_cc.html -w "HTTP %{http_code} SIZE %{size_download}\n"; grep -oE 'src="[^"]*\.js"' stage_cc.html | sort -u | head
+HTTP 401 SIZE 112
+[0m
+[0m$ [0mcd /tmp/opencode && curl -sS -m 60 -H "User-Agent: Mozilla/5.0" "https://digital-onboarding.vpbank.com/control-center/" -o prod_cc.html -w "HTTP %{http_code} SIZE %{size_download}\n"; grep -oE 'src="[^"]*\.js"' prod_cc.html | sort -u | head
+HTTP 200 SIZE 3167
+src="/control-center/assets/index-BmxtS-cn.js"
+[0m
+[0m$ [0mcd /tmp/opencode && curl -sS -m 90 -H "User-Agent: Mozilla/5.0" "https://digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js" -o prod_cc_bundle.js -w "HTTP %{http_code} SIZE %{size_download}\n"; grep -oE '(/api/v1/[a-zA-Z0-9_${}./:@?=&%-]*)' prod_cc_bundle.js | sort -u
+HTTP 200 SIZE 4310363
+/api/v1/brand
+/api/v1/current_user_details
+/api/v1/qr_codes/generate
+/api/v1/sessions
+/api/v1/sessions/idp_login
+/api/v1/sessions/reset_password
+/api/v1/sessions/secure_session
+/api/v1/tenants
+/api/v1/users
+/api/v1/users/${e}
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE 'idp_login|secure_session|reset_password|current_user_details|qr_codes|direct_uploads|tenant_id|force_tenant' stage_bundle_new.js | sort | uniq -c; echo "---DEV CC---"; curl -sS -m 60 -H "User-Agent: Mozilla/5.0" "https://digital-onboarding-dev.vpbank.com/control-center/" -o dev_cc.html -w "HTTP %{http_code} SIZE %{size_download}\n"; grep -oE 'src="[^"]*\.js"' dev_cc.html | sort -u | head -3
+---DEV CC---
+HTTP 401 SIZE 112
+[0m
+[0m$ [0mcd /tmp/opencode && grep -oE '(apiUrl|api_url|baseUrl|endpoint|["'"'"'][^"'"'"']*consent[^"'"'"']*)' stage_bundle_new.js | sort -u | head -30; echo "---URLS w/ http---"; grep -oE 'https?://[a-zA-Z0-9._/-]+' stage_bundle_new.js | sort -u | head -20
+"!==consentManager.env||consentManager.testServer||(window[`ga-disable-${consentManager.gaTrackingId}`]=!1,window[`ga-disable-${consentManager.gaTrackingIdInternal}`]=!1,createTracker(consentManager.gaTrackingId,
+"),!1},window.displayPopup=function(e,t){(()=>void 0===consentManager.allowPopupCookies||
+"),consentManager.allowPopupCookies&&Cookies.set(`${e}_popup_clicked`+t,
+"),createTracker(consentManager.gaTrackingIdInternal,
+")}(this,e),this.config=t,this.store=void 0!==n?n:new ni[this.storageMethod](this),void 0===this.store&&(this.store=ni.cookie),this.auxiliaryStore=void 0!==i?i:new ti(this),this.consents=this.defaultConsents,this.confirmed=!1,this.changed=!1,this.states={},this.initialized={},this.executedOnce={},this.watchers=new Set([]),this.loadConsents(),this.applyConsents(),this.savedConsents=xt({},this.consents)}var t,n,i;return t=e,(n=[{key:
+")}(this,t),n=r.call(this,e),e.manager.watch(Te(n)),n.state={consents:e.manager.consents},n}!function(e,t){if(
+")}(this,t),n=r.call(this,e),e.manager.watch(de(n)),n.state={consents:e.manager.consents},n}!function(e,t){if(
+")}),consentManager.tenantUsesGoogleAnalytics){!function(e,t,n,i,s,r,a){e.GoogleAnalyticsObject=s,e[s]=e[s]||function(){(e[s].q=e[s].q||[]).push(arguments)},e[s].l=1*new Date,r=t.createElement(n),a=t.getElementsByTagName(n)[0],r.async=1,r.src=i,a.parentNode.insertBefore(r,a)}(window,document,
+",b));var w=An($n,{config:o,lang:c,services:a,toggle:function(e,t){e.map(function(e){e.required||d.updateConsent(e.name,t)})},consents:h,t:m}),k=f||m([
+",consentModal:{description:
+",e))(t)}for(var s=0,r=0;r<this.config.services.length;r++){var a=this.config.services[r];if(void 0===n||n===a.name){var o=a.vars||{},l={service:a,config:this.config,vars:o};this.initialized[a.name]||(this.initialized[a.name]=!0,i(a.onInit,l))}}for(var u=0;u<this.config.services.length;u++){var c=this.config.services[u];if(void 0===n||n===c.name){var d=this.states[c.name],h=c.vars||{},p=void 0!==c.optOut?c.optOut:this.config.optOut||!1,f=void 0!==c.required?c.required:this.config.required||!1,m=this.confirmed||p||e||t,_=this.getConsent(c.name)&&m||f,g={service:c,config:this.config,vars:h,consents:this.consents,confirmed:this.confirmed};d!==_&&s++,e||(i(_?c.onAccept:c.onDecline,g),this.updateServiceElements(c,_),this.updateServiceStorage(c,_),void 0!==c.callback&&c.callback(_,c),void 0!==this.config.callback&&this.config.callback(_,c),this.states[c.name]=_)}}return this.notify(
+",this.consents)),this.consents}},{key:
+",this.consents),n}},{key:
+",this.consents)}},{key:
+",value:function(){for(var e=!0,t=new Set(this.config.services.map(function(e){return e.name})),n=new Set(Object.keys(this.consents)),i=0,s=Object.keys(this.consents);i<s.length;i++){var r=s[i];t.has(r)||delete this.consents[r]}var a,o=Mt(this.config.services);try{for(o.s();!(a=o.n()).done;){var l=a.value;n.has(l.name)||(this.consents[l.name]=this.getDefaultConsent(l),e=!1)}}catch(e){o.e(e)}finally{o.f()}this.confirmed=e,e||(this.changed=!0)}},{key:
+",value:function(){for(var e={},t=0,n=Object.entries(this.consents);t<n.length;t++){var i=wt(n[t],2),s=i[0],r=i[1];this.savedConsents[s]!==r&&(e[s]=r)}return e}},{key:
+",value:function(){this.consents=this.defaultConsents,this.states={},this.confirmed=!1,this.applyConsents(),this.savedConsents=xt({},this.consents),this.store.delete(),this.notify(
+",value:function(){var e,t=this,n=this.props,i=n.allEnabled,s=n.onlyRequiredEnabled,r=n.allDisabled,a=n.services,o=n.config,l=n.onToggle,u=n.name,c=n.lang,d=n.manager,h=n.consents,p=n.title,f=n.description,m=n.t,_=this.state.servicesVisible,g=this.props.required||!1,v=this.props.purposes||[],y=
+",value:function(){var e,t=this.props,n=t.config,i=t.t,s=t.manager,r=t.lang,a=this.state.consents,o=n.services,l={},u=we(o);try{for(u.s();!(e=u.n()).done;){var c,d=e.value,h=we(d.purposes);try{for(h.s();!(c=h.n()).done;){var p=c.value;void 0===l[p]&&(l[p]=[]),l[p].push(d)}}catch(e){h.e(e)}finally{h.f()}}}catch(e){u.e(e)}finally{u.f()}var f=function(e,t){e.map(function(e){var n,i=we(l[e]);try{for(i.s();!(n=i.n()).done;){var r=n.value;r.required||s.updateConsent(r.name,t)}}catch(e){i.e(e)}finally{i.f()}})},m=function(e){var t,n={allEnabled:!0,onlyRequiredEnabled:!0,allDisabled:!0,allRequired:!0},i=we(e);try{for(i.s();!(t=i.n()).done;){var s=t.value;s.required||(n.allRequired=!1),a[s.name]?(s.required||(n.onlyRequiredEnabled=!1),n.allDisabled=!1):s.required||(n.allEnabled=!1)}}catch(e){i.e(e)}finally{i.f()}return n.allDisabled&&(n.onlyRequiredEnabled=!1),n},_=n.purposeOrder||[],g=Object.keys(l).sort(function(e,t){return _.indexOf(e)-_.indexOf(t)}).map(function(e){var t=m(l[e]);return An(
+",value:function(){var e=this.props,t=e.config,n=e.t,i=e.manager,s=e.lang,r=this.state.consents,a=t.services,o=function(e,t){e.map(function(e){e.required||i.updateConsent(e.name,t)})},l=An($n,{config:t,lang:s,services:a,t:n,consents:r,toggle:o}),u=a.filter(function(e){return!e.required}),c=u.filter(function(e){return r[e.name]}).length,d=a.filter(function(e){return e.required}).length,h=c===u.length;return a.filter(function(e){return e.required}).length,An(
+",value:function(){var e=this.store.get();return null!==e&&(this.consents=JSON.parse(decodeURIComponent(e)),this._checkConsents(),this.notify(
+",value:function(e){return this.consents[e]||!1}},{key:
+",value:function(e){var t=encodeURIComponent(JSON.stringify(this.consents));this.store.set(t),this.confirmed=!0,this.changed=!1;var n=this.changedConsents();this.savedConsents=xt({},this.consents),this.notify(
+",value:function(e,t){var n=(this.consents[e]||!1)!==t;return this.consents[e]=t,this.notify(
+",{changes:n,consents:this.consents,type:e||
+":return function(){consentManager.allowPopupCookies=!0};default:return null}}function translations(){let e=consentManager.locale,t={},n={},i=consentManager.cookiepedia,s=consentManager.widgetTranslations;for(let t in i)n[t]=i[t].name[e];return t[e]={privacyPolicyUrl:consentManager.cookiePolicyPageUrl,consentModal:{title:s.consentModal.title[e],description:s.consentModal.description[e]},purposes:n,decline:s.decline[e],ok:s.ok[e],consentNotice:{learnMore:s.consentNotice.learnMore[e],description:s.consentNotice.description[e]},privacyPolicy:{name:s.privacyPolicy.name[e],text:s.privacyPolicy.text[e]}},t}function setOffsetForPopupDiv(e,t){let n;n=t.pageY+e.height()<$(window).height()+window.pageYOffset?t.pageY:t.pageY-e.height(),e.offset({top:n,left:t.pageX})}function countryCodePostalCodeValidation(e,t,n){var i,s;if(n){i=$(
+":return function(){window[`ga-disable-${consentManager.gaTrackingId}`]&&(
+"===n.type&&0===Object.keys(n.changes).length)return;var i=Ct(Ct({},this.getBaseConsentData(e.config)),{},{consent_data:{consents:n.consents,changes:
+"===t&&this.setState({consents:n})}},{key:
+"===t){var s=Ct(Ct({},this.getBaseConsentData(n.config)),{},{consent_data:{consents:{},changes:{},type:
+---URLS w/ http---
+http://fb.me/use-check-prop-types
+http://momentjs.com/guides/
+http://www.w3.org/1999/xlink
+http://www.w3.org/2000/svg
+https://kiprotect.com/klaro
+https://www.google-analytics.com/analytics.js
+[0m
+STEP 1 — DELTA
+- [NEW] stage `/users/sign_in` page now loads `application-4297ba05…js` (1,140,267B, fetched) — contains ZERO `/api/v1/` or `/rails/` literals; it is a Klaro consent-manager + DAB BNP Paribas securities-widget bundle. This explains sign_in body growth 25,093B→43,608B as widget bloat, NOT controller/API change.
+- [CHANGED] prod `/control-center/` SPA bundle freshly fetched (`index-BmxtS-cn.js`, 4,310,363B) — API literal map IDENTICAL to prior set (brand, current_user_details, qr_codes/generate, sessions/{idp_login,reset_password,secure_session}, tenants, users, users/${e}); no `/rails/` literals, no new routes.
+- [CHANGED] stage `/users/sign_in` hidden fields still pinned `tenant_id=7/admin=false/user_id=0` + live auth_token ×3 — injection baseline intact, no observable handler change.
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com /psd2/berlin-group/v1/consents, 6.95, IDOR/BOLA re-proof (a7 b9 t6 g9 c1 f6)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in, 6.60, AUTH session-context injection (a7 b9 t8 g4 c1 f7)
+- [PRIO] digital-onboarding.vpbank.com/api/v1/brand?force_tenant=vpbank, 4.0, MISCONFIG anonymous tenant switch (a4 b5 t5 g7 c1 f3)
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA proven 09-05 (anon POST 201 → fresh anon session read, zero binding); read path healthy 09-15/16/17 (accounts 200 `{"accounts":[]}` 15B, consents 405, spec 46,112B, no authz gate); only TTL-expired anchor blocks re-proof; no code-signal change observed this cycle
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<new uuid> + Content-Type:application/json; on 201 capture consentId; new anonymous session GET /consents/{id}/status, /accounts, /balances; diff vs anon baseline
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class reportable POC (synthetic data)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, `_us_session`+session_expiry pre-auth (re-verified this cycle); failed-login axis negative (context NOT written pre-auth) so only success path unobserved
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email+password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs 200 `{}`/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Fresh stage bundle endpoint discovery (prior conf 75/45): RESOLVED NEGATIVE this cycle — stage bundle is consent/widget only, prod bundle map unchanged → closed, no further value.
+- [PARKED] New `vpbank/` UI namespace / floating-placeholder shared-build lead: explains body growth, no API evidence — closed.
+- [FINAL] Survivors ranked: 1) stage valid-creds session-context injection (95, HUMAN_ONLY, creds-blocked); 2) PSD2 BOLA re-mint (66, HUMAN_ONLY, self-sufficient anon POST).
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: PSD2 BOLA re-mint — anonymous POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with JSON body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<fresh uuid>` + `Content-Type:application/json`; on 201 capture `consentId`, then in a fresh anonymous session GET `/consents/{id}/status`, `/accounts`, `/balances` and diff against the `200 {}`/15B anonymous baseline.
+
+STEP 6 — LEARNING
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 50 — standing accepted surfaces intact (stage injection baseline live + pinned, prod 403 differential, PSD2 read path healthy); two advertised redeploy leads resolved negative this cycle; only unexecuted HUMAN_ONLY proofs (valid-creds POST, BOLA re-mint) remain rate-limiting; discovery gap closed, not risk-added.

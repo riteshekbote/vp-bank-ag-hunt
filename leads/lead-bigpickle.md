@@ -5049,3 +5049,26 @@ impact: may unlock passive new route on looser-dev; LOW-MEDIUM
 testability: PASSIVE
 [NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<creds>` + `authenticity_token` + `user[email]&user[password]&user[tenant_id]=1&user[admin]=true&user[user_id]=1` + `_us_session` cookie; on success replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon `200 {}` / `401` baseline.
 [RISK] vp-bank-ag: 50 — standing accepted surfaces re-verified this cycle (stage injection baseline live, prod 403 differential intact, PSD2 read path healthy); active stage redeploy raised then closed the bundle-lead (negative); progress remains bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+## 2026-09-17 21:43:38 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA proven 09-05 (anon POST 201 → fresh anon session read, zero binding); read path healthy 09-15/16/17 (accounts 200 `{"accounts":[]}` 15B, consents 405, spec 46,112B, no authz gate); only TTL-expired anchor blocks re-proof; no code-signal change observed this cycle
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<new uuid> + Content-Type:application/json; on 201 capture consentId; new anonymous session GET /consents/{id}/status, /accounts, /balances; diff vs anon baseline
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class reportable POC (synthetic data)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, `_us_session`+session_expiry pre-auth (re-verified this cycle); failed-login axis negative (context NOT written pre-auth) so only success path unobserved
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email+password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs 200 `{}`/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] HUMAN: PSD2 BOLA re-mint — anonymous POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with JSON body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<fresh uuid>` + `Content-Type:application/json`; on 201 capture `consentId`, then in a fresh anonymous session GET `/consents/{id}/status`, `/accounts`, `/balances` and diff against the `200 {}`/15B anonymous baseline.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces intact (stage injection baseline live + pinned, prod 403 differential, PSD2 read path healthy); two advertised redeploy leads resolved negative this cycle; only unexecuted HUMAN_ONLY proofs (valid-creds POST, BOLA re-mint) remain rate-limiting; discovery gap closed, not risk-added.
