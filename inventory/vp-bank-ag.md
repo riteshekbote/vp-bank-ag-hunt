@@ -938,3 +938,9 @@ www.vpbank.com
 - CHANGED `target=api` is fully exhausted (15+ cycles of uniform INVALID_REQUEST_RESOURCE JSON 500) — state shows target=api but no actionable surface remains
 - NEW digital-onboarding-stage.vpbank.com bundle redeployed (hash changed to `4297ba05...`) — new build may register new routes or alter controller behavior; prior API map was extracted from old bundle
 - CHANGED digital-onboarding-stage.vpbank.com/users/sign_in body grew 25,093B→43,608B — content churn suggests frontend redeployment alongside backend; injection surface needs fresh baseline capture
+
+## 2026-09-17 14:38:52 UTC
+- NEW digital-onboarding-stage.vpbank.com bundle redeployed (hash `4297ba05...`); /users/sign_in body grew 25,093B→43,608B — frontend redeployment may alter controller behavior or register new API routes
+- NEW digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js — fresh JS bundle unexamined for new endpoints
+- CHANGED api.vpbank.com fully exhausted (15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500) — no actionable surface remains on target=api
+- CHANGED developer.vpbank.com PSD2 sandbox read path healthy (/accounts 200 `{"accounts":[]}`, /consents 405, spec 200 46KB) — BOLA mechanism intact, anchor consent expired (needs re-mint)
