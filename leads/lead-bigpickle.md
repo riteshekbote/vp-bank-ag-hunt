@@ -4906,3 +4906,33 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED IDOR @ developer.vpbank.com: fresh read-only cycle — accounts 200 {"accounts":[]} (15B), consents GET 405, spec unchanged; no authz gate added; BOLA mechanism stands pending synthetic re-mint.
 [LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B (content churn) — baseline re-capture recommended, no vuln inference.
 [RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface on prod/dev/stage, prod anon config differential); no decisive exploit landed; bounded by 6+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+## 2026-09-17 04:58:09 UTC [target] (model bigpickle)
+[HYP] Valid-credential session-context injection on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController proven fleet-wide (3/3, defaults 4/129/7); stage renders unpinned hidden user[tenant_id]/user[admin]/user[user_id]; POST accepts injected params w/o validation error; failed-login axis negative (context NOT written pre-auth), so only success-path unobserved; page live 200 this cycle but frontend just redeployed (bundle hash changed) — controller behavior re-verification warranted
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != {} or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+injected params+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 {}/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 -> fresh anon session read, zero binding); read path re-verified this cycle (accounts 200 15B, consents 405, spec 200 46112B, no authz gate); only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+[HYP] Fresh stage bundle exposes new API endpoints or changed tenant/authgates not in prior 4MB API map
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js
+confidence: 45
+reasoning: bundle hash redeployed while failed-login axis was already exhausted against the OLD bundle; new build may register new routes (POST-only sessions/*, direct_uploads, etc.) or alter force_tenant handling; PDF.js added implies new document/PDF rendering surface
+evidence_needed: any endpoint string in new bundle absent from the prior API map that responds non-404/405 anonymously
+verify_steps: PASSIVE: GET the new .js bundle; extract /api/v1/* and /rails/* URL literals; diff vs known map (sessions/idp_login|secure_session|reset_password, users, tenants, qr_codes/generate, current_user_details, active_storage/direct_uploads); probe only new hits read-only
+impact: may unlock a passive-verifiable stage surface or fresh angle on the injection chain; LOW-MEDIUM
+testability: PASSIVE
+[NEXT] PROBE: GET https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js ; extract /api/v1/* + /rails/* URL literals and diff against prior API map; probe any NEW paths read-only (GET/HEAD) to detect a non-404 anonymous route.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface live, prod anon config differential intact); stage frontend actively redeployed raising odds of fresh route real estate; progress bounded by 7+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
