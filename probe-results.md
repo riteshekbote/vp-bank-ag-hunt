@@ -565,3 +565,8 @@ https://www.vpbank.com/portal/api/language/en -> HTTP 403
 
 ## 2026-09-16 21:42:31 UTC
 https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 00:02:31 UTC
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400

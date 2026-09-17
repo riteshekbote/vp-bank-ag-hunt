@@ -328,3 +328,7 @@
 - 2026-09-16 REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
 - 2026-09-16 ACCEPTED IDOR @ developer.vpbank.com: fresh read-only cycle — accounts 200 {"accounts":[]} (15B), consents GET 405, spec unchanged; no authz gate added; BOLA mechanism stands pending synthetic re-mint.
 - 2026-09-16 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B (content churn) — baseline re-capture recommended, no vuln inference.
+- 2026-09-17 REJECTED MISCONFIG @ api.vpbank.com (subdomain takeover): ellb.ch is active Swiss load balancer, not a decommissioned cloud provider tenant
+- 2026-09-17 REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
+- 2026-09-17 ACCEPTED IDOR @ developer.vpbank.com: fresh read-only cycle — accounts 200 {"accounts":[]} (15B), consents GET 405, spec unchanged; no authz gate added; BOLA mechanism stands pending synthetic re-mint.
+- 2026-09-17 ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B (content churn) — baseline re-capture recommended, no vuln inference.
