@@ -346,3 +346,4 @@
 - 2026-09-17 ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
 - 2026-09-17 REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
 - 2026-09-17 REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
+- 2026-09-17 REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1/ endpoints; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change

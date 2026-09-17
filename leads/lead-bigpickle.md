@@ -5072,3 +5072,4 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
 [LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
 [RISK] vp-bank-ag: 50 — standing accepted surfaces intact (stage injection baseline live + pinned, prod 403 differential, PSD2 read path healthy); two advertised redeploy leads resolved negative this cycle; only unexecuted HUMAN_ONLY proofs (valid-creds POST, BOLA re-mint) remain rate-limiting; discovery gap closed, not risk-added.
+## 2026-09-17 23:51:28 UTC [target] (model bigpickle)
