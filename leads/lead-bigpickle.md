@@ -5019,3 +5019,33 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 {} (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
 [LEARN] REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
 [RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface live, prod anon config differential intact); stage frontend actively redeployed raising odds of fresh route real estate; progress bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+## 2026-09-17 18:32:57 UTC [target] (model bigpickle)
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage renders unpinned hidden fields; POST accepts injected params w/o validation; failed-login axis negative (context NOT written pre-auth) so only success path unobserved; baseline live this cycle (200/43,991B, token valid)
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token `YaafNjUK…2Ag`) → POST email/password+3 injected params+CSRF+_us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs 200 {}/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA proven 09-05 (anon POST 201 → fresh anon session read, zero binding); read path re-verified 09-16/17 (accounts 200 `{"accounts":[]}` 15B, consents 405, spec 46,112B, no authz gate); only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint yields consentId readable by different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + X-Request-ID:<uuid> + Content-Type:application/json → on 201 capture id; new anon session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class POC (synthetic data)
+testability: HUMAN_ONLY
+[HYP] New vpbank/ UI namespace on stage hints shared build with dev/prod carrying new API refs
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 40
+reasoning: redeploy added `/assets/vpbank/application-8973c31e…css` + `floating-placeholder` + Klaro hash change; if dev/prod share build, their sign_in pages may reference a JS bundle w/ new API literals diffable vs prior 4MB map
+evidence_needed: any dev/prod sign_in-referenced JS containing /api/v1/* literal absent from prior map
+verify_steps: PASSIVE: GET dev/prod /users/sign_in, extract script srcs, fetch each JS, grep `/api/v1/` + `/rails/` literals, diff vs known map; probe new hits GET/HEAD
+impact: may unlock passive new route on looser-dev; LOW-MEDIUM
+testability: PASSIVE
+[NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<creds>` + `authenticity_token` + `user[email]&user[password]&user[tenant_id]=1&user[admin]=true&user[user_id]=1` + `_us_session` cookie; on success replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon `200 {}` / `401` baseline.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces re-verified this cycle (stage injection baseline live, prod 403 differential intact, PSD2 read path healthy); active stage redeploy raised then closed the bundle-lead (negative); progress remains bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.

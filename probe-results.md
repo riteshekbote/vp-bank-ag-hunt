@@ -587,3 +587,8 @@ https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5
 https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 18:35:12 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
