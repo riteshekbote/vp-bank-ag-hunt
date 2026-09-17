@@ -933,3 +933,8 @@ www.vpbank.com
 - CHANGED attack surface expanded beyond 3 inventory hosts; dev/stage domains are scoped (company-operated) and in production trust chain
 
 ## 2026-09-17 04:59:03 UTC
+
+## 2026-09-17 09:52:17 UTC
+- CHANGED `target=api` is fully exhausted (15+ cycles of uniform INVALID_REQUEST_RESOURCE JSON 500) — state shows target=api but no actionable surface remains
+- NEW digital-onboarding-stage.vpbank.com bundle redeployed (hash changed to `4297ba05...`) — new build may register new routes or alter controller behavior; prior API map was extracted from old bundle
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in body grew 25,093B→43,608B — content churn suggests frontend redeployment alongside backend; injection surface needs fresh baseline capture

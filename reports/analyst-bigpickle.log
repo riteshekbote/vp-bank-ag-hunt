@@ -30383,3 +30383,75 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface live, prod anon config differential intact); stage frontend actively redeployed raising odds of fresh route real estate; progress bounded by 7+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+===== ANALYST bigpickle 2026-09-17 09:52:17 UTC =====
+[0m
+> build · big-pickle
+[0m
+## STEP 1 — DELTA
+
+[CHANGED] `target=api` is fully exhausted (15+ cycles of uniform INVALID_REQUEST_RESOURCE JSON 500) — state shows target=api but no actionable surface remains
+[NEW] digital-onboarding-stage.vpbank.com bundle redeployed (hash changed to `4297ba05...`) — new build may register new routes or alter controller behavior; prior API map was extracted from old bundle
+[CHANGED] digital-onboarding-stage.vpbank.com/users/sign_in body grew 25,093B→43,608B — content churn suggests frontend redeployment alongside backend; injection surface needs fresh baseline capture
+[NO_DELTA] All rejected assets (mobile/ebics/tracking/beta/concentsol/api/api-prep/designsystem/sts/vpbank-dev/stage WAF) unchanged
+
+## STEP 2 — PRIORITIZE
+
+[PRIO] digital-onboarding-stage.vpbank.com,9.0,attack_surface=9 business_value=9 tech_exposure=8 gate_ease=8 cloud_surface=7 freshness=10 — live Rails/Devise with unpinned hidden session-context fields, custom overridden SessionsController, Sentry debug telemetry, new bundle hash this cycle; strongest passive+HUMAN surface
+[PRIO] digital-onboarding.vpbank.com,8.5,attack_surface=8 business_value=9 tech_exposure=8 gate_ease=7 cloud_surface=6 freshness=8 — production sibling, same controller fleet-wide, prod tenant_id=4 default, /api/v1/tenants 403 stricter posture; HUMAN-only but highest business impact if successful
+[PRIO] developer.vpbank.com,7.5,attack_surface=7 business_value=8 tech_exposure=7 gate_ease=7 cloud_surface=5 freshness=7 — PSD2 sandbox BOLA read path healthy (accounts 200, consents 405), OpenAPI spec 46KB; re-mint anchor would restore CRITICAL-class cross-session consent/account/balance read
+
+## STEP 3 — HYPOTHESES
+
+[HYP] Fresh stage bundle exposes new API endpoints or changed controller behavior not in prior 4MB API map
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js
+confidence: 45
+reasoning: bundle hash redeployed while failed-login axis was already exhausted against OLD bundle; new build may register new routes (POST-only sessions/*, direct_uploads, etc.) or alter force_tenant handling; PDF.js added implies new document/PDF rendering surface; body grew 25K→43K suggesting significant frontend changes
+evidence_needed: any endpoint string in new bundle absent from the prior API map that responds non-404/405 anonymously
+verify_steps: PASSIVE: GET https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js ; extract /api/v1/* + /rails/* URL literals and diff against prior API map (sessions/idp_login|secure_session|reset_password, users, tenants, qr_codes/generate, current_user_details, active_storage/direct_uploads); probe only new hits read-only (GET/HEAD) to detect a non-404 anonymous route
+impact: may unlock a passive-verifiable stage surface or fresh angle on the injection chain; LOW-MEDIUM
+testability: PASSIVE
+
+[HYP] Valid-credential session-context injection on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: overridden Users::SessionsController proven fleet-wide (3/3 venues, defaults 4/129/7); stage renders unpinned hidden user[tenant_id]/user[admin]/user[user_id]; POST accepts injected params w/o validation error; failed-login axis negative (context NOT written pre-auth), so only success-path unobserved; page live 200 this cycle but frontend just redeployed (bundle hash changed) — controller behavior re-verification warranted
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants != {} or /admin/api/v1/users != 401)
+verify_steps: HUMAN: GET /users/sign_in capture authenticity_token+_us_session+session_expiry; POST email/password+injected params+CSRF; replay GET /api/v1/tenants and /admin/api/v1/users; diff vs 200 {}/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident documents, wire status; HIGH
+testability: HUMAN_ONLY
+
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance/confirm-funds read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA fully proven 09-05 (anon POST 201 -> fresh anon session read, zero binding); read path re-verified this cycle (accounts 200 15B, consents 405, spec 200 46112B, no authz gate); only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<uuid> + Content-Type:application/json; on 201 capture consentId; fresh anonymous session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class reportable POC (synthetic data only)
+testability: HUMAN_ONLY
+
+## STEP 4 — SELF-CRITIQUE
+
+[PARKED] Fresh stage bundle endpoint discovery: confidence 45 is marginal but above threshold; asset is PASSIVE-testable with no risk; bundle may have changed meaningfully given body size jump 25K→43K; RETAIN as lowest-priority next action.
+[FINAL] Survivors ranked:
+1. [95] Valid-credential session-context injection on digital-onboarding-stage — highest confidence, highest impact, HUMAN_ONLY
+2. [66] PSD2 sandbox BOLA re-mint — proven mechanism, needs one mutating POST then read-only verification, HUMAN_ONLY  
+3. [45] Fresh stage bundle endpoint discovery — PASSIVE, low risk, may reveal new surface or confirm controller unchanged
+
+## STEP 5 — NEXT ACTION
+
+[NEXT] PROBE: GET https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js ; extract /api/v1/* + /rails/* URL literals and diff against prior API map; probe any NEW paths read-only (GET/HEAD) to detect non-404 anonymous routes.
+
+## STEP 6 — LEARNING
+
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B (content churn) — baseline re-capture recommended, no vuln inference.
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+[LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 {} (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
+
+## STEP 7 — RISK
+
+[RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface on prod/dev/stage, prod anon config differential intact); stage frontend actively redeployed raising odds of fresh route real estate; progress bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
