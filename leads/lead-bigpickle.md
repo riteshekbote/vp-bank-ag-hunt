@@ -5073,3 +5073,24 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
 [RISK] vp-bank-ag: 50 — standing accepted surfaces intact (stage injection baseline live + pinned, prod 403 differential, PSD2 read path healthy); two advertised redeploy leads resolved negative this cycle; only unexecuted HUMAN_ONLY proofs (valid-creds POST, BOLA re-mint) remain rate-limiting; discovery gap closed, not risk-added.
 ## 2026-09-17 23:51:28 UTC [target] (model bigpickle)
+## 2026-09-18 02:47:41 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox consent-object BOLA — cross-identity read live this cycle
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 90
+reasoning: consent `799bf6a0-2c45-4300-a51b-18935f378fc5` minted 09-17 under basic-auth identity (test:test); 09-18 read by brand-new anonymous session (fresh AL_SESS-S, no auth/basic-auth/session) → /status 200 valid, GET 200 w/ access scopes+IBAN LI4908805500000000008; genesis off same TPP both reqs? no — reads sent with zero credentials; differential clean: random UUID /status 404, expired anchor 6b517824… /status 404
+evidence_needed: (obtained) fresh anon session status/GET differ from 404 baseline for the minted id
+verify_steps: (executed 09-18, read-only GET) baseline `/accounts` 200 15B; `GET /consents/799bf6a0-…/status` 200; `GET /consents/799bf6a0-…` 200 388B; `GET /consents/<random-uuid>/status` 404; `GET /consents/6b517824-…/status` 404; then `GET /accounts`+Consent-ID 200 `{"accounts":[]}`, `/accounts/{iban}[/balances|/transactions]` 404
+impact: any known synthetic consentId → cross-identity read of consent scope + IBAN (privacy leak), zero binding to minting TPP; sandbox-level POC; prod ASPSP (openbanking) mTLS-gated so no prod carry; MEDIUM on sandbox, indicator of authz model flaw
+testability: PASSIVE
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, pre-auth cookies; failed-login axis negative (context NOT written pre-auth) so only success path unobserved; baseline live 09-17
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email/password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] PROBE: read-only GET `https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` from a THIRD fresh anonymous session tomorrow to re-confirm the reused-anchor consent object stays globally readable across sessions (rules out single-session luck), keeping 1rps.
+[RISK] vp-bank-ag: 48 — PSD2 consent-object BOLA re-proven live with clean differential (highest-confidence standing finding, synthetic-data sandbox only, no prod carry); deep-data axis closed; stage injection surface still live but HUMAN_ONLY-bound for 10+ cycles; no new discovery gap — rating steady, bounded by unexecuted credential/authorized proofs, not by surface.

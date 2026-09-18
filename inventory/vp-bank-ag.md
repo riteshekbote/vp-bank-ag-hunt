@@ -970,3 +970,12 @@ www.vpbank.com
 - CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context 
 - CHANGED PSD2 sandbox BOLA mechanism intact: consent/account/payment cross-session read with zero identity binding on consentId/paymentId
 - CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, but post-POST co
+
+## 2026-09-18 02:47:51 UTC
+- NEW digital-onboarding-stage.vpbank.com JS bundle redeployed: hash `4297ba05...` (was `7f7cb839...`); `/users/sign_in` body grew 25,093B→43,608B (74% increase) — frontend redeployment, new bundle primaril
+- NEW developer.vpbank.com PSD2 sandbox consent re-mint SUCCESSFUL: POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 returned 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`
+- CHANGED api.vpbank.com fully exhausted (15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500) — no actionable surface remains on target=api
+- CHANGED digital-onboarding-stage.vpbank.com/users/sign_in confirms hidden fields `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token ×3 + pre-auth `_us_session`/`session_expiry` c
+- CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context 
+- CHANGED PSD2 sandbox BOLA mechanism intact: consent/account/payment cross-session read with zero identity binding on consentId/paymentId
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, but post-POST co
