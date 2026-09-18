@@ -2138,3 +2138,21 @@
 - LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
+
+## RANKED HYPOTHESES 2026-09-18 12:40:20 UTC
+- [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office (from art/lead_nemotron3.txt)
+- [50] developer.vpbank.com/psd2/berlin-group/v1/consents/{id}: Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity) (from art/lead_bigpickle.txt)
+- NEXT(hypotheses-bigpickle.txt): HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token + _us_session), POST `email/<valid_creds>`+`password`
+- NEXT(hypotheses-nemotron3.txt): HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh token), then POST `email/<valid_creds>` + `authenticity_tok
+- LEARN: ACCEPTED ACTIVE @ digital-onboarding-stage.vpbank.com: /users/sign_in live 200 this cycle with unpinned hidden session-context fields; body grew 25,093B→43,608B
+- LEARN: ACCEPTED MISCONFIG @ digital-onboarding family: 3/3 venues render client-controlled user[tenant_id]/user[admin]/user[user_id] with differing defaults (4/129/7) 
+- LEARN: ACCEPTED IDOR @ developer.vpbank.com (PSD2 sandbox BOLA): consent/account/payment cross-session read, zero binding on consentId/paymentId
+- LEARN: REJECTED AUTH @ digital-onboarding-stage.vpbank.com/users/sign_in (failed-login session-context): verify_steps EXECUTED — POST with invalid creds + user[admin]=
+- LEARN: REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/assets/application-4297ba05…js: bundle is Klaro consent-manager + DAB BNP Paribas widget — zero /api/v1
+- LEARN: REJECTED MISCONFIG @ digital-onboarding.vpbank.com/control-center/assets/index-BmxtS-cn.js: prod SPA bundle freshly fetched 4.31MB — API literal map identical t
+- LEARN: REJECTED MISCONFIG @ mobile.vpbank.com: EV-cert genuine (O=VP Bank AG), Apache serves identical 404 "Maintenance" on ALL paths — maintenance-gated, no mobile-ba
+- LEARN: REJECTED MISCONFIG @ ebics.vpbank.com: Swisscom-hosted static EBICS info landing page, all protocol paths 404 — active product, no takeover
+- LEARN: REJECTED MISCONFIG @ tracking.vpbank.com: 303→/error_path/400.html — WAF maintenance family, no content
+- LEARN: REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
+- LEARN: REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
+- LEARN: REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/device
