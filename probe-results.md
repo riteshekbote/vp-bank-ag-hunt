@@ -620,3 +620,8 @@ https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a5
 https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
 https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
 https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-18 16:49:58 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267

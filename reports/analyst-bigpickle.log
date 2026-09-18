@@ -31759,3 +31759,91 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA) independently re-confirmed across a 4th fresh anonymous session with clean 404 control; stage session-context injection surface still live at 95-confidence but Human-bound (valid creds) for 10+ cycles; discovery gap closed — further movement rate-limited solely by unexecuted HUMAN_ONLY proofs (valid-creds POST, consent re-mint/DELETE), not by surface.
+===== ANALYST bigpickle 2026-09-18 16:49:53 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && git log --oneline -5 2>/dev/null; ls -R . | head -50
+total 576
+drwxr-xr-x 12 runner runner   4096 Sep 18 16:42 .
+drwxr-xr-x  3 runner runner   4096 Sep 18 16:42 ..
+drwxr-xr-x  7 runner runner   4096 Sep 18 16:42 .git
+drwxr-xr-x  3 runner runner   4096 Sep 18 16:42 .github
+-rw-r--r--  1 runner runner   1752 Sep 18 16:42 README.md
+-rw-r--r--  1 runner runner     32 Sep 18 16:42 analyst-out.txt
+-rw-r--r--  1 runner runner 236797 Sep 18 16:42 analyst-prompt.txt
+-rw-r--r--  1 runner runner 232982 Sep 18 16:42 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 leads
+-rw-r--r--  1 runner runner  31764 Sep 18 16:42 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 reports
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 18 16:42 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 scripts
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 18 16:42 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 18 16:42 triage
+810fc43 triage 2026-09-18-15-52
+.:
+README.md
+analyst-out.txt
+analyst-prompt.txt
+ctx.txt
+inventory
+knowledge
+leads
+probe-results.md
+recon-notes
+reports
+reposcan-raw
+scope.yml
+scripts
+state_bigpickle.json
+state_laguna.json
+state_ling3.json
+state_longcat.json
+state_mimo.json
+state_nemotron3.json
+triage
+
+./inventory:
+vp-bank-ag.md
+
+./knowledge:
+index.md
+
+./leads:
+lead-bigpickle.md
+lead-laguna.md
+lead-ling3.md
+lead-longcat.md
+lead-mimo.md
+lead-nemotron3.md
+reposcan-vp-bank-ag.md
+
+./recon-notes:
+DEDICATED-DEEP.md
+
+./reports:
+analyst-bigpickle.log
+analyst-laguna.log
+analyst-ling3.log
+analyst-longcat.log
+analyst-nemotron3.log
+hypotheses-bigpickle.txt
+hypotheses-laguna.txt
+hypotheses-ling3.txt
+hypotheses-longcat.txt
+[0m
+[0m→ [0mRead README.md
+[0m→ [0mRead scope.yml
+[0m→ [0mRead state_bigpickle.json
+[93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
+[0m✗ [0mcurl -s -o /tmp/c1.body -D /tmp/c1.hdr -w "HTTP %{http_code} | size %{size_download} | %{time_total}s\n" -H "X-Request-ID: 8f3a2c11-9b4d-4c5e-8f1a-2b3c4d5e6f71" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"; sleep 1.2; echo "--- BODY ---"; cat /tmp/c1.body failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
