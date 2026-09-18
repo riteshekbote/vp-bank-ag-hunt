@@ -31847,3 +31847,143 @@ hypotheses-longcat.txt
 [93m[1m! [0mpermission requested: external_directory (/tmp/*); auto-rejecting
 [0m✗ [0mcurl -s -o /tmp/c1.body -D /tmp/c1.hdr -w "HTTP %{http_code} | size %{size_download} | %{time_total}s\n" -H "X-Request-ID: 8f3a2c11-9b4d-4c5e-8f1a-2b3c4d5e6f71" -H "Accept: application/json" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"; sleep 1.2; echo "--- BODY ---"; cat /tmp/c1.body failed
 [91m[1mError: [0mThe user rejected permission to use this specific tool call.
+===== ANALYST bigpickle 2026-09-18 19:27:23 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mmkdir -p /tmp/opencode/p
+urls=(
+"https://digital-onboarding.vpbank.com/admin"
+"https://digital-onboarding-stage.vpbank.com/admin"
+"https://digital-onboarding-dev.vpbank.com/admin"
+"https://digital-onboarding.vpbank.com/sidekiq"
+"https://digital-onboarding-stage.vpbank.com/sidekiq"
+"https://digital-onboarding-dev.vpbank.com/sidekiq"
+"https://digital-onboarding.vpbank.com/up"
+"https://digital-onboarding-stage.vpbank.com/up"
+"https://digital-onboarding-dev.vpbank.com/up"
+"https://digital-onboarding-stage.vpbank.com/rails/info/routes"
+"https://digital-onboarding-stage.vpbank.com/rails/info/properties"
+"https://digital-onboarding-dev.vpbank.com/rails/info/routes"
+"https://digital-onboarding-dev.vpbank.com/rails/info/properties"
+)
+i=0
+for u in "${urls[@]}"; do
+  i=$((i+1))
+  curl -sS --max-time 15 -o /tmp/opencode/p/p$i.out -w "resp$i code=%{http_code} size=%{size_download} url=%{url_effective} loc=%{redirect_url}\n" "$u" 2>/dev/null || echo "resp$i NETFAIL $u"
+  sleep 1
+done
+resp1 code=404 size=1793 url=https://digital-onboarding.vpbank.com/admin loc=
+resp2 code=404 size=1793 url=https://digital-onboarding-stage.vpbank.com/admin loc=
+resp3 code=404 size=1793 url=https://digital-onboarding-dev.vpbank.com/admin loc=
+resp4 code=401 size=0 url=https://digital-onboarding.vpbank.com/sidekiq loc=
+resp5 code=401 size=0 url=https://digital-onboarding-stage.vpbank.com/sidekiq loc=
+resp6 code=401 size=0 url=https://digital-onboarding-dev.vpbank.com/sidekiq loc=
+resp7 code=404 size=1793 url=https://digital-onboarding.vpbank.com/up loc=
+resp8 code=404 size=1793 url=https://digital-onboarding-stage.vpbank.com/up loc=
+resp9 code=404 size=1793 url=https://digital-onboarding-dev.vpbank.com/up loc=
+resp10 code=404 size=1793 url=https://digital-onboarding-stage.vpbank.com/rails/info/routes loc=
+resp11 code=404 size=1793 url=https://digital-onboarding-stage.vpbank.com/rails/info/properties loc=
+resp12 code=404 size=1793 url=https://digital-onboarding-dev.vpbank.com/rails/info/routes loc=
+resp13 code=404 size=1793 url=https://digital-onboarding-dev.vpbank.com/rails/info/properties loc=
+[0m
+[0m$ [0mcurl -sS --max-time 15 -D - -o /dev/null "https://digital-onboarding-stage.vpbank.com/sidekiq" 2>/dev/null | head -20
+echo "---"
+curl -sS --max-time 15 -D - -o /dev/null "https://digital-onboarding.vpbank.com/sidekiq" 2>/dev/null | head -20
+echo "---PSD2---"
+curl -sS --max-time 15 -H "X-Request-ID: 1f2e3d4c-5b6a-7f8e-9d0c-1b2a3c4d5e6f" -o /tmp/opencode/p/p20.out -w "p20 code=%{http_code} size=%{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"
+sleep 1
+curl -sS --max-time 15 -H "X-Request-ID: 2f2e3d4c-5b6a-7f8e-9d0c-1b2a3c4d5e6f" -o /tmp/opencode/p/p21.out -w "p21 code=%{http_code} size=%{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/00000000-0000-0000-0000-000000000000/status"
+sleep 1
+curl -sS --max-time 15 -H "X-Request-ID: 3f2e3d4c-5b6a-7f8e-9d0c-1b2a3c4d5e6f" -H "Consent-ID: 799bf6a0-2c45-4300-a51b-18935f378fc5" -o /tmp/opencode/p/p22.out -w "p22 code=%{http_code} size=%{size_download}\n" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"
+HTTP/2 401 
+date: Fri, 18 Sep 2026 19:25:50 GMT
+content-type: text/plain
+content-length: 0
+www-authenticate: Basic realm=""
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-ViJ/q4mL4ozTIqZJ9FvrMw=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.sentry.io/api/4506139526955009/security/?sentry_key=94032977b82e5066a63980fb795ab821&sentry_release=f6f79a2ee0594f2f32520fd618591fc507e8128b&sentry_environment=stage-vpbank
+x-request-id: 5c0ac330-519a-4b80-9a72-a29f8e6cddf9
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Origin
+
+---
+HTTP/2 401 
+date: Fri, 18 Sep 2026 19:25:51 GMT
+content-type: text/plain
+content-length: 0
+www-authenticate: Basic realm=""
+content-security-policy: default-src 'self' https:; font-src 'self' https: data:; img-src 'self' https: data:; object-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-eval' https: 'unsafe-inline' 'nonce-sqDwJm19DU1VwpPAsUZTAw=='; style-src 'self' https: 'unsafe-inline'; base-uri 'none'; report-uri https://o91423.ingest.us.sentry.io/api/199166/security/?sentry_key=995ec19c043749b783e721ad963907d9&sentry_release=265f59a81e97d3a4ccb594fff1fde06984ad90c7&sentry_environment=production-vpbank
+x-request-id: c76407ae-11ea-442c-ace5-e4553b7aa7e6
+strict-transport-security: max-age=63072000; includeSubDomains
+vary: Origin
+
+---PSD2---
+p20 code=200 size=25
+p21 code=404 size=0
+p22 code=200 size=15
+[0m
+[0m→ [0mRead /tmp/opencode/p/p20.out
+[0m→ [0mRead /tmp/opencode/p/p22.out
+[0m→ [0mRead /tmp/opencode/p/p21.out
+[0m
+[0m$ [0mprintf '%s' "995ec19c043749b783e721ad963907d9" | sha256sum; printf '%s' "94032977b82e5066a63980fb795ab821" | sha256sum
+31a4c64484fce3e6cff6af257264befc9aa5df9d104f918add17007c6061ef4d  -
+a8c552c95beefcd3eac258c3b28517ab0d967453a675107ceb2d305721cd94b4  -
+[0m
+STEP 1 — DELTA
+- NEW @ digital-onboarding fleet prod/stage/dev: `/sidekiq` → HTTP 401 `WWW-Authenticate: Basic realm=""` (0B) on all three venues — Sidekiq Web UI (background-job admin) mounted fleet-wide behind empty-realm HTTP Basic; previously unprobed surface. Sidekiq 401 CPS headers expose prod Sentry key (sha256 31a4c644…ef4d, env production-vpbank via o91423.ingest.us) vs stage (sha256 a8c552c9…b4b, env stage-vpbank).
+- CHANGED @ developer.vpbank.com: BOLA re-read this cycle from fresh anonymous session — `/consents/799bf6a0-…/status` 200 `{"consentStatus":"valid"}` (25B), control random-uuid 404 (0B), `/accounts` w/Consent-ID 200 `{"accounts":[]}` (15B) — anchor valid, mechanism standing, deep-data axis empty for this mint.
+- CHANGED @ digital-onboarding fleet: `/admin`, `/up`, `/rails/info/routes`, `/rails/info/properties` all HTTP 404 (Rails 404.html, 1793B) on prod/stage/dev — no admin-panel/health/route-map mounts (also not Rails 7.1+ default `/up`); surface gaps closed.
+- NO_DELTA on stage /users/sign_in injection (HUMAN-bound, valid creds), api.vpbank.com (exhausted), bundle API map (Klaro+DAB widget bloat).
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com,7.35,PSD2 BOLA read-path live + revocation candidate; anon-gated reads
+- [PRIO] digital-onboarding-stage.vpbank.com,7.05,session-context injection surface + new Sidekiq mount
+- [PRIO] digital-onboarding.vpbank.com,6.90,Sidekiq management surface + accepted anon /brand config baseline
+
+STEP 3 — HYPOTHESES
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 50
+reasoning: read path re-confirmed this cycle — any anonymous session reads another creator's consent (anchor 799bf6a0 status 200, control uuid 404); Berlin Group defines DELETE /consents/{consentId}; if DELETE inherits the same zero-binding, any known consentId is revocable cross-identity.
+evidence_needed: DELETE /consents/{id} from fresh anon session → 204/200, then GET /consents/{id}/status flips to 404/"revokedByPsu"; control random-uuid DELETE returns 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic sandbox): re-mint consent via POST /consents (basic auth test:test, X-Request-ID ending 5, payload access=["accounts","balances","transactions"] validUntil=2027-03-11 frequencyPerDay=100) → capture new N → DELETE /consents/{N} w/ fresh X-Request-ID → GET /consents/{N}/status; repeat DELETE on random-uuid as control.
+impact: cross-identity revocation of any known consent → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic, no prod carry)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet-wide overridden Users::SessionsController (3/3 venues, defaults 4/129/7); stage hidden fields unpinned (7/false/0), pre-auth _us_session+session_expiry; POST accepts injected params without validation error; failed-login axis negative (context NOT written pre-auth) — only success path unobserved; surface unchanged this cycle.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token+_us_session) → POST email/password+3 injected params+CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Sidekiq Web UI reachable with shared/default Basic creds on prod back-office
+class: MISCONFIG
+asset: digital-onboarding.vpbank.com/sidekiq
+confidence: 40
+reasoning: /sidekiq HTTP 401 `Basic realm=""` (0B) on prod/stage/dev confirms Sidekiq admin mounted fleet-wide; empty realm, no source-IP allowlist; prior fleet pattern = inconsistent gating (stage /control-center/ Basic vs /api/v1/* anonymous) suggests cred-hygiene risk; job payloads can carry PII.
+evidence_needed: one credential attempt (documented/reused basic creds, NOT brute-force) against prod /sidekiq yields 200 UI.
+verify_steps: PASSIVE done (401 Basic realm=""); HUMAN: single attempt with any known/reused venue basic credential against GET /sidekiq; on 200, inspect queues/job-args for PII.
+impact: job-control (retry/purge/see payloads incl. PII) on prod background queue; MEDIUM if creds obtained
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Anonymous mint → credential-free BOLA chain (45): HUMAN-only, unexecuted 10+ cycles; revocation/re-mint NEXT supersedes it (any re-mint doubles as the anonymous-mint test if auth header omitted).
+- [PARKED] Sidekiq Basic creds (40): /sidekiq 401 Basic realm="" confirmed but exploit requires credentials; brute-force REJECTED class; no bypass evidence → surface-only exposure, keep as NEW INFO not a finding.
+- [FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in — valid-creds session-context injection (HUMAN_ONLY, standing)
+- [FINAL] 2. [92] developer.vpbank.com/psd2/berlin-group/v1/consents/{id} — consent-object BOLA, re-confirmed this cycle (PASSIVE)
+- [FINAL] 3. [50] developer.vpbank.com/psd2/berlin-group/v1/consents/{id} DELETE — cross-identity revocation (HUMAN_ONLY)
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: developer.vpbank.com revocation proof — POST /psd2/berlin-group/v1/consents (basic auth `test:test`, X-Request-ID `<new-uuid-ending-5>`, JSON `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`) → capture new consentId N → DELETE /psd2/berlin-group/v1/consents/{N} (no auth, fresh X-Request-ID) → GET /consents/{N}/status; run DELETE on random-uuid as 404/405 control. Preserve standing read anchor 799bf6a0-2c45-4300-a51b-18935f378fc5.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com: BOLA re-confirmed this cycle — anchor 799bf6a0 /status 200 `{"consentStatus":"valid"}` from fresh anon session, control random-uuid 404, /accounts w/Consent-ID 200 `{"accounts":[]}` (deep-data axis empty for this mint).
+- [LEARN] NEW INFO @ digital-onboarding prod/stage/dev /sidekiq: HTTP 401 `Basic realm=""` (0B) fleet-wide — Sidekiq Web UI mounted; prod/stage Sentry keys sha256 31a4c644…ef4d / a8c552c9…b4b in SDK-report CSP; access gated on creds.
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding fleet /admin,/up,/rails/info/{routes,properties}: uniform 404 (Rails 404.html 1793B) on all venues — no admin-panel/health/route-map mounts; closes the gap.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed this cycle (anchor valid, clean 404 control); new Sidekiq management surface on prod/stage/dev is gated on unknown Basic creds (surface-only, no escalation evidence); stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; movement rate-limited solely by unexecuted HUMAN_ONLY proofs.
