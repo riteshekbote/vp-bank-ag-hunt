@@ -1,7 +1,7 @@
-## 2026-09-18 19:26:31 UTC [target] (model nemotron3)
-[NEW] Target pivot confirmed: `api.vpbank.com` fully exhausted (15+ cycles uniform `INVALID_REQUEST_RESOURCE` JSON 500) — no actionable surface remains on `target=api`
-[NEW] Digital-onboarding-stage bundle redeployed: hash `4297ba05...` (was `7f7cb839...`); `/users/sign_in` body grew 25,093B→43,608B (74%) — frontend redeploy, new bundle is jQuery/Select2/UI libs only, zero new `/api/v1/` endpoints
-[NEW] PSD2 sandbox consent re-mint SUCCESSFUL: `POST /consents` with basic auth (test:test) + `X-Request-ID` ending in 5 → 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous read of `/consents/{id}/status` and `/consents/{id}` confirmed (BOLA mechanism intact)
+## 2026-09-18 21:52:40 UTC [target] (model nemotron3)
+[NEW] api.vpbank.com pivot confirmed exhausted — 15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500, all vectors (SSRF, policy bypass, XML/SOAP, routing headers) tested and rejected across all models; no actionable surface remains on target=api
+[NEW] digital-onboarding-stage.vpbank.com bundle redeploy confirmed — hash `4297ba05...` (was `7f7cb839...`), `/users/sign_in` body grew 25,093B→43,608B (74%), but bundle analysis shows only jQuery/Select2/UI library churn, zero new `/api/v1/` endpoints or controller logic changes
+[NEW] PSD2 sandbox consent re-mint SUCCESSFUL — POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 → 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous read of `/consents/{id}/status` and `/consents/{id}` confirmed (BOLA mechanism intact)
 [CHANGED] All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden `Users::SessionsController` consuming client-controlled session-context params
 [CHANGED] Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10→09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay shows NO differential vs anonymous baseline — session context NOT written pre-auth
 [CHANGED] All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts, api-prep, designsystem, vpbank-dev/stage)
@@ -36,7 +36,7 @@ evidence_needed: POST /users/sign_in with valid email/password + injected user[a
 verify_steps: GET https://digital-onboarding.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults + _us_session); POST with valid email/password + injected params — observe HTTP status, Set-Cookie, redirect; replay cookie on /api/v1/tenants, /api/v1/current_user_details, /admin/api/v1/users, /control-center/
 impact: Wrong-tenant or admin session on production bank-onboarding back-office → cross-tenant onboarding PII, identity documents, banking transactions, wire transfers, role management; severity CRITICAL
 testability: HUMAN_ONLY
-[PARKED] Fresh stage bundle mutation alters controller behavior or exposes new admin endpoints: confidence 45 < threshold; bundle analysis shows only library code churn (Klaro consent-manager + DAB BNP Paribas widget), no new /api/v1/ endpoints or controller logic changes detected
+[PARKED] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-dev back-office: lower business value (synthetic data) vs prod/stage; same controller logic but dev environment
 [FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection on stage back-office (HUMAN_ONLY)
 [FINAL] 2. [85] developer.vpbank.com/psd2/berlin-group/v1/consents: PSD2 sandbox BOLA re-mint restores cross-session consent/account read (PASSIVE)
 [FINAL] 3. [90] digital-onboarding.vpbank.com/users/sign_in: Valid-credential session-context injection on prod back-office (HUMAN_ONLY)

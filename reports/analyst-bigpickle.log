@@ -31987,3 +31987,163 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed this cycle (anchor valid, clean 404 control); new Sidekiq management surface on prod/stage/dev is gated on unknown Basic creds (surface-only, no escalation evidence); stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; movement rate-limited solely by unexecuted HUMAN_ONLY proofs.
+===== ANALYST bigpickle 2026-09-18 21:52:50 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls art/ 2>/dev/null | head -50
+total 584
+drwxr-xr-x 12 runner runner   4096 Sep 18 21:49 .
+drwxr-xr-x  3 runner runner   4096 Sep 18 21:49 ..
+drwxr-xr-x  7 runner runner   4096 Sep 18 21:49 .git
+drwxr-xr-x  3 runner runner   4096 Sep 18 21:49 .github
+-rw-r--r--  1 runner runner   1752 Sep 18 21:49 README.md
+-rw-r--r--  1 runner runner     32 Sep 18 21:49 analyst-out.txt
+-rw-r--r--  1 runner runner 238704 Sep 18 21:49 analyst-prompt.txt
+-rw-r--r--  1 runner runner 234889 Sep 18 21:49 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 leads
+-rw-r--r--  1 runner runner  32407 Sep 18 21:49 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 reports
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 18 21:49 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 scripts
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 triage
+[0m
+[0m✱ [0mGlob "**/*.yml"[90m 1 match[0m
+[0m→ [0mRead scope.yml
+[0m
+[0m$ [0mcat state_bigpickle.json && echo "---ANALYST-OUT---" && cat analyst-out.txt && echo "---LEADS---" && ls -la leads/ && echo "---RECON---" && ls -la recon-notes/
+{"phase": "POC", "target": "api"}---ANALYST-OUT---
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mls -la && ls art/ 2>/dev/null | head -50
+total 584
+drwxr-xr-x 12 runner runner   4096 Sep 18 21:49 .
+drwxr-xr-x  3 runner runner   4096 Sep 18 21:49 ..
+drwxr-xr-x  7 runner runner   4096 Sep 18 21:49 .git
+drwxr-xr-x  3 runner runner   4096 Sep 18 21:49 .github
+-rw-r--r--  1 runner runner   1752 Sep 18 21:49 README.md
+-rw-r--r--  1 runner runner     32 Sep 18 21:49 analyst-out.txt
+-rw-r--r--  1 runner runner 238704 Sep 18 21:49 analyst-prompt.txt
+-rw-r--r--  1 runner runner 234889 Sep 18 21:49 ctx.txt
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 inventory
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 knowledge
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 leads
+-rw-r--r--  1 runner runner  32407 Sep 18 21:49 probe-results.md
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 recon-notes
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 reports
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 reposcan-raw
+-rw-r--r--  1 runner runner   3228 Sep 18 21:49 scope.yml
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 scripts
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_bigpickle.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_laguna.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_ling3.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_longcat.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_mimo.json
+-rw-r--r--  1 runner runner     33 Sep 18 21:49 state_nemotron3.json
+drwxr-xr-x  2 runner runner   4096 Sep 18 21:49 triage
+[0m
+[0m✱ [0mGlob "**/*.yml"[90m 1 match[0m
+[0m→ [0mRead scope.yml
+---LEADS---
+total 1836
+drwxr-xr-x  2 runner runner    4096 Sep 18 21:49 .
+drwxr-xr-x 12 runner runner    4096 Sep 18 21:49 ..
+-rw-r--r--  1 runner runner  762000 Sep 18 21:49 lead-bigpickle.md
+-rw-r--r--  1 runner runner    5355 Sep 18 21:49 lead-laguna.md
+-rw-r--r--  1 runner runner    5250 Sep 18 21:49 lead-ling3.md
+-rw-r--r--  1 runner runner    5460 Sep 18 21:49 lead-longcat.md
+-rw-r--r--  1 runner runner      18 Sep 18 21:49 lead-mimo.md
+-rw-r--r--  1 runner runner 1057186 Sep 18 21:49 lead-nemotron3.md
+-rw-r--r--  1 runner runner   14465 Sep 18 21:49 reposcan-vp-bank-ag.md
+---RECON---
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep 18 21:49 .
+drwxr-xr-x 12 runner runner 4096 Sep 18 21:49 ..
+-rw-r--r--  1 runner runner  819 Sep 18 21:49 DEDICATED-DEEP.md
+[0m
+[0m$ [0mtail -60 probe-results.md; echo "===TAIL-LEADS==="; grep -n "2026-09-18" leads/lead-bigpickle.md | tail -5
+## 2026-09-17 04:59:10 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-17 09:52:23 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-17 14:38:57 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 18:35:12 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 21:47:03 UTC
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+
+## 2026-09-17 23:54:11 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-18 02:47:57 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` -> HTTP 400
+
+## 2026-09-18 07:56:56 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+https://developer.vpbank.com/psd2/berlin-group/v1/consents -> HTTP 400
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5` -> HTTP 400
+
+## 2026-09-18 12:40:25 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-18 16:49:58 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding-stage.vpbank.com/assets/application-4297ba05969faa3b5b880d4b54ab2ecb12984c19b38dd93f97cb473cc2a0ecc0.js -> 200 len=1140267
+
+## 2026-09-18 19:27:28 UTC
+https://digital-onboarding-stage.vpbank.com/users/sign_in -> 200 len=0
+https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status -> HTTP 400
+https://digital-onboarding.vpbank.com/users/sign_in -> 200 len=0
+===TAIL-LEADS===
+5076:## 2026-09-18 02:47:41 UTC [target] (model bigpickle)
+5097:## 2026-09-18 07:56:38 UTC [target] (model bigpickle)
+5274:## 2026-09-18 12:40:11 UTC [target] (model bigpickle)
+5304:## 2026-09-18 16:42:56 UTC [target] (model bigpickle)
+5305:## 2026-09-18 19:27:13 UTC [target] (model bigpickle)
+[0m
+[93m[1m! [0mpermission requested: external_directory (/proc/sys/kernel/random/*); auto-rejecting
+[0m✗ [0mU1=$(cat /proc/sys/kernel/random/uuid); U2=$(cat /proc/sys/kernel/random/uuid); U3=$(cat /proc/sys/kernel/random/uuid)
+echo "== 1. PSD2 anchor status (anchor consent, X-Request-ID) =="
+curl -s -m 20 -H "X-Request-ID: $U1" -w "\nRC=%{http_code} SIZE=%{size_download}\n" https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status
+sleep 1
+echo "== 2. CONTROL: random-uuid status (X-Request-ID) =="
+curl -s -m 20 -H "X-Request-ID: $U2" -w "\nRC=%{http_code} SIZE=%{size_download}\n" https://developer.vpbank.com/psd2/berlin-group/v1/consents/$U3/status failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.
