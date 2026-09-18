@@ -1031,3 +1031,10 @@ www.vpbank.com
 - CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden `Users::SessionsController` consuming client-controlled session-contex
 - CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10→09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay 
 - CHANGED All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts, api-prep, designsystem, vpbank-dev/stage)
+
+## 2026-09-18 23:54:04 UTC
+- NEW api.vpbank.com pivot confirmed exhausted — 15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500, all vectors (SSRF, policy bypass, XML/SOAP, routing headers) tested and rejected; no actionable surface
+- NEW digital-onboarding-stage.vpbank.com bundle redeploy confirmed — hash `4297ba05...` (was `7f7cb839...`), `/users/sign_in` body grew 25,093B→43,608B (74%), bundle analysis shows only jQuery/Select2/UI l
+- NEW PSD2 sandbox consent re-mint SUCCESSFUL — POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 → 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous r
+- CHANGED All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden `Users::SessionsController` consuming client-controlled session-contex
+- CHANGED Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10→09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay 
