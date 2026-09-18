@@ -62,3 +62,7 @@
 - 2 lead(s) marked VALID at 2026-09-16 18:14:17 UTC
   - **VERDICT: VALID**
   - | PSD2 BOLA (developer) | VALID | 8.6 | Report to program |
+
+- 2 lead(s) marked VALID at 2026-09-18 21:28:18 UTC
+  - | **Q4 Provable** | NO — requires valid dev/stage test credentials to POST sign-in with mass-assignment params. Cannot prove controller accepts/ignores admin param without authentication. Hidden field
+  - | **Q4 Provable** | PARTIALLY — metadata endpoint visible, but device_code grant requires valid client_id (unknown) |
