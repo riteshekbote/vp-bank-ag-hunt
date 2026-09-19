@@ -32896,3 +32896,74 @@ Called in `zona.addEventListener('pointerdown', ...)` and `knob.addEventListener
 9. **Optional Next Step:**
    Run the actual test suite for the drone control project to validate the arrow/pulse changes, then clean up any remaining artifacts. Direct quote from my tracking: my todos were `"Build and verify"` (marked `in_progress`), meaning I should run the test suite (`python manage.py test`) and confirm all tests pass, then report both features (and the known 225° overshoot) to the user.
 </summary>
+===== ANALYST bigpickle 2026-09-19 02:49:36 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "anchor:%{http_code}:%{size_download}\n" -H "X-Request-ID: 9c3e6a11-22b4-4a07-9d5a-7f81c1234567" --max-time 15 https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status; echo "---"; curl -s -o /dev/null -w "ctl:%{http_code}:%{size_download}\n" -H "X-Request-ID: 9c3e6a11-22b4-4a07-9d5a-7f81c1234568" --max-time 15 https://developer.vpbank.com/psd2/berlin-group/v1/consents/00000000-0000-4000-8000-000000000000/status
+anchor:200:25
+---
+ctl:404:0
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "signin:%{http_code}:%{size_download}\n" --max-time 15 https://digital-onboarding-stage.vpbank.com/users/sign_in; echo "---"; curl -s -o /dev/null -w "tenants:%{http_code}:%{size_download}\n" --max-time 15 https://digital-onboarding-stage.vpbank.com/api/v1/tenants; echo "---"; curl -s -o /dev/null -w "accounts:%{http_code}:%{size_download}\n" -H "X-Request-ID: 9c3e6a11-22b4-4a07-9d5a-7f81c1234569" --max-time 15 https://developer.vpbank.com/psd2/berlin-group/v1/accounts
+signin:200:44470
+---
+tenants:200:2
+---
+accounts:200:15
+[0m
+STEP 1 — DELTA
+- [NEW] PSD2 anchor consent `799bf6a0…` re-verified live this cycle: anon GET /consents/{id}/status → 200 (25B), control random-uuid → 404 (0B) — BOLA read differential intact, mechanism standing.
+- [NEW] stage /users/sign_in → 200 @ 44,470B (churn 43,608B→44,470B, consistent with prior frontend-only redeploy analysis); /api/v1/tenants → 200 `{}` (2B) anon baseline; developer /accounts → 200 `{"accounts":[]}` (15B).
+- [CHANGED] No surface change on any host — api.vpbank.com remains exhausted; all standing movement remains HUMAN_ONLY-gated.
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,7.5,a=7 b=9 t=5 g=10 c=5 f=8 (BOLA read-proof live; DELETE/revocation axis unproven)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,6.5,a=6 b=8 t=5 g=3 c=5 f=8 (fleet-wide overridden SessionsController, unpinned hidden fields; HUMAN-bound)
+- [PRIO] digital-onboarding.vpbank.com/control-center,5.5,a=5 b=8 t=4 g=3 c=5 f=6 (anonymous SPA + config-only API reach, no data axis)
+
+STEP 3 — HYPOTHESES
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 50
+reasoning: Read path re-confirmed this cycle — anchor 799bf6a0 status 200 (25B) via fresh anonymous session, control uuid 404 (0B); zero identity binding on consentId; Berlin Group defines DELETE /consents/{consentId}.
+evidence_needed: DELETE from fresh anon session → 204/200, then GET /consents/{id}/status flips to 404/revokedByPsu; control random-uuid DELETE → 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic sandbox): POST /consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE /psd2/berlin-group/v1/consents/{N} (anon, fresh X-Request-ID) → GET /consents/{N}/status. Control: DELETE random-uuid.
+impact: cross-identity revocation of any known consent → AIS/PIS denial on an official PSD2 API; MEDIUM (sandbox synthetic)
+testability: HUMAN_ONLY
+
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage hidden fields unpinned (7/false/0); GET live 200 @44,470B this cycle; failed-login axis negative (context NOT written pre-auth); only success path unobserved; POST tolerates injected params; pre-auth _us_session+session_expiry set.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token+_us_session) → POST email/password+3 injected params+CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201; re-mints since then used basic auth test:test; no signal anonymous mint disabled; if live, mint→cross-read is credential-free end-to-end (cleaner PoC).
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] Sidekiq Web UI default-creds (conf 40): 401 Basic realm="" confirmed fleet-wide but single-cred attempt is brute-force-adjacent, not multi-attempt; no passive advance possible — park at 40, needs HUMAN single attempt.
+- [PARKED] sts.vpbank.com device_code: blocks on unknown client_id — no enumeration vector.
+- [FINAL] #1 stage valid-creds injection (95), #2 consent revocation (50), #3 anonymous mint (45).
+
+STEP 5 — NEXT ACTION
+- [NEXT] HUMAN: stage valid-creds POST — GET https://digital-onboarding-stage.vpbank.com/users/sign_in (fresh auth_token + _us_session) → POST `authenticity_token` + `user[email]&user[password]` (valid creds) + `user[tenant_id]=1&user[admin]=true&user[user_id]=1` → replay GET /api/v1/tenants and /admin/api/v1/users; diff vs anon `200 {}`/401. If blocked, escalate DELETE-consent revocation proof on developer.vpbank.com (keep anchor 799bf6a0 intact).
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com: BOLA anchor re-verified 09-19 from fresh anonymous session — 200(25B)/404 control differential clean; mechanism standing, no authz gate added.
+- [LEARN] ACCEPTED MISCONFIG @ digital-onboarding-stage.vpbank.com: /users/sign_in size still churning (43,608B→44,470B) but prior bundle analysis shows jQuery/Select2/UI-lib content only — no controller/API change implied.
+
+STEP 7 — RISK
+- [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) independently re-confirmed this cycle with clean 404 control; stage session-context injection live at 95-confidence but HUMAN-bound (valid creds) for 11+ cycles; movement rate-limited solely by unexecuted HUMAN_ONLY proofs (valid-creds POST, DELETE revocation, anonymous mint), not by surface.

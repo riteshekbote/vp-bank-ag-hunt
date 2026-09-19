@@ -5334,3 +5334,31 @@ testability: HUMAN_ONLY
 [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed this cycle (anchor valid, clean 404 control); new Sidekiq management surface on prod/stage/dev is gated on unknown Basic creds (surface-only, no escalation evidence); stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; movement rate-limited solely by unexecuted HUMAN_ONLY proofs.
 ## 2026-09-18 21:50:19 UTC [target] (model bigpickle)
 ## 2026-09-18 23:53:53 UTC [target] (model bigpickle)
+## 2026-09-19 02:45:56 UTC [target] (model bigpickle)
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 50
+reasoning: Read path re-confirmed this cycle — anchor 799bf6a0 status 200 (25B) via fresh anonymous session, control uuid 404 (0B); zero identity binding on consentId; Berlin Group defines DELETE /consents/{consentId}.
+evidence_needed: DELETE from fresh anon session → 204/200, then GET /consents/{id}/status flips to 404/revokedByPsu; control random-uuid DELETE → 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic sandbox): POST /consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE /psd2/berlin-group/v1/consents/{N} (anon, fresh X-Request-ID) → GET /consents/{N}/status. Control: DELETE random-uuid.
+impact: cross-identity revocation of any known consent → AIS/PIS denial on an official PSD2 API; MEDIUM (sandbox synthetic)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage hidden fields unpinned (7/false/0); GET live 200 @44,470B this cycle; failed-login axis negative (context NOT written pre-auth); only success path unobserved; POST tolerates injected params; pre-auth _us_session+session_expiry set.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token+_us_session) → POST email/password+3 injected params+CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201; re-mints since then used basic auth test:test; no signal anonymous mint disabled; if live, mint→cross-read is credential-free end-to-end (cleaner PoC).
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY

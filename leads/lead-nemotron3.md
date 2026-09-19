@@ -5891,3 +5891,26 @@ testability: HUMAN_ONLY
 [LEARN] REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 [LEARN] REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
 [RISK] vp-bank-ag: 75 — Two high-value attack surfaces confirmed: (1) digital-onboarding family (prod/dev/stage) exposes anonymous back-office SPA + API with Devise session-context injection on sign-in (admin/tenant/user_id client-controlled in hidden form fields across all three venues) AND force_tenant parameter enabling tenant context switching — multi-tenant SaaS with onboarding PII, identity docs, banking transactions, wire transfers, role management; session-context injection now PROVEN at form/controller level (stage POST probe HTTP 200, params accepted, cookies renewed); (2) PSD2 sandbox BOLA proven end-to-end (consent/account/payment cross-session read, zero binding) — production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY). Residual: sts.vpbank.com ADFS device_code grant phishing vector (blocked on client_id + service 503); www.vpbank.com OAuth dead without client_id; api.vpbank.com exhausted; dev/stage WAF-blocked; mobile/ebics/tracking/beta/concentsol all negative.
+## 2026-09-19 02:49:24 UTC [target] (model nemotron3)
+[NEW] api.vpbank.com pivot confirmed exhausted — 15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500, all vectors (SSRF, policy bypass, XML/SOAP, routing headers) tested and rejected; no actionable surface remains on target=api
+[NEW] digital-onboarding-stage.vpbank.com bundle redeploy confirmed — hash `4297ba05...` (was `7f7cb839...`), `/users/sign_in` body grew 25,093B→43,608B (74%), bundle analysis shows only jQuery/Select2/UI lib churn, zero new `/api/v1/` endpoints or controller logic changes
+[NEW] PSD2 sandbox consent re-mint SUCCESSFUL — POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 → 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous read of `/consents/{id}/status` and `/consents/{id}` confirmed (BOLA mechanism intact)
+[CHANGED] All three digital-onboarding venues (prod=tenant_id=4, dev=tenant_id=129, stage=tenant_id=7) confirmed with fleet-wide overridden `Users::SessionsController` consuming client-controlled session-context params
+[CHANGED] Failed-login session-context injection hypothesis REJECTED (5 consecutive cycles 09-10→09-14): POST with invalid creds + injected params → HTTP 200 re-render, cookies renewed, post-POST cookie replay shows NO differential vs anonymous baseline — session context NOT written pre-auth
+[CHANGED] All non-digital-onboarding/developer assets remain rejected/maintenance-gated/parked (mobile, ebics, tracking, beta, concentsol, sts, api-prep, designsystem, vpbank-dev/stage)
+[PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,9.55,attack_surface=10|business_value=10|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
+[PRIO] digital-onboarding.vpbank.com/users/sign_in,9.15,attack_surface=9|business_value=10|tech_exposure=9|gate_ease=9|cloud_surface=8|freshness=10
+[PRIO] digital-onboarding-dev.vpbank.com/users/sign_in,8.95,attack_surface=9|business_value=8|tech_exposure=9|gate_ease=10|cloud_surface=8|freshness=10
+[PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents,7.45,attack_surface=7|business_value=9|tech_exposure=8|gate_ease=8|cloud_surface=6|freshness=6
+[HYP] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: /users/sign_in renders hidden user[tenant_id]=7, user[admin]=false, user[user_id]=0 + authenticity_token ×3; overridden Users::SessionsController confirmed consuming client-controlled params across all 3 venues; stage has unpinned defaults making injected values flow purely from POST body; pre-auth _us_session + session_expiry cookies set; POST with injected params accepted (HTTP 200, cookies renewed) without validation error — only missing valid credentials
+evidence_needed: POST /users/sign_in with valid email/password + injected user[admin]=true or user[tenant_id]=X or user[user_id]=Y returns session with elevated privileges or cross-tenant access
+verify_steps: GET https://digital-onboarding-stage.vpbank.com/users/sign_in (capture authenticity_token + hidden defaults + _us_session); POST with valid email/password + injected params — observe HTTP status, Set-Cookie, redirect location; then GET /api/v1/tenants, /api/v1/current_user_details, /admin/api/v1/users, /control-center/ with resulting cookie
+impact: Wrong-tenant or admin session on bank-onboarding back-office → cross-tenant onboarding PII, identity documents, banking transactions, wire transfers, role management; severity HIGH
+testability: HUMAN_ONLY
+[HYP] PSD2 sandbox BOLA consent/account/payment cross-session read with zero identity binding
+class: IDOR
+asset: developer.vpbank
