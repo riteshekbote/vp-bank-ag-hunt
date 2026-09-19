@@ -270,3 +270,12 @@ TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
 ## REPOSCAN 2026-09-19 14:49:01 UTC
 TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
+## REPOSCAN 2026-09-19 17:55:34 UTC
+[HYP] (none)
+class: N/A
+asset: N/A
+confidence: N/A
+reasoning: No VP Bank AG GitHub organization found. Scope explicitly states github_orgs: none-configured. All API lookups return 404.
+impact: N/A
+verify_steps: N/A
+TARGET_ORG not configured for vp-bank-ag; skipping public-org deep scan.
