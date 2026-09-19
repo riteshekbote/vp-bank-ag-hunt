@@ -33125,3 +33125,179 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed live this cycle with clean 404 control and fresh synthetic object body; stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; revocation-escalation (integrity) is the one standing chain that can move with existing sandbox access; no new passive surface or severity change.
+===== ANALYST bigpickle 2026-09-19 16:00:27 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -s -o /tmp/vpbank_spec.yaml -w "SPEC_HTTP:%{http_code} SIZE:%{size_download}\n" -m 30 "https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml"
+SPEC_HTTP:200 SIZE:46112
+[0m
+[0m$ [0mcurl -s -w "\nANCHOR_HTTP:%{http_code}\n" -m 30 "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status" -H "X-Request-ID: 11111111-1111-1111-1111-111111111115"
+{"consentStatus":"valid"}
+ANCHOR_HTTP:200
+[0m
+[0m$ [0mgrep -n 'delete:' /tmp/vpbank_spec.yaml; echo "---CONSENT PATHS---"; grep -n 'consents' /tmp/vpbank_spec.yaml | head -40
+61:        delete:
+137:    #    delete:
+---CONSENT PATHS---
+16:    /consents:
+28:                $ref: "#/components/requestBodies/consents"
+39:    /consents/{consentId}:
+83:    /consents/{consentId}/status:
+190:            description: Returns all identifiers of the accounts, to which an account access has been granted to through the /consents endpoint by the PSU.
+545:                        $ref: "#/components/schemas/consentsResponse-201"
+598:        consents:
+599:            description: Request body for a consents request
+603:                        $ref: "#/components/schemas/consents"
+1083:        consents:
+1187:        consentsResponse-201:
+[0m
+[0m$ [0msed -n '39,130p' /tmp/vpbank_spec.yaml
+/consents/{consentId}:
+        get:
+            summary: Get consent request
+            description: Returns the content of an account information consent object.
+            operationId: getConsentInformation
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConsentInformation"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+        delete:
+            summary: Delete consent
+            description: The TPP can delete an account information consent object if needed.
+            operationId: deleteConsent
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+            responses:
+                '204':
+                    $ref: "#/components/responses/NO_CONTENT_204_Consents"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    /consents/{consentId}/status:
+        get:
+            summary: Consent status request
+            description: Read the status of an account information consent resource.
+            operationId: getConsentStatus
+            tags:
+                - Account Information Service (AIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/consentId_PATH"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+            responses:
+                '200':
+                    $ref: "#/components/responses/OK_200_ConsentStatus"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+                '404':
+                    $ref: "#/components/responses/NOT_FOUND_404_AIS"
+                '500':
+                    $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_AIS"
+
+    #######################################################
+    # Payment Initiation Service (PIS)
+    #######################################################
+
+    /{payment-service}/{payment-product}:
+        post:
+            summary: Payment initiation request
+            description: This method is used to initiate a payment at the ASPSP.
+            operationId: initiatePayment
+            tags:
+                - Payment Initiation Service (PIS)
+            parameters:
+                #path
+                -   $ref: "#/components/parameters/paymentService"
+                -   $ref: "#/components/parameters/paymentProduct"
+                #header
+                -   $ref: "#/components/parameters/X-Request-ID"
+                -   $ref: "#/components/parameters/TPP-Redirect-URI"
+                -   $ref: "#/components/parameters/PSU-IP-Address"
+            requestBody:
+                $ref: "#/components/requestBodies/paymentInitiation"
+            responses:
+                '201':
+                    $ref: "#/components/responses/CREATED_201_PaymentInitiation"
+                '403':
+                    $ref: "#/components/responses/FORBIDDEN_403_AIS"
+[0m
+STEP 1 — DELTA
+- NEW developer.vpbank.com spec re-fetched 200/46,112B (unchanged): `DELETE /consents/{consentId}` documented as `deleteConsent` — required: `consentId` path + `X-Request-ID` + `TPP-Redirect-URI` headers only, no auth scheme; responses 204/403/404/500 — revocation verify_steps now exact.
+- NEW anchor `799bf6a0-2c45-4300-a51b-18935f378fc5` re-confirmed from a fresh anonymous curl session this cycle: GET /consents/{id}/status → 200 `{"consentStatus":"valid"}` — BOLA read path live, anchor unexpired.
+- CHANGED no new surface on any other asset (api 15+ cycles exhausted; digital-onboarding fleet unchanged; mobile/ebics/tracking/beta/concentsol/sts rejected).
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents/{id},5.9,IDOR-BOLA-integrity (spec-verified DELETE, zero binding on consentId, anchor live)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,5.75,AUTH-session-context (fleet 3/3 overridden SessionsController, valid-creds proof only)
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1/consents (POST),5.3,IDOR-credential-free-mint (09-05 anon 201 observed, re-mints since used basic auth)
+
+STEP 3 — HYPOTHESES
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 60
+reasoning: Spec (200/46,112B this cycle) defines DELETE /consents/{consentId} (`deleteConsent`) with only path id + X-Request-ID + TPP-Redirect-URI, no security scheme; zero identity binding on consentId observed on object/status reads (anchor 200 `valid` from fresh anon session today, control uuid 404 prior cycles); Berlin Group semantics = 204 on delete.
+evidence_needed: DELETE from fresh anon session → 204/200 then GET /status flips away from `valid`; random-uuid DELETE → 404/403 differential.
+verify_steps: HUMAN (mutating, synthetic sandbox): POST /psd2/berlin-group/v1/consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE /psd2/berlin-group/v1/consents/{N} (anonymous, X-Request-ID ending 5 + TPP-Redirect-URI header) → expect 204 → GET /consents/{N}/status (expect 404/revokedByPsu); control DELETE on random-uuid (expect 404/403); do NOT touch standing anchor 799bf6a0.
+impact: cross-identity revocation of any known consentId → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic, no prod carry)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage fields unpinned; POST tolerates injected params + renews cookies; failed-login axis negative 10+ cycles (context NOT written pre-auth); only success path unobserved.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie replay diverging from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh authenticity_token + _us_session) → POST email/password + 3 injected params + CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201 observed; later re-mints used basic auth test:test; no signal anonymous mint disabled; if live, mint→cross-read is credential-free end-to-end.
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID ending 5, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [FINAL] Cross-identity consent REVOCATION [60] — spec-verified endpoint + headers + live anchor this cycle; keep, next-in-line for HUMAN mutating proof.
+- [FINAL] Stage valid-creds session-context injection [95] — strongest standing finding, HUMAN-bound 10+ cycles on valid creds; keep queued.
+- [FINAL] Anonymous consent mint [45] — secondary credential-free chain; keep pending revocation proof run.
+- [PARKED] api.vpbank.com — 15+ cycles uniform INVALID_REQUEST_RESOURCE, all vectors rejected; dead.
+- [PARKED] force_tenant / sessions GET probes / mobile-ebics-tracking-beta-concentsol-sts — rejected/maintenance/parked, no new signal.
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: developer.vpbank.com revocation proof — POST /psd2/berlin-group/v1/consents (basic auth `test:test`, X-Request-ID ending 5, `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`) → capture N → DELETE /psd2/berlin-group/v1/consents/{N} (anonymous, headers `X-Request-ID: <...5>` + `TPP-Redirect-URI: https://tpp.example/cb`) → expect 204 → GET /consents/{N}/status (expect flip from `valid`); control: DELETE random-uuid (expect 404/403). Preserve anchor 799bf6a0-2c45-4300-a51b-18935f378fc5.
+
+STEP 6 — LEARNING
+[LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (spec): DELETE /consents/{consentId} (`deleteConsent`) documented with no security scheme; only consentId + X-Request-ID + TPP-Redirect-URI required; response set 204/403/404/500 — revocation chain verify_steps now exact.
+[LEARN] ACCEPTED IDOR @ developer.vpbank.com (BOLA read path): anchor 799bf6a0 status 200 `{"consentStatus":"valid"}` re-confirmed from fresh anonymous session 2026-09-19 — cross-session object/status read standing, zero binding on consentId.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 52 — standing PSD2 consent-object BOLA (MEDIUM) re-live-verified with unexpired anchor; integrity-escalation chain now spec-locked at [60] and ready for the one HUMAN mutating proof that can move it; stage injection stays [95] but cred-bound (10+ cycles); no new passive surface or severity change anywhere else this cycle.

@@ -376,3 +376,5 @@
 - 2026-09-19 REJECTED MISCONFIG @ www-beta/mobile-beta.vpbank.com: both resolve 193.222.70.149 with shared www SAN — aliases, not distinct products
 - 2026-09-19 REJECTED MISCONFIG @ concentsol.vpbank.com: Kestrel uniform empty 404 no content-type — parked, no anonymous routes
 - 2026-09-19 REJECTED OAUTH @ sts.vpbank.com: /adfs/oauth2/token/devicecode 200 is MS-HTTPAPI error shell (X-MS-Forwarded-Status-Code:500); real endpoint /adfs/oauth2/devicecode (405 GET) — blocks on client_id
+- 2026-09-19 ACCEPTED MISCONFIG @ developer.vpbank.com (spec): DELETE /consents/{consentId} (`deleteConsent`) documented with no security scheme; only consentId + X-Request-ID + TPP-Redirect-URI required; response set 204/403/404/500 — revocation chain verify_steps now exact.
+- 2026-09-19 ACCEPTED IDOR @ developer.vpbank.com (BOLA read path): anchor 799bf6a0 status 200 `{"consentStatus":"valid"}` re-confirmed from fresh anonymous session 2026-09-19 — cross-session object/status read standing, zero binding on consentId.
