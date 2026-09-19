@@ -5452,3 +5452,31 @@ testability: HUMAN_ONLY
 [LEARN] ACCEPTED MISCONFIG @ developer.vpbank.com (spec): DELETE /consents/{consentId} (`deleteConsent`) documented with no security scheme; only consentId + X-Request-ID + TPP-Redirect-URI required; response set 204/403/404/500 — revocation chain verify_steps now exact.
 [LEARN] ACCEPTED IDOR @ developer.vpbank.com (BOLA read path): anchor 799bf6a0 status 200 `{"consentStatus":"valid"}` re-confirmed from fresh anonymous session 2026-09-19 — cross-session object/status read standing, zero binding on consentId.
 [RISK] vp-bank-ag: 52 — standing PSD2 consent-object BOLA (MEDIUM) re-live-verified with unexpired anchor; integrity-escalation chain now spec-locked at [60] and ready for the one HUMAN mutating proof that can move it; stage injection stays [95] but cred-bound (10+ cycles); no new passive surface or severity change anywhere else this cycle.
+## 2026-09-19 18:23:18 UTC [target] (model bigpickle)
+[HYP] Cross-identity consent REVOCATION via DELETE /consents/{id} (BOLA→integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id}
+confidence: 60
+reasoning: This cycle object+status reads from fresh anon session both 200 (status `valid`, object incl IBAN) — zero binding on consentId on reads; spec (46,112B, unchanged) documents `deleteConsent` with no security scheme, only consentId+X-Request-ID+TPP-Redirect-URI; response set 204/403/404/500.
+evidence_needed: anon DELETE of a known consentId → 204 and /status flips from `valid`; random-uuid DELETE → 404/403 differential.
+verify_steps: HUMAN (mutating, synthetic): POST /psd2/berlin-group/v1/consents (basic auth test:test, X-Request-ID ending 5, `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`) → N; anon DELETE /consents/{N} (X-Request-ID ending 5 + TPP-Redirect-URI:https://tpp.example/cb) → expect 204 → anon GET /consents/{N}/status → expect 404/revokedByPsu; control DELETE random-uuid → 404/403. Do NOT touch 799bf6a0.
+impact: cross-identity revocation of any known consentId → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage fields unpinned; POST tolerates injected params + renews cookies; failed-login axis negative 10+ cycles (context NOT written pre-auth); only success path unobserved.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie replay diverging from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh authenticity_token + _us_session) → POST email/password + 3 injected params + CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Anonymous consent mint still live → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201 observed; later mints used basic auth test:test; current read path shows no authz gate; no signal anon mint disabled.
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId readable by fresh anon session.
+verify_steps: HUMAN: POST /consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID ending 5, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat; MEDIUM
+testability: HUMAN_ONLY
