@@ -5390,3 +5390,33 @@ evidence_needed: anonymous POST /consents (no Authorization) → 201 new consent
 verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
 impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
 testability: HUMAN_ONLY
+## 2026-09-19 12:13:35 UTC [target] (model bigpickle)
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 55
+reasoning: This cycle the re-minted anchor returned full object incl IBAN LI4908805500000000008 and status 200 from a fresh anonymous session while random-uuid control got 404 — zero identity binding on consentId remains on object+status reads; Berlin Group defines DELETE /consents/{consentId}; no keyed-auth gate observed.
+evidence_needed: DELETE from fresh anon session → 204/200 then GET /status flips to 404/revokedByPsu; random-uuid DELETE → 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic): POST /psd2/berlin-group/v1/consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE {N} (anon, fresh X-Request-ID) → GET /consents/{N}/status; repeat DELETE on random-uuid as control; do NOT touch standing anchor 799bf6a0.
+impact: cross-identity revocation of any known consent id → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage fields unpinned and live 200 @44,476B this cycle; failed-login axis negative (context NOT written pre-auth, 10+ cycles); only success path unobserved; POST tolerates injected params.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token + _us_session) → POST email/password + 3 injected params + CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201 observed; subsequent re-mints used basic auth test:test; no signal anonymous mint disabled; if live, mint→cross-read is credential-free end-to-end.
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY
+[NEXT] HUMAN: developer.vpbank.com revocation proof — POST /psd2/berlin-group/v1/consents (basic auth `test:test`, X-Request-ID ending 5, `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`) → capture new consentId N → DELETE /psd2/berlin-group/v1/consents/{N} (no auth, fresh X-Request-ID) → GET /consents/{N}/status (expect flip away from `valid`); control DELETE random-uuid (expect 404/405). Preserve standing anchor 799bf6a0-2c45-4300-a51b-18935f378fc5.
+[RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed live this cycle with clean 404 control and fresh synthetic object body; stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; revocation-escalation (integrity) is the one standing chain that can move with existing sandbox access; no new passive surface or severity change.

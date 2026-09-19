@@ -1,4 +1,4 @@
-## 2026-09-19 07:45:34 UTC [target] (model nemotron3)
+## 2026-09-19 12:14:05 UTC [target] (model nemotron3)
 [NEW] api.vpbank.com pivot confirmed exhausted — 15+ cycles uniform INVALID_REQUEST_RESOURCE JSON 500, all vectors (SSRF, policy bypass, XML/SOAP, routing headers) tested and rejected; no actionable surface remains on target=api
 [NEW] digital-onboarding-stage.vpbank.com bundle redeploy confirmed — hash `4297ba05...` (was `7f7cb839...`), `/users/sign_in` body grew 25,093B→43,608B (74%), bundle analysis shows only jQuery/Select2/UI lib churn, zero new `/api/v1/` endpoints or controller logic changes
 [NEW] PSD2 sandbox consent re-mint SUCCESSFUL — POST `/consents` with basic auth (test:test) + X-Request-ID ending in 5 → 201 with consentId `799bf6a0-2c45-4300-a51b-18935f378fc5`; cross-session anonymous read of `/consents/{id}/status` and `/consents/{id}` confirmed (BOLA mechanism intact)
@@ -36,7 +36,7 @@ evidence_needed: GET /consents/{id}/status, /consents/{id}, /accounts, /balances
 verify_steps: GET https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status (expect 200); GET /consents/799bf6a0-2c45-4300-a51b-18935f378fc5 (expect 200 with IBAN); GET /accounts + Consent-ID header; GET /balances + Consent-ID; GET /transactions + Consent-ID
 impact: Cross-TPP consent/account/payment data read in PSD2 sandbox; production carryover plausible via shared cert CN=openbanking.vpbank.com but blocked by mTLS (HUMAN_ONLY); severity HIGH for sandbox, CRITICAL if production bypass
 testability: PASSIVE
-[PARKED] Valid-credential session-context injection grants cross-tenant admin on digital-onboarding-dev back-office: lower business value (synthetic data) vs prod/stage; same controller logic but dev environment
+[PARKED] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity): confidence 50 < threshold; requires mutating DELETE on consentId which is integrity impact, not read-only; no passive verify path
 [FINAL] 1. [95] digital-onboarding-stage.vpbank.com/users/sign_in: Valid-credential session-context injection on stage back-office (HUMAN_ONLY)
 [FINAL] 2. [90] digital-onboarding.vpbank.com/users/sign_in: Valid-credential session-context injection on prod back-office (HUMAN_ONLY)
 [FINAL] 3. [85] developer.vpbank.com/psd2/berlin-group/v1/consents: PSD2 sandbox BOLA re-mint restores cross-session consent/account read (PASSIVE)

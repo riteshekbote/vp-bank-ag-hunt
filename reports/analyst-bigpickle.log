@@ -33049,3 +33049,79 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 - [RISK] vp-bank-ag: 50 — highest-confidence finding remains PSD2 consent-object BOLA (MEDIUM, sandbox synthetic, anchor valid, clean 404 control); stage session-context injection [95] is HIGH-impact but HUMAN-bound for 10+ cycles with zero new passive surface; all other assets exhausted/rejected. Movement rate-limited solely by unexecuted HUMAN_ONLY proofs.
+===== ANALYST bigpickle 2026-09-19 12:14:14 UTC =====
+[0m
+> build · big-pickle
+[0m
+First, verifying my standing environment and running the mandated passive read-only baselines.
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code} %{size_download}B %{content_type}\n" --max-time 20 -H "X-Request-ID: a9c41f3e-7a12-4b30-9d55-000000000501" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"
+200 25B application/json;charset=UTF-8
+[0m
+Standing anchor alive. Capturing body + parallel read-only baselines.
+[0m$ [0mcurl -s --max-time 20 -H "X-Request-ID: a9c41f3e-7a12-4b30-9d55-000000000502" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5/status"; echo; curl -s --max-time 20 -H "X-Request-ID: a9c41f3e-7a12-4b30-9d55-000000000503" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/799bf6a0-2c45-4300-a51b-18935f378fc5"; echo
+{"consentStatus":"valid"}
+{"consentId":null,"requestedAccessTypes":[],"access":{"accounts":[{"iban":"LI4908805500000000008"}],"balances":[{"iban":"LI4908805500000000008"}],"transactions":[{"iban":"LI4908805500000000008"}],"confirmationOfFunds":[]},"recurringIndicator":true,"validUntil":"2026-12-31","frequencyPerDay":4,"lastActionDate":null,"consentStatus":"valid","tppName":null,"redirectUri":null,"_links":null}
+[0m
+Consent object readable (fresh IBAN LI4908805500000000008, synthetic). Running control + keyed differential.
+[0m$ [0mecho "--control(random-uuid)--"; curl -s -o /dev/null -w "%{http_code} %{size_download}B\n" --max-time 20 -H "X-Request-ID: a9c41f3e-7a12-4b30-9d55-000000000504" "https://developer.vpbank.com/psd2/berlin-group/v1/consents/11111111-2222-4333-8444-aabbccddeeff/status"; echo "--accounts--"; curl -s --max-time 20 -H "X-Request-ID: a9c41f3e-7a12-4b30-9d55-000000000505" "https://developer.vpbank.com/psd2/berlin-group/v1/accounts"; echo; echo "--stage-signin--"; curl -s -o /dev/null -w "%{http_code} %{size_download}B\n" --max-time 20 "https://digital-onboarding-stage.vpbank.com/users/sign_in"
+--control(random-uuid)--
+404 0B
+--accounts--
+{"accounts":[]}
+--stage-signin--
+200 44476B
+[0m
+All re-verifications complete. Both direction points (anchor status/object, control 404, accounts, stage baseline) unchanged — mechanism stable. Emitting analysis for this cycle.
+
+STEP 1 — DELTA
+- [NEW] PSD2 sandbox consent-2 anchor `799bf6a0-2c45-4300-a51b-18935f378fc5` live-verified again (status 200 `{"consentStatus":"valid"}`, object 200 reveals fresh mint IBAN `LI4908805500000000008`, `validUntil:2026-12-31`) — third+ distinct anonymous re-read, random-uuid control 404 (0B)
+- [CHANGED] stage `/users/sign_in` body now 44,476B (was 25,093B/43,608B) — frontend widget churn continues, hidden session-context fields still unpinned, no backend change signal
+- [CHANGED] No new passive surface anywhere in inventory; all open hypotheses remain HUMAN_ONLY-gated (mutating POST/DELETE or valid creds)
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1 (sandbox), 5.9, IDOR/BOLA read+integrity axis — attack_surface 6, business_value 5 (synthetic sandbox), tech_exposure 6 (PSD2 mTLS/basic-auth spec), gate_ease 8 (anonymous reads), cloud_surface 1, freshness 3
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in, 5.3, AUTH session-context injection — surface 6, value 8 (back-office PII), tech 7 (Devise override), gate 2 (valid creds needed), cloud 1, freshness 3
+- [PRIO] sts.vpbank.com, 3.1, OAuth device_code — surface 3, value 6 (corporate IdP), tech 6, gate 2 (client_id unknown), cloud 1, freshness 1
+
+STEP 3 — HYPOTHESES
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 55
+reasoning: This cycle the re-minted anchor returned full object incl IBAN LI4908805500000000008 and status 200 from a fresh anonymous session while random-uuid control got 404 — zero identity binding on consentId remains on object+status reads; Berlin Group defines DELETE /consents/{consentId}; no keyed-auth gate observed.
+evidence_needed: DELETE from fresh anon session → 204/200 then GET /status flips to 404/revokedByPsu; random-uuid DELETE → 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic): POST /psd2/berlin-group/v1/consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE {N} (anon, fresh X-Request-ID) → GET /consents/{N}/status; repeat DELETE on random-uuid as control; do NOT touch standing anchor 799bf6a0.
+impact: cross-identity revocation of any known consent id → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic)
+testability: HUMAN_ONLY
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage fields unpinned and live 200 @44,476B this cycle; failed-login axis negative (context NOT written pre-auth, 10+ cycles); only success path unobserved; POST tolerates injected params.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie whose replay diverges from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token + _us_session) → POST email/password + 3 injected params + CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201 observed; subsequent re-mints used basic auth test:test; no signal anonymous mint disabled; if live, mint→cross-read is credential-free end-to-end.
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [PARKED] sts.vpbank.com device_code: still blocks on unknown client_id + service 503; no new evidence, confidence frozen <40.
+- [FINAL] 1) stage session-context injection [95] 2) consent REVOCATION [55] 3) anonymous mint [45] — none newly dropped; all three require HUMAN action, no passive-detectable remaining surface inventory-wide.
+
+STEP 5 — NEXT ACTION
+[NEXT] HUMAN: developer.vpbank.com revocation proof — POST /psd2/berlin-group/v1/consents (basic auth `test:test`, X-Request-ID ending 5, `{"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}`) → capture new consentId N → DELETE /psd2/berlin-group/v1/consents/{N} (no auth, fresh X-Request-ID) → GET /consents/{N}/status (expect flip away from `valid`); control DELETE random-uuid (expect 404/405). Preserve standing anchor 799bf6a0-2c45-4300-a51b-18935f378fc5.
+
+STEP 6 — LEARNING
+- [LEARN] ACCEPTED IDOR @ developer.vpbank.com (PSD2 consent-object BOLA): re-verified 2026-09-19 — anchor 799bf6a0 status 200 `{"consentStatus":"valid"}` (25B) + full object 200 (IBAN LI4908805500000000008, validUntil 2026-12-31) from fresh anonymous session; random-uuid control 404 (0B); /accounts 200 `{"accounts":[]}`; mechanism standing, no authz gate added.
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com: /users/sign_in 200 @44,476B (body churn from Klaro/DAB widget only, bundle re-examined 09-17/19 — no /api/v1 literals, no controller change); injection surface unchanged, no new routes.
+
+STEP 7 — RISK
+[RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) re-confirmed live this cycle with clean 404 control and fresh synthetic object body; stage session-context injection remains [95] but HUMAN-bound (valid creds) for 10+ cycles; revocation-escalation (integrity) is the one standing chain that can move with existing sandbox access; no new passive surface or severity change.
