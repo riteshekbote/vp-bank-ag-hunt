@@ -32967,3 +32967,85 @@ STEP 6 — LEARNING
 
 STEP 7 — RISK
 - [RISK] vp-bank-ag: 50 — highest-confidence standing finding (PSD2 consent-object BOLA, MEDIUM) independently re-confirmed this cycle with clean 404 control; stage session-context injection live at 95-confidence but HUMAN-bound (valid creds) for 11+ cycles; movement rate-limited solely by unexecuted HUMAN_ONLY proofs (valid-creds POST, DELETE revocation, anonymous mint), not by surface.
+===== ANALYST bigpickle 2026-09-19 07:45:42 UTC =====
+[0m
+> build · big-pickle
+[0m
+[0m$ [0mcurl -sk -m 15 -o /tmp/opencode/routes.out -w "HTTP %{http_code} | size=%{size_download} | type=%{content_type}\n" "https://digital-onboarding-stage.vpbank.com/rails/info/routes" ; echo "---"; head -c 400 /tmp/opencode/routes.out; echo
+HTTP 404 | size=1793 | type=text/html; charset=UTF-8
+---
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 error</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <style>
+    body {
+      background-color: #EFEFEF;
+      color: #2E2F30;
+      margin: 0;
+    }
+
+    p.error-message {
+      font-size: 40px;
+      color: #cc7b0a;
+      text-align: center;
+      fon
+[0m
+STEP 1 — DELTA
+- NO_DELTA: surface identical to last lead cycle (09-19 02:45) — api exhausted, PSD2 BOLA anchor valid, stage injection HUMAN-bound.
+- [NEW] Passive probe executed this cycle: `GET digital-onboarding-stage.vpbank.com/rails/info/routes` → HTTP 404 Rails 404.html (1793B) — Rails diagnostic route dumper NOT enabled on stage.
+- [CHANGED] All standing top leads remain HUMAN_ONLY (valid-creds inject, consent DELETE, anonymous mint); no passive-detectable surface left on any in-scope host that has not already been probed.
+
+STEP 2 — PRIORITIZE
+- [PRIO] developer.vpbank.com/psd2/berlin-group/v1,score=7.6,axis=BOLA-read standing + DELETE/POST mutating escalations (a9 b8 t6 g5 c6 f9)
+- [PRIO] digital-onboarding-stage.vpbank.com/users/sign_in,score=6.8,axis=session-context injection (a8 b7 t6 g4 c5 f8)
+- [PRIO] digital-onboarding.vpbank.com/sidekiq,score=4.2,axis=management-UI gate (a6 b5 t5 g1 c4 f4)
+
+STEP 3 — HYPOTHESES
+[HYP] Cross-identity consent REVOCATION on PSD2 sandbox (BOLA escalation to integrity)
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents/{id} (DELETE)
+confidence: 50
+reasoning: anchor 799bf6a0-2c45-4300-a51b-18935f378fc5 globally readable from ≥3 anonymous sessions (status 200, control uuid 404) this and prior cycles; Berlin Group NextGenPSD2 defines DELETE /consents/{consentId}; zero identity binding observed on consentId everywhere the read path was tested.
+evidence_needed: DELETE from fresh anon session → 204/200, then GET /consents/{id}/status flips to 404/revokedByPsu; control random-uuid DELETE → 404/405 differential.
+verify_steps: HUMAN (mutating, synthetic sandbox): POST /psd2/berlin-group/v1/consents (basic auth test:test, X-Request-ID ending 5, {"access":["accounts","balances","transactions"],"recurringIndicator":true,"validUntil":"2027-03-11","frequencyPerDay":100}) → capture N → DELETE /psd2/berlin-group/v1/consents/{N} (anon, fresh X-Request-ID) → GET /consents/{N}/status; repeat DELETE on random-uuid as control.
+impact: cross-identity revocation of any known consent → AIS/PIS denial on official PSD2 API; MEDIUM (sandbox synthetic), no prod carry
+testability: HUMAN_ONLY
+
+[HYP] Valid-credential session-context injection on stage back-office
+class: AUTH
+asset: digital-onboarding-stage.vpbank.com/users/sign_in
+confidence: 95
+reasoning: fleet 3/3 overridden Users::SessionsController (defaults 4/129/7); stage hidden fields unpinned (7/false/0), POST tolerates injected params, cookies renewed; failed-login axis negative (10+ consistent cycles — pre-auth context NOT written); only success path unobserved.
+evidence_needed: valid-creds POST + user[admin]=true&user[tenant_id]=1&user[user_id]=1 yields cookie replay diverging from anon baseline (/api/v1/tenants ≠ `{}` or /admin/api/v1/users ≠ 401).
+verify_steps: HUMAN: GET /users/sign_in (fresh auth_token + _us_session) → POST email/password+3 injected params+CSRF → replay GET /api/v1/tenants + /admin/api/v1/users; diff vs `200 {}`/401.
+impact: cross-tenant admin back-office session — onboarding PII, ident docs, wire status; HIGH
+testability: HUMAN_ONLY
+
+[HYP] Anonymous consent mint still possible → fully credential-free BOLA chain
+class: IDOR
+asset: developer.vpbank.com/psd2/berlin-group/v1/consents (POST)
+confidence: 45
+reasoning: 09-05 anonymous POST→201 observed; all later re-mints used basic auth test:test; no signal anonymous mint was disabled since; if live, mint→cross-read is credential-free end-to-end.
+evidence_needed: anonymous POST /consents (no Authorization) → 201 new consentId; fresh anon session reads /status 200.
+verify_steps: HUMAN: POST /psd2/berlin-group/v1/consents (JSON access/recurringIndicator/validUntil/frequencyPerDay, X-Request-ID, no auth) → anon GET /consents/{id}/status.
+impact: removes "attacker identity at mint" caveat from BOLA report; MEDIUM
+testability: HUMAN_ONLY
+
+STEP 4 — SELF-CRITIQUE
+- [REJECTED] stage /rails/info/routes: probe executed → HTTP 404 Rails page; hypothesis refuted, no route-dump surface. Dropped.
+- [PARKED] Sidekiq default-creds (40): /sidekiq 401 `Basic realm=""` confirmed fleet-wide but no credential-acquisition path exists (single attempt HUMAN, unknown creds); boundary confidence, demoted below delete/anonymous-mint.
+- [PARKED] stage session-context (95): unchanged 10+ cycles, HUMAN-bound on valid creds; kept as top finding, not actionable without creds.
+- [FINAL] Ranked: (1) valid-creds session-context injection stage [95]; (2) consent DELETE revocation [50]; (3) anonymous consent mint [45].
+
+STEP 5 — NEXT ACTION
+- [NEXT] PROBE: `GET https://developer.vpbank.com/psd2/berlin-group/v1/psd2_api.yaml` (read-only, passive) — re-fetch 46KB spec to (a) confirm DELETE /consents/{consentId} path + any PATCH/PUT consent ops exist in spec (raises revocation conf above 50), (b) diff spec bytes vs prior captures for backend change signal; 1 request.
+
+STEP 6 — LEARNING
+- [LEARN] REJECTED MISCONFIG @ digital-onboarding-stage.vpbank.com/rails/info/routes: executed 2026-09-19 — HTTP 404 Rails 404.html (1793B); Rails diagnostic route dumper not enabled on stage; no route-map disclosure.
+
+STEP 7 — RISK
+- [RISK] vp-bank-ag: 50 — highest-confidence finding remains PSD2 consent-object BOLA (MEDIUM, sandbox synthetic, anchor valid, clean 404 control); stage session-context injection [95] is HIGH-impact but HUMAN-bound for 10+ cycles with zero new passive surface; all other assets exhausted/rejected. Movement rate-limited solely by unexecuted HUMAN_ONLY proofs.
